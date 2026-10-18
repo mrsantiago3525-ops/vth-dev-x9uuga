@@ -3179,7 +3179,7 @@ const DENS_Z={
  7:[[100,620,3,'kfl,skel,narq'],[870,1200,2,'kfl,skel'],[1460,2500,6,'kfl,kesc,narq,skel,kfl,ang'],[2500,3700,7,'kfl,kesc,narq,skel,ang,kfl'],
     [3700,4600,6,'kfl,kesc,narq,skel,kfl'],[5460,6420,5,'kfl,kesc,narq,skel,ang']]};
 let DS=null;
-const densTarget=()=>{const b=[4,5,6,7][SAVE.diff|0]||5,z=DENS_Z[stage],dx=z?P.x-z[0][0]:9999;return Math.max(2,b-(stage===8?1:0)-(dx<500?2:dx<1100?1:0));};
+const densTarget=()=>{const b=[4,5,6,7][SAVE.diff|0]||5,z=DENS_Z[stage],dx=z?P.x-z[0][0]:9999;return Math.max(2,b-(stage===8?2:0)-(dx<500?2:dx<1100?1:0));};
 const densGap=()=>[118,78,64,48][SAVE.diff|0]||70;
 const pitBetween=(a,b)=>{const l=Math.min(a,b),r=Math.max(a,b);return pits.some(q=>l<q.x+q.w&&r>q.x);};
 function densLive(){let n=0;for(const e of enemies){if(e.dead||e.boss||e.type==='ocu')continue;if(e.sk&&!e.dn)continue;if(e.type==='gmin'&&e.st==='perch')continue;if(Math.abs(e.x-P.x)>900)continue;n++;}return n;}
