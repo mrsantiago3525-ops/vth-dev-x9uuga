@@ -5932,12 +5932,19 @@ const NT=n=>440*Math.pow(2,(n-69)/12);
 const EXP={bpm:56,chords:[[50,53,57],[46,50,53],[43,46,50],[45,49,52]],mel:[74,null,72,69,70,null,69,null,67,null,70,69,69,null,null,null,74,null,77,76,74,null,72,70,67,null,69,70,69,null,null,null]};
 const BOSS={bpm:138,chords:[[50,53,57],[46,50,53],[43,46,50],[45,49,52]],bass:[38,38,50,38,38,41,38,37]};
 function auMode(){if(!AU.c)return;const bossOn=(state==='play'||state==='cards'||state==='over')&&enemies.some(e=>e.boss&&!e.dead&&e.type!=='bart'),fr=stage===1&&state!=='title';const want=((stage===9||stage===10)&&state!=='title'&&state!=='epi'&&!bossOn)?'distorsion':(stage===8&&state!=='title'&&!(bossOn&&!(T3&&T3.dream)&&enemies.some(e=>e.type==='lilv'&&!e.dead&&e.st!=='introC')))?(T3&&T3.dream?'pesadilla':'distorsion'):bossOn?(fr?'elf':'boss'):(fr?'forest':(stage===3&&state!=='title'?'deep':stage===7&&state!=='title'?'coros':stage===6&&state!=='title'?'torre':stage===5&&state!=='title'?'murallas':stage===4&&state!=='title'?'statues':'explore'));
- if(want===AU.mode)return;const C=AU.c,t=C.currentTime;if(AU.bus){const o=AU.bus;o.gain.cancelScheduledValues(t);o.gain.setValueAtTime(o.gain.value,t);o.gain.linearRampToValueAtTime(0,t+1.5);setTimeout(()=>o.disconnect(),2500);}
- AU.bus=C.createGain();AU.bus.gain.setValueAtTime(0,t);AU.bus.gain.linearRampToValueAtTime(want==='boss'||want==='elf'?1.7:2.2,t+1.5);AU.bus.connect(AU.master);AU.mode=want;AU.step=0;AU.nextT=t+.1;}
+ const wantX=(stage===0&&state!=='title'&&state!=='epi'&&!bossOn&&want==='explore')?'n1':want;
+ if(wantX===AU.mode)return;const C=AU.c,t=C.currentTime;if(AU.bus){const o=AU.bus;o.gain.cancelScheduledValues(t);o.gain.setValueAtTime(o.gain.value,t);o.gain.linearRampToValueAtTime(0,t+1.5);setTimeout(()=>o.disconnect(),2500);}
+ if(AU.n1src){const q=AU.n1src;AU.n1src=null;setTimeout(()=>{try{q.stop();}catch(e){}},2500);}
+ AU.bus=C.createGain();AU.bus.gain.setValueAtTime(0,t);AU.bus.gain.linearRampToValueAtTime(wantX==='n1'?1:want==='boss'||want==='elf'?1.7:2.2,t+(wantX==='n1'?2:1.5));AU.bus.connect(AU.master);AU.mode=wantX;if(wantX==='n1'){n1Load();n1Start();}AU.step=0;AU.nextT=t+.1;}
 function pad(t,notes,dur,vol){for(const n of notes){[-7,7].forEach(d=>osc(t,NT(n),dur,'sawtooth',vol,AU.bus,{det:d,a:dur*.3,r:dur*.4,lp:900,rev:.7}));osc(t,NT(n-12),dur,'sine',vol*1.5,AU.bus,{a:dur*.3,r:dur*.4,rev:.4});}}
 function choir(t,notes,dur,vol){const C=AU.c;for(const n of notes)for(const fm of [700,1150]){const x=C.createOscillator(),f=C.createBiquadFilter(),g=C.createGain();x.type='sawtooth';x.frequency.value=NT(n+12);x.detune.value=rnd(-10,10);
  f.type='bandpass';f.frequency.value=fm;f.Q.value=6;env(g,t,dur*.35,vol,dur,dur*.4);x.connect(f);f.connect(g);g.connect(AU.bus);const s=C.createGain();s.gain.value=.8;g.connect(s);s.connect(AU.rev);x.start(t);x.stop(t+dur+.1);}}
-function auSched(){const C=AU.c;if(!C||!AU.bus||AU.muted||C.state!=='running')return;if(AU.nextT<C.currentTime)AU.nextT=C.currentTime+.05;
+// música del nivel 1 (archivo aparte, cacheado por sw.js). Bucle con puntos de loop (crossfade ya horneado en el archivo)
+const N1={buf:null,ld:0,fail:0,LS:27.6677,LE:150.946,VOL:.55};
+function n1Load(){if(N1.buf||N1.ld||!AU.c||N1.fail>3)return;N1.ld=1;
+ fetch('musica_n1.mp3').then(r=>{if(!r.ok)throw 0;return r.arrayBuffer();}).then(b=>new Promise((ok,ko)=>AU.c.decodeAudioData(b,ok,ko))).then(buf=>{N1.buf=buf;N1.ld=0;n1Start();}).catch(()=>{N1.ld=0;N1.fail++;});}
+function n1Start(){if(!N1.buf||!AU.c||!AU.bus||AU.mode!=='n1'||AU.n1src)return;const C=AU.c,s=C.createBufferSource(),g=C.createGain();s.buffer=N1.buf;s.loop=true;s.loopStart=N1.LS;s.loopEnd=Math.min(N1.LE,N1.buf.duration);g.gain.value=N1.VOL;s.connect(g);g.connect(AU.bus);s.start(C.currentTime+.05);AU.n1src=s;}
+function auSched(){const C=AU.c;if(!C||!AU.bus||AU.muted||C.state!=='running')return;if(AU.mode==='n1'){n1Load();n1Start();return;}if(AU.nextT<C.currentTime)AU.nextT=C.currentTime+.05;
  while(AU.nextT<C.currentTime+.25){const t=AU.nextT,i=AU.step;
   if(AU.mode==='explore'){const beat=60/EXP.bpm;
    if(i%4===0){const ch=EXP.chords[(i/4|0)%4];pad(t,ch,beat*4.3,.035);if(i%8===0)choir(t,[ch[0],ch[2]],beat*8,.05);}
