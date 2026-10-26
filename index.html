@@ -4111,7 +4111,7 @@ function cstAI(e,dx,ad,dir){const d=DIF();
 function cstDeath(e){S('crumble');burst(e.x,e.y-90,40,'#8a9aa0',6);}
 // ---------- Cirlene ----------
 function cirAI(e,dx,ad,dir){const d=DIF(),sp=e.phase>=3?1.25:e.phase===2?1.1:1,X0=G1+90,X1=WORLD-90;cirTick(e);if(e.st==='dying'){cirDying(e);return;}
- if(e.st==='intro'){e.inv=9999;e.vx=0;e.f=dir;cirTalk(e);if(e.stT===120){S('chainlash');shake=6;}if(e.stT===100)cirShout(e,'«¡¿QUIÉN PROFANA LA MAREA DE MI MADRE?!»',1);if(e.stT<=0){e.inv=0;T_(e,'idle',50);}return;}
+ if(e.st==='intro'){e.inv=9999;e.vx=0;e.f=dir;cirTalk(e);if(e.stT===120&&!e.talk){S('chainlash');shake=6;}if(e.stT===100&&!e.talk)cirShout(e,'«¡¿QUIÉN PROFANA LA MAREA DE MI MADRE?!»',1);if(e.stT<=0){e.inv=0;T_(e,'idle',50);}return;}
  bossHug(e,'90,200,255');
  if(e.phase===1&&e.hp<e.maxHp*.66){e.phase=2;eproj=eproj.filter(o=>!o.cz);T_(e,'roar',70);e.inv=70;shake=18;flash=8;S('iroar');banner={text:'«¡La marea me obedece a mí!»',sub:'Cirlene llama al río',t:130};cirShout(e,'«¡¡RAAAAHHH!!»',1);e.shT=200;return;}
  if(e.phase===2&&e.hp<e.maxHp*.33){e.phase=3;eproj=eproj.filter(o=>!o.cz);T_(e,'roar',80);e.inv=80;e.brk=1;shake=22;flash=10;S('chainlash');S('iroar');banner={text:'¡UNA CADENA SE ROMPE!',sub:'Cirlene se vuelve más rápida',t:140};cirBreak(e);e.shT=240;burst(e.x+40,e.y-200,40,'#9fb4c8',6);return;}
@@ -6739,22 +6739,27 @@ function drawCst(e,dx){const im=SPR54.golem[0];if(!im||!im.naturalWidth){drawCst
  if(e.hp<e.maxHp*.6){C.strokeStyle='rgba(20,24,28,.8)';C.lineWidth=1.5;C.beginPath();C.moveTo(dx-8,e.y-120);C.lineTo(dx+4,e.y-92);C.lineTo(dx-4,e.y-60);C.stroke();}}
 // ---- Cirlene: vida continua ----
 let CIRTALK=0,SERB=null;
-function cirTalk(e){if(!e.tk0){e.tk0=1;if(!CIRTALK){CIRTALK=1;e.stT=380;e.talk=1;}}
- if(!e.talk)return;const T=e.stT;
- if(T===360)SERB={txt:'Cirlene… no vine a pelear contigo.',t:110};
- if(T===290)e.bub={txt:'«¿Otra hija de la Diosa? ¿Vienes a atarme otra vez?»',t:100};
- if(T===215)SERB={txt:'Vengo a romper esas cadenas… si me dejas.',t:100};
- if(T===150){e.bub={txt:'«Las cadenas son lo único que me queda de madre.»',t:80};}}
+function cirTalk(e){if(!e.tk0){e.tk0=1;if(!CIRTALK){CIRTALK=1;e.stT=760;e.talk=1;}}
+ if(!e.talk)return;const T=e.stT,B=(t,n)=>{e.bub={txt:t,t:n};};
+ if(T===740)B('«Hija del alba… hacía siglos que nadie bajaba hasta mis cadenas.»',120);
+ if(T===620)B('«¿Vienes a liberarme o a alimentarme?»',95);
+ if(T===520)SERB={txt:'«Vengo por la llama que arde bajo el agua.»',t:95};
+ if(T===420)B('«Mi madre la encerró conmigo.»',80);
+ if(T===340)B('«Para tomarla tendrás que arrancármela…»',95);
+ if(T===245)B('«…y yo solo conozco el placer en el dolor.»',110);
+ if(T===130)SERB={txt:'«Entonces te daré mucho placer.»',t:85};
+ if(T===45){B('«¡Ven, déjame probarte!»',85);S('laugh');S('chainlash');shake=10;e.shT=70;e.rat=70;if(typeof burst==='function')burst(e.x,e.y-120,26,'#9ad8ff',5);}
+ if(e.rat>0){e.rat--;if(e.rat%14===0)S('chainlash');}}
 function seraBubble(){if(!SERB||SERB.t<=0)return;const C=ctx;C.save();C.globalAlpha=Math.min(1,SERB.t/12);C.font='italic bold 13px Georgia';const tw=C.measureText(SERB.txt).width+18,px=P.x-cam,bx=clamp(px-tw/2,6,W-tw-6),by=P.y-(typeof camV!=='undefined'?camV:0)-P.h-58;
  C.fillStyle='rgba(255,248,225,.94)';C.strokeStyle='#b8860b';C.lineWidth=2;C.beginPath();C.rect(bx,by,tw,26);C.fill();C.stroke();C.beginPath();C.moveTo(px-6,by+26);C.lineTo(px,by+36);C.lineTo(px+6,by+26);C.fill();C.fillStyle='#3a2a10';C.textAlign='center';C.fillText(SERB.txt,bx+tw/2,by+18);C.textAlign='left';C.restore();}
 function cirChainDr(C,x0,y0,x1,y1,sag,rat,al){const n=Math.max(6,Math.round(Math.hypot(x1-x0,y1-y0)/11));C.save();C.globalAlpha=al;for(let i=0;i<=n;i++){const u=i/n,mx=(x0+x1)/2,my=(y0+y1)/2+sag,x=(1-u)*(1-u)*x0+2*u*(1-u)*mx+u*u*x1+(rat?rnd(-1.5,1.5):0),y=(1-u)*(1-u)*y0+2*u*(1-u)*my+u*u*y1+(rat?rnd(-1.5,1.5):0);
   C.strokeStyle=i%2?'#7d8a99':'#a8b6c8';C.lineWidth=3;C.beginPath();C.ellipse(x,y,i%2?3:6,i%2?6:3.5,Math.atan2(y1-y0,x1-x0),0,7);C.stroke();}C.restore();}
 function drawCirl(e,dx){const C=ctx,st=e.st;if(st!==e.pst){e.pst=st;e.st0=Math.max(1,e.stT);}
  const t=e.t||frame,u=clamp(1-e.stT/e.st0,0,1),wind=st==='clawW'||st==='tideW'||st==='orbW'||st==='grabC'||st==='chainC',dying=st==='dying';
- const intro=st==='intro',scream=st==='roar'||(intro&&e.stT<112&&e.stT>30)||e.scr>0||dying,rel=st==='claw'||st==='tideA'||st==='orb';
+ const intro=st==='intro',iT=!e.talk?e.stT:e.stT>702?e.stT-590:e.stT>45?111:31+e.stT*1.75,scream=st==='roar'||(intro&&iT<112&&iT>30)||e.scr>0||dying,rel=st==='claw'||st==='tideA'||st==='orb';
  const img=(scream||rel)&&CIRA.naturalWidth?CIRA:CIRI,br=Math.sin(t*.045),bob=Math.sin(t*.05)*5+Math.sin(t*.13)*1.5;
  let sx=1-.014*br,sy=1+.02*br,rot=Math.sin(t*.03)*.025,ox=0,oy=0,al=1,flt='';
- if(intro){const rs=e.talk?330:112,k=e.stT>rs?clamp((e.stT-rs)/50,0,1):0;oy=k*k*240;al=1-k*.6;}
+ if(intro){const k=iT>112?clamp((iT-112)/58,0,1):0;oy=k*k*240;al=1-k*.6;}
  if(wind){sy*=1-.1*u;sx*=1+.07*u;rot=-.1*u;ox=-10*u;if(u>.7)ox+=rnd(-2,2);}
  if(rel){const k=1-u;sy*=1+.12*k;sx*=1-.08*k;rot=(st==='claw'?.12:.06)*(.4+k);ox=st==='claw'?20*(.5+k):10;}
  if(scream&&!dying){sx*=1.05+.03*Math.sin(t*.9);sy*=1.07;rot=-.06;ox=rnd(-2,2);oy+=rnd(-1.5,1.5);}
@@ -6777,8 +6782,8 @@ function drawCirl(e,dx){const C=ctx,st=e.st;if(st!==e.pst){e.pst=st;e.st0=Math.m
  else{C.fillStyle='#2a6a7a';C.fillRect(dx-50,e.y-240,100,240);}
  // muñecas aproximadas (local -> mundo)
  const wp=(lx,ly)=>{const yy=ly*sy*h,xx=lx*sx*w+lean*yy;return [bx+fs*(xx*Math.cos(rot)-yy*Math.sin(rot)),by+(xx*Math.sin(rot)+yy*Math.cos(rot))];};
- if(!dying&&!e.dead&&oy<60){const rat=act||e.flT>0,sg=18+Math.sin(t*.06)*10+(rat?rnd(-6,6):0),[lx,ly]=wp(-.26,-.52),[rx,ry]=wp(.24,-.5);
-  cirChainDr(C,lx,ly,dx-fs*170,FLOOR-2,sg,rat,al);
+ if(!dying&&!e.dead&&oy<60){const rat=act||e.flT>0||e.rat>0,sg=18+Math.sin(t*.06)*10+(rat?rnd(-6,6):0),[lx,ly]=wp(-.26,-.52),[rx,ry]=wp(.24,-.5);
+  cirChainDr(C,lx,ly,dx-fs*170,FLOOR-2,sg+(e.rat>0?Math.sin(t*.9)*18:0),rat,al);
   if(!e.brk)cirChainDr(C,rx,ry,dx+fs*180,FLOOR-2,sg+Math.sin(t*.07+1)*8,rat,al);
   else{cirChainDr(C,rx,ry,rx+fs*(20+Math.sin(t*.09)*14),ry+70,6,0,al);}
   if(rat&&frame%40===0)S('chainlash');}
