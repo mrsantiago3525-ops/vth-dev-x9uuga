@@ -875,7 +875,7 @@ function buildZoneObjs(z){merRoll(z);urns=urns.filter(u=>u.fw||!ALTD[z].some(ax=
  for(const [k,x,y,id] of XPK[z])pickups.push({x,y:y-24,vy:0,k,t:0,keep:1,id});
  for(const fw of FWD[z]){const brk=!!SAVE.gt[fw.id];urns.push({x:fw.x,y:FLOOR,b:brk?1:0,fw,hit:0,lf:-99});if(brk)for(const [k,dx,id] of fw.items)pickups.push({x:fw.x+dx,y:FLOOR-24,vy:0,k,t:0,keep:1,id});}
  pickups=pickups.filter(p=>!(p.id&&SAVE.pk[p.id]));}
-function enterZone(z,x,o){o=o||{};liftArm=0;DS=null;skQ=[];stage=z;WORLD=ZW[z];G1=ZGt[z];buildBG(z>10?3:z);enemies=[];eproj=[];pproj=[];souls=[];texts.length=0;
+function enterZone(z,x,o){o=o||{};if(typeof clr55==='function')clr55();liftArm=0;DS=null;skQ=[];stage=z;WORLD=ZW[z];G1=ZGt[z];buildBG(z>10?3:z);enemies=[];eproj=[];pproj=[];souls=[];texts.length=0;
  wave=(z===1&&SAVE.bd.elf&&!SAVE.bd.witch)?1:0;mgT=0;mgX=0;demoEnd=false;
  platforms=z===5?[{x:350,y:300,w:150},{x:1000,y:300,w:150}]:[{x:420,y:310,w:140},{x:820,y:280,w:160},{x:1150,y:315,w:130}];setupLevel();buildZoneObjs(z);m25Enter(z);cirEnter(z);
  P.x=x;P.y=FLOOR;P.vx=0;P.vy=0;P.air=false;P.grab=null;P.stone=false;P.gzImm=0;P.atk=null;P.atkT=0;P.f=o.f||1;P.rootT=0;P.dashT=0;P.adT=0;P.adUsed=0;P.slideT=0;P.inv=Math.max(P.inv,45);
@@ -2173,7 +2173,7 @@ function update(){
   if(!e.fly&&!e.ledge&&pits.length&&overPit(e.x+e.vx+Math.sign(e.vx)*e.w*.4)&&!(e.sk&&e.air))e.vx=0;e.x+=e.vx;e.x=clamp(e.x,gateOn?G1+30:30,WORLD-30);if(e.ledge)e.x=clamp(e.x,e.ledge.x+14,e.ledge.x+e.ledge.w-14);
   if(e.fly&&e.st!=='dive'&&!e.kv)e.vx*=.95;}
  // camera
- cam+=(clamp(P.x-W*.4,camMin,WORLD-W)-cam)*.12;cam=clamp(cam,camMin,WORLD-W);{const t=vTgt();camV+=(t-camV)*.12;if(Math.abs(t-camV)<.4)camV=t;if(camV<0)camV=Math.min(0,clamp(camV,P.y-400,P.y-130));}
+ cam+=(clamp(camTgt55(),camMin,WORLD-W)-cam)*.12;cam=clamp(cam,camMin,WORLD-W);{const t=vTgt();camV+=(t-camV)*.12;if(Math.abs(t-camV)<.4)camV=t;if(camV<0)camV=Math.min(0,clamp(camV,P.y-400,P.y-130));}
  if(shake>0)shake*=.8;if(shake<.5)shake=0;if(flash>0)flash--;if(banner&&--banner.t<=0)banner=null;
  updParts();
  for(let i=texts.length-1;i>=0;i--){texts[i].y-=.8;if(--texts[i].life<=0)texts.splice(i,1);}
@@ -6745,7 +6745,7 @@ function cirTalk(e){if(!e.tk0){e.tk0=1;if(!CIRTALK){CIRTALK=1;e.stT=380;e.talk=1
  if(T===290)e.bub={txt:'«¿Otra hija de la Diosa? ¿Vienes a atarme otra vez?»',t:100};
  if(T===215)SERB={txt:'Vengo a romper esas cadenas… si me dejas.',t:100};
  if(T===150){e.bub={txt:'«Las cadenas son lo único que me queda de madre.»',t:80};}}
-function seraBubble(){if(!SERB||SERB.t<=0)return;SERB.t--;const C=ctx;C.save();C.globalAlpha=Math.min(1,SERB.t/12);C.font='italic bold 13px Georgia';const tw=C.measureText(SERB.txt).width+18,px=P.x-cam,bx=clamp(px-tw/2,6,W-tw-6),by=P.y-(typeof camV!=='undefined'?camV:0)-P.h-58;
+function seraBubble(){if(!SERB||SERB.t<=0)return;const C=ctx;C.save();C.globalAlpha=Math.min(1,SERB.t/12);C.font='italic bold 13px Georgia';const tw=C.measureText(SERB.txt).width+18,px=P.x-cam,bx=clamp(px-tw/2,6,W-tw-6),by=P.y-(typeof camV!=='undefined'?camV:0)-P.h-58;
  C.fillStyle='rgba(255,248,225,.94)';C.strokeStyle='#b8860b';C.lineWidth=2;C.beginPath();C.rect(bx,by,tw,26);C.fill();C.stroke();C.beginPath();C.moveTo(px-6,by+26);C.lineTo(px,by+36);C.lineTo(px+6,by+26);C.fill();C.fillStyle='#3a2a10';C.textAlign='center';C.fillText(SERB.txt,bx+tw/2,by+18);C.textAlign='left';C.restore();}
 function cirChainDr(C,x0,y0,x1,y1,sag,rat,al){const n=Math.max(6,Math.round(Math.hypot(x1-x0,y1-y0)/11));C.save();C.globalAlpha=al;for(let i=0;i<=n;i++){const u=i/n,mx=(x0+x1)/2,my=(y0+y1)/2+sag,x=(1-u)*(1-u)*x0+2*u*(1-u)*mx+u*u*x1+(rat?rnd(-1.5,1.5):0),y=(1-u)*(1-u)*y0+2*u*(1-u)*my+u*u*y1+(rat?rnd(-1.5,1.5):0);
   C.strokeStyle=i%2?'#7d8a99':'#a8b6c8';C.lineWidth=3;C.beginPath();C.ellipse(x,y,i%2?3:6,i%2?6:3.5,Math.atan2(y1-y0,x1-x0),0,7);C.stroke();}C.restore();}
@@ -6824,7 +6824,13 @@ function ecoBuy(r){const o=ECO();if(!r.p){ecoMsg('Agotado');return;}if(o.ag<r.p)
 function ecoOpen(m){ECOUI.open=m;ECOUI.sel=0;ECOUI.t=0;clearPR();anyPress=false;try{TCH.releaseAll();}catch(_){}}
 function ecoRows(){return ECOUI.open==='shop'?shopList():IORD.map(k=>({k}));}
 function ecoAct(i){const L=ecoRows();if(i<0){ECOUI.open=null;return;}const r=L[i];if(!r)return;ECOUI.sel=i;if(ECOUI.open==='shop')ecoBuy(r);else ecoUse(r.k);}
-function ecoUpd(){if(!P||typeof SAVE==='undefined')return false;const o=ECO();if(ECOUI.msgT>0)ECOUI.msgT--;if(ECOUI.cd>0)ECOUI.cd--;
+let _l55s,_l55z;
+function clr55(){SERB=null;toastT=0;if(typeof ECOUI!=="undefined")ECOUI.msgT=0;if(typeof enemies!=='undefined')for(const e of enemies)if(e.bub)e.bub=null;}
+function camTgt55(){let t=P.x-W*.4;const e=(typeof CIR!=='undefined'&&CIR&&CIR.arena&&stage===11)?enemies.find(q=>q.type==='cirl'&&!q.dead):null;
+ if(e){const lo=e.x+175-W,hi=e.x-200;t=Math.max(t,lo);t=Math.min(t,P.x-70);t=Math.max(t,Math.min(lo,P.x-70));}return t;}
+function ecoUpd(){if(!P||typeof SAVE==='undefined')return false;if(SERB&&SERB.t>0)SERB.t--;if(SERB&&SERB.t<=0)SERB=null;
+ {const sk=state==='cards'?'play':state;if(_l55s!==undefined&&(sk!==_l55s||stage!==_l55z))clr55();_l55s=sk;_l55z=stage;}
+ const o=ECO();if(ECOUI.msgT>0)ECOUI.msgT--;if(ECOUI.cd>0)ECOUI.cd--;
  if(state==='over'&&!ECOUI.dd){ECOUI.dd=1;const l=Math.floor(o.ag*.3);if(l>0){o.ag-=l;saveG();ECOUI.lost=l;ECOUI.lostT=240;}}
  if(state==='play'&&P.hp>0)ECOUI.dd=0;if(ECOUI.lostT>0&&state==='play'){ECOUI.lostT--;if(ECOUI.lostT===239||ECOUI.lostT===200){toastTxt='Perdiste '+ECOUI.lost+' almas de plata al caer';toastT=150;}}
  if(ECOUI.open){if(state!=='play'||trans){ECOUI.open=null;return false;}ECOUI.t++;const n=ecoRows().length;
@@ -6846,7 +6852,7 @@ function ecoDraw(){const C=ctx;if(state!=='play'||!P)return;const o=ECO();
  if(!mapOpen){C.font='bold 12px Georgia';C.fillStyle='#e4eef8';C.lineWidth=3;C.strokeStyle='#000';const s='◈ '+o.ag;C.strokeText(s,16,92);C.fillText(s,16,92);
   if(P.poison>0){C.fillStyle='#8f6';C.strokeText('☠ VENENO',70,92);C.fillText('☠ VENENO',70,92);}}
  if(ECOUI.msgT>0&&!ECOUI.open){C.globalAlpha=Math.min(1,ECOUI.msgT/15);C.font='bold 13px Georgia';C.textAlign='center';C.strokeText(ECOUI.msg,W/2,120);C.fillStyle='#ffe08a';C.fillText(ECOUI.msg,W/2,120);C.textAlign='left';C.globalAlpha=1;}
- if(!ECOUI.open)return;const shop=ECOUI.open==='shop',L=ecoRows(),x0=150,y0=50,pw=500,ph=350;ECOUI.rows=[];
+ if(!ECOUI.open)return;const shop=ECOUI.open==='shop',L=ecoRows(),x0=150,y0=22,pw=500,ph=406;ECOUI.rows=[];
  C.fillStyle='rgba(0,0,0,.55)';C.fillRect(0,0,W,H);C.fillStyle='rgba(16,10,22,.95)';C.fillRect(x0,y0,pw,ph);C.strokeStyle='#b8860b';C.lineWidth=2;C.strokeRect(x0+.5,y0+.5,pw,ph);
  if(shop)spr54(SPR54.merchant[0],x0+52,y0+150,110,0);
  C.font='bold 18px Georgia';C.fillStyle='#f1c40f';C.textAlign='center';C.fillText(shop?'MERCADER ENCAPUCHADO':'INVENTARIO',x0+pw/2,y0+28);C.font='italic 11px Georgia';C.fillStyle='#bba';C.fillText(shop?'«Todo tiene un precio, hija de la Diosa…»':'Toca un objeto para usarlo · ☆ para uso rápido',x0+pw/2,y0+46);
