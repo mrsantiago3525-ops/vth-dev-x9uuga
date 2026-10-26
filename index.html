@@ -5957,7 +5957,9 @@ const NT=n=>440*Math.pow(2,(n-69)/12);
 const EXP={bpm:56,chords:[[50,53,57],[46,50,53],[43,46,50],[45,49,52]],mel:[74,null,72,69,70,null,69,null,67,null,70,69,69,null,null,null,74,null,77,76,74,null,72,70,67,null,69,70,69,null,null,null]};
 const BOSS={bpm:138,chords:[[50,53,57],[46,50,53],[43,46,50],[45,49,52]],bass:[38,38,50,38,38,41,38,37]};
 function auMode(){if(!AU.c)return;const bossOn=(state==='play'||state==='cards'||state==='over')&&enemies.some(e=>e.boss&&!e.dead&&e.type!=='bart'),fr=stage===1&&state!=='title';const want=((stage===9||stage===10)&&state!=='title'&&state!=='epi'&&!bossOn)?'distorsion':(stage===8&&state!=='title'&&!(bossOn&&!(T3&&T3.dream)&&enemies.some(e=>e.type==='lilv'&&!e.dead&&e.st!=='introC')))?(T3&&T3.dream?'pesadilla':'distorsion'):bossOn?(fr?'elf':'boss'):(fr?'forest':(stage===3&&state!=='title'?'deep':stage===7&&state!=='title'?'coros':stage===6&&state!=='title'?'torre':stage===5&&state!=='title'?'murallas':stage===4&&state!=='title'?'statues':'explore'));
- const wantX=(TRK[stage]&&state!=='title'&&state!=='epi'&&!bossOn&&want==='explore')?TRK[stage]:want;
+ const bE=bossOn&&state!=='title'&&state!=='epi'&&enemies.find(e=>e.boss&&!e.dead&&BTRK[e.type]);
+ const wantX=bE?BTRK[bE.type]:(TRK[stage]&&state!=='title'&&state!=='epi'&&!bossOn&&(want==='explore'||want==='forest'))?TRK[stage]:want;
+ if(state!=='title'&&ZBT[stage])for(const k of ZBT[stage])mLoad(k);
  if(wantX===AU.mode)return;const C=AU.c,t=C.currentTime;if(AU.bus){const o=AU.bus;o.gain.cancelScheduledValues(t);o.gain.setValueAtTime(o.gain.value,t);o.gain.linearRampToValueAtTime(0,t+1.5);setTimeout(()=>o.disconnect(),2500);}
  if(AU.n1src){const q=AU.n1src;AU.n1src=null;setTimeout(()=>{try{q.stop();}catch(e){}},2500);}
  AU.bus=C.createGain();AU.bus.gain.setValueAtTime(0,t);AU.bus.gain.linearRampToValueAtTime(MUS[wantX]?1:want==='boss'||want==='elf'?1.7:2.2,t+(MUS[wantX]?2:1.5));AU.bus.connect(AU.master);AU.mode=wantX;if(MUS[wantX]){n1Load();n1Start();}AU.step=0;AU.nextT=t+.1;}
@@ -5967,8 +5969,15 @@ function choir(t,notes,dur,vol){const C=AU.c;for(const n of notes)for(const fm o
 // música del nivel 1 (archivo aparte, cacheado por sw.js). Bucle con puntos de loop (crossfade ya horneado en el archivo)
 // v45: pistas por zona (archivos aparte, cacheados por sw.js). Zonas 0 y 1 comparten n1 (no se reinicia al cruzar)
 const TRK={0:'n1',1:'n1',2:'n3'};
-const MUS={n1:{f:'musica_n1.mp3',LS:27.6677,LE:150.946,VOL:.55,buf:null,ld:0,fail:0},n3:{f:'musica_n3.mp3',LS:16.0087,LE:160,VOL:.55,buf:null,ld:0,fail:0}};
-function n1Load(){const M=MUS[AU.mode];if(!M||M.buf||M.ld||!AU.c||M.fail>3)return;M.ld=1;
+const MUS={n1:{f:'musica_n1.mp3',LS:27.6677,LE:150.946,VOL:.55,buf:null,ld:0,fail:0},n3:{f:'musica_n3.mp3',LS:16.0087,LE:160,VOL:.55,buf:null,ld:0,fail:0},
+ bcap:{f:'boss_capitan.mp3',LS:24.6,LE:128.6002,VOL:.6,buf:null,ld:0,fail:0},
+ bsyl:{f:'boss_sylvaraeth.mp3',LS:8.6,LE:151.5692,VOL:.6,buf:null,ld:0,fail:0},
+ bmor:{f:'boss_morgrave.mp3',LS:8.8,LE:132.5144,VOL:.6,buf:null,ld:0,fail:0},
+ bgor:{f:'boss_gorrath.mp3',LS:39.8,LE:129.8,VOL:.6,buf:null,ld:0,fail:0}};
+// v46: tipo de jefe -> pista (beast = Gorrath la Bestia Encadenada NO; sigue con música procedural)
+const BTRK={captain:'bcap',elf:'bsyl',witch:'bmor',gorrath:'bgor'};const ZBT={0:['bcap'],1:['bsyl','bmor'],2:['bgor']};
+function n1Load(){mLoad(AU.mode);}
+function mLoad(k){const M=MUS[k];if(!M||M.buf||M.ld||!AU.c||M.fail>3)return;M.ld=1;
  fetch(M.f).then(r=>{if(!r.ok)throw 0;return r.arrayBuffer();}).then(b=>new Promise((ok,ko)=>AU.c.decodeAudioData(b,ok,ko))).then(buf=>{M.buf=buf;M.ld=0;n1Start();}).catch(()=>{M.ld=0;M.fail++;});}
 function n1Start(){const M=MUS[AU.mode];if(!M||!M.buf||!AU.c||!AU.bus||AU.n1src)return;const C=AU.c,s=C.createBufferSource(),g=C.createGain();s.buffer=M.buf;s.loop=true;s.loopStart=M.LS;s.loopEnd=Math.min(M.LE,M.buf.duration);g.gain.value=M.VOL;s.connect(g);g.connect(AU.bus);s.start(C.currentTime+.05);AU.n1src=s;}
 function auSched(){const C=AU.c;if(!C||!AU.bus||AU.muted||C.state!=='running')return;if(MUS[AU.mode]){n1Load();n1Start();return;}if(AU.nextT<C.currentTime)AU.nextT=C.currentTime+.05;
