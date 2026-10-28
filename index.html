@@ -7182,5 +7182,57 @@ function swTrail(C,x,y,blue){if(P.atk!=='sword'||!(P.atkT>0)||P.crouch)return;co
 {const _th=tideHero;tideHero=function(){_th();if(!TIDE()&&P&&state!=='title')swTrail(ctx,P.x-cam,P.y,0);};}
 
 </script>
+<script>
+// ===== v62: el Santuario previo a Cirlene (M-01, x 8800-9200) se vuelve el Templo Hundido de la Madre de las Mareas =====
+const TPL={x0:8826,x1:9176};
+function tplH(a,b){let h=(a*374761393+b*668265263)|0;h=(h^(h>>>13))*1274126177|0;return((h^(h>>>16))>>>0)/4294967296;}
+function drawTemplo(){const C=ctx,X0=TPL.x0,X1=TPL.x1,F=FLOOR;if(X1<cam-40||X0>cam+W+40)return;
+ const R=(x,y,w,h,c)=>{C.fillStyle=c;C.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h));};
+ const ST=['#0b1820','#132834','#1c3946','#28505e','#3b6e7c'],MO='#24453a',MO2='#335e48',GO='#7f6a3a',GO2='#b39a55';
+ const top=F-286;
+ // muro del fondo: sillares con desgaste, borde superior roto
+ for(let x=X0;x<X1;x+=4){const bt=top+18+Math.floor(tplH(x>>2,7)*3)*4+(Math.abs(x-9000)<70?-30:0)+Math.round(Math.max(0,40-Math.min(x-X0,X1-x))*(2.5+tplH(x>>3,3)*2)/4)*4;R(x,bt,4,F-bt,ST[1]);R(x,bt,4,2,ST[3]);}
+ for(let y=top+20;y<F;y+=12){const off=((y/12)|0)%2?0:14;for(let x=X0+off-28;x<X1;x+=28){const xa=Math.max(X0,x),xb=Math.min(X1,x+27);if(xb<=xa)continue;
+   const v=tplH(x,y);R(xa,y,xb-xa,1,ST[2]);R(xa,y+11,xb-xa,1,ST[0]);if(xa===x)R(xa,y,1,12,ST[0]);
+   if(v<.18)R(xa+4,y+3,Math.min(10,xb-xa-6),6,ST[0]);else if(v>.88)R(xa+3,y+2,8,2,ST[3]);}}
+ // ábside central con relieve de la Madre de las Mareas
+ const ax=9000,aw=74,ay=F-236;C.fillStyle=ST[0];C.beginPath();C.moveTo(ax-aw,F);C.lineTo(ax-aw,ay);C.arc(ax,ay,aw,Math.PI,0);C.lineTo(ax+aw,F);C.fill();
+ for(let k=0;k<9;k++){const a=Math.PI+k*Math.PI/8,x=ax+Math.cos(a)*(aw+6),y=ay+Math.sin(a)*(aw+6);R(x-6,y-5,12,10,k%2?ST[3]:ST[2]);R(x-6,y+4,12,1,ST[0]);}
+ const pu=.55+.45*Math.sin(frame*.035);
+ C.save();C.globalAlpha=.35+.25*pu;C.strokeStyle='#5ad0ff';C.lineWidth=2;
+ C.beginPath();C.arc(ax,ay+6,30,0,7);C.stroke();C.beginPath();C.arc(ax+9,ay,26,Math.PI*.55,Math.PI*1.45);C.stroke();
+ for(let i=0;i<3;i++){C.beginPath();for(let x=-22;x<=22;x+=2){const y=ay+48+i*9+Math.round(Math.sin(x*.28+i)*3);x===-22?C.moveTo(ax+x,y):C.lineTo(ax+x,y);}C.stroke();}
+ C.restore();R(ax-1,ay-2,3,3,'#bfefff');
+ // friso de olas sobre el ábside
+ for(let x=X0+6;x<X1-6;x+=12){R(x,top+34,12,10,ST[2]);R(x+2,top+36,6,2,ST[4]);R(x+6,top+38,4,4,ST[3]);R(x,top+43,12,1,ST[0]);}
+ R(X0,top+30,X1-X0,4,ST[3]);R(X0,top+44,X1-X0,3,ST[0]);
+ // columnas (una partida)
+ for(const [cx,br] of [[8860,0],[8920,1],[9080,0],[9140,0]]){const ct=br?F-150:top+48,w=22;
+  R(cx-w/2-5,F-14,w+10,14,ST[2]);R(cx-w/2-5,F-14,w+10,2,ST[4]);R(cx-w/2-3,F-20,w+6,6,ST[3]);
+  R(cx-w/2,ct,w,F-20-ct,ST[2]);R(cx-w/2,ct,3,F-20-ct,ST[3]);R(cx+w/2-4,ct,4,F-20-ct,ST[1]);
+  for(let fx=cx-w/2+6;fx<cx+w/2-4;fx+=5)R(fx,ct+4,1,F-26-ct,ST[1]);
+  if(br){for(let i=0;i<w;i+=3)R(cx-w/2+i,ct-Math.floor(tplH(cx,i)*8),3,8,ST[2]);R(cx-w/2-14,F-8,10,8,ST[2]);R(cx+w/2+8,F-6,8,6,ST[1]);}
+  else{R(cx-w/2-6,ct-8,w+12,8,ST[3]);R(cx-w/2-6,ct-8,w+12,2,ST[4]);R(cx-w/2-3,ct,w+6,3,ST[1]);
+   for(let k=0;k<5;k++)R(cx-w/2+2+k*4,ct+3,2,4+Math.floor(tplH(cx,k)*10),MO);}
+  for(let k=0;k<3;k++){const yy=ct+30+Math.floor(tplH(cx,k+9)*(F-ct-80));R(cx-w/2,yy,3+k,6,MO2);}}
+ // arcos laterales entre columnas
+ for(const [xa,xb] of [[8860,8920],[9080,9140]]){const m=(xa+xb)/2,r=(xb-xa)/2-11,yy=top+120;C.fillStyle='#071017';C.beginPath();C.moveTo(m-r,F-20);C.lineTo(m-r,yy);C.arc(m,yy,r,Math.PI,0);C.lineTo(m+r,F-20);C.fill();
+  C.fillStyle='rgba(90,200,240,'+(.05+.04*pu)+')';C.fillRect(m-r,yy-r,r*2,F-20-yy+r);
+  for(let k=0;k<4;k++){const kx=m-r+4+k*((r*2-8)/3),L=24+Math.floor(tplH(m,k)*40);for(let j=0;j<L;j+=3)R(kx+Math.round(Math.sin((j+frame*.5)*.12+k)*2),yy-r+2+j,2,3,j%6?MO:MO2);}}
+ // altar escalonado bajo la brasa
+ R(ax-46,F-6,92,6,ST[2]);R(ax-46,F-6,92,1,ST[4]);R(ax-34,F-12,68,6,ST[3]);R(ax-34,F-12,68,1,ST[4]);R(ax-46,F-1,92,1,ST[0]);
+ for(let x=ax-30;x<ax+30;x+=10)R(x,F-10,6,2,GO);
+ // braseros de marea (llama azul) a los lados
+ for(const bx of [8955-40,9045+40]){R(bx-7,F-34,14,4,GO2);R(bx-5,F-30,10,3,GO);R(bx-2,F-27,4,13,ST[3]);R(bx-6,F-14,12,3,ST[2]);
+  for(let k=0;k<4;k++){const h=6+((frame/5+k*3+bx)|0)%5*2;R(bx-5+k*3,F-34-h,2,h,k%2?'#5ad0ff':'#bfefff');}
+  C.save();C.globalCompositeOperation='lighter';const g=C.createRadialGradient(bx,F-44,0,bx,F-44,46);g.addColorStop(0,'rgba(80,200,255,'+(.22*pu+.1)+')');g.addColorStop(1,'rgba(40,120,255,0)');C.fillStyle=g;C.fillRect(bx-46,F-90,92,92);C.restore();}
+ // haces de luz desde las grietas del techo
+ C.save();C.globalCompositeOperation='lighter';for(const [lx,s] of [[8890,1],[9060,1.4]]){const g=C.createLinearGradient(0,top,0,F);g.addColorStop(0,'rgba(120,220,255,'+(.10*s)+')');g.addColorStop(1,'rgba(120,220,255,0)');C.fillStyle=g;C.beginPath();C.moveTo(lx,top);C.lineTo(lx+18,top);C.lineTo(lx+60,F);C.lineTo(lx+22,F);C.fill();}C.restore();
+ // bordes de las ruinas: transición suave con la cueva
+ for(const [ex,d] of [[X0,1],[X1,-1]])for(let i=0;i<10;i++)R(ex+d*(i*2)-(d<0?2:0),top+60+Math.floor(tplH(ex,i)*200),2,F-top-60,'rgba(5,12,18,.12)');
+}
+{const _d=drawCirLvl;drawCirLvl=function(){drawTemplo();_d();};}
+
+</script>
 </body>
 </html>
