@@ -7235,7 +7235,7 @@ function drawTemplo(){const C=ctx,X0=TPL.x0,X1=TPL.x1,F=FLOOR;if(X1<cam-40||X0>c
 
 </script>
 <script>
-// ===== v63: VFX pixel-art de ataques de jefes (ondas de choque, impactos, grietas, telegrafía) =====
+// ===== v64: VFX pixel-art de ataques de jefes (ondas de choque, impactos, grietas, telegrafía) =====
 const VTH={
  earth:{c:['#3a2a1e','#6a5038','#9a7a58','#c8a67e','#f0dcb8'],g:'#ff6a2a',du:'176,150,118',gl:null},
  molten:{c:['#3a1a10','#7a3a1e','#b8602e','#ff9a3a','#ffe6a0'],g:'#ff7a2a',du:'170,120,90',gl:'glowR'},
@@ -7252,7 +7252,7 @@ function vTheme(o){if(o.th)return o.th;if(o.lt)return'light';if(o.fire)return'fi
 function vH(a,b){let h=(a*374761393+b*668265263)|0;h=(h^(h>>>13))*1274126177|0;return((h^(h>>>16))>>>0)/4294967296;}
 const vR=(x,y,w,h,c)=>{ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),w,h);};
 // --- onda de choque pixel-art: alto ≈ caja de daño (14+.6r) para que lo que ves sea lo que golpea ---
-function vfxWave(o,x){const T=VTH[o.th||(o.th=vTheme(o))],C=T.c,r=o.r,d=Math.sign(o.vx)||1,Hh=Math.round(16+r*.62),L=Math.round(r*2.6),fr=(frame/3|0),F=FLOOR,cs=4;
+function vfxWave(o,x){const T=VTH[o.th||(o.th=vTheme(o))],C=T.c,r=o.r,d=Math.sign(o.vx)||1,Hh=o.tall||Math.round(16+r*.62),L=Math.round(o.tall?o.tall*1.9:r*3.2),fr=(frame/3|0),F=FLOOR,cs=4;
  const fade=o.life<10?o.life/10:1;ctx.save();ctx.globalCompositeOperation='source-over';ctx.globalAlpha=fade;
  // polvo/estela detrás
  for(let i=0;i<5;i++){const u=(i+(frame%6)/6)/5,px=x-d*(r*.4+u*L*1.2),py=F-4-u*Hh*.5-vH(i,fr)*6,s=6+u*10|0;ctx.fillStyle=`rgba(${T.du},${(.38*(1-u))*fade})`;ctx.fillRect(Math.round(px-s/2),Math.round(py-s/2),s,s);}
@@ -7268,18 +7268,24 @@ function vfxWave(o,x){const T=VTH[o.th||(o.th=vTheme(o))],C=T.c,r=o.r,d=Math.sig
  else if(o.th==='void'){ctx.globalCompositeOperation='lighter';for(let i=0;i<5;i++){const ph=((frame*.6+i*9)%20)/20,cx=x+d*(r-i*L/6)+Math.sin(ph*6+i)*4,cy=F-Hh-ph*30;vR(cx-2,cy,3,6,`rgba(176,106,255,${.8*(1-ph)})`);vR(cx-1,cy-2,2,2,`rgba(234,210,255,${1-ph})`);}}
  else if(o.th==='water'){for(let i=0;i<6;i++){const ph=((frame*.8+i*5)%14)/14,cx=x+d*(r-i*5-ph*8),cy=F-Hh-ph*18+ph*ph*26;vR(cx,cy,3,3,C[3]);vR(cx,cy,2,1,C[4]);}}
  else if(o.th==='light'||o.th==='toxic'){ctx.globalCompositeOperation='lighter';for(let i=0;i<5;i++){const ph=((frame+i*8)%24)/24;vR(x+d*(r-i*L/5)-1,F-Hh-ph*26,2,2,C[4]);}}
- if(T.gl){ctx.globalCompositeOperation='lighter';G(VGL()[T.gl],x,F-Hh*.5,r*2.2,.35*fade);}
+ if(o.tall){ctx.globalCompositeOperation='source-over';
+  for(let i=0;i<9;i++){const ph=((frame*.7+i*5.3)%22)/22,rx=x+d*(r*.3-i*L/9-ph*12),ry=F-Hh*(1-i/12)-ph*36+ph*ph*48,s=i%3?6:9;vR(rx,ry,s,s,C[0]);vR(rx+1,ry+1,s-2,s-3,C[i%2?1:2]);vR(rx+1,ry+1,s-3,2,C[3]);}
+  ctx.globalCompositeOperation='lighter';
+  for(let k=0;k<L*.8;k+=5){const u=k/L,hh=Hh*(u<.18?u/.18:1-(u-.18)/.82*.85),fl=(4+vH(k,fr)*12)|0,cx=x+d*(r-k);vR(cx-2,F-hh-fl-2,4,fl,'rgba(255,120,30,.75)');vR(cx-1,F-hh-fl-4,2,4,'rgba(255,230,140,.9)');}
+  for(let i=0;i<10;i++){const ph=((frame*1.3+i*7)%26)/26,ex=x+d*(r-i*L/10)+Math.sin(ph*9+i)*5,ey=F-Hh-ph*40;vR(ex,ey,2,2,`rgba(255,${180+i*6},90,${1-ph})`);}
+  for(let k=0;k<L;k+=6)vR(x+d*(r-k)-3,F-1,6,2,'rgba(255,110,30,.8)');}
+ if(T.gl){ctx.globalCompositeOperation='lighter';G(VGL()[T.gl],x,F-Hh*.5,(o.tall?Hh*1.6:r*2.6),(o.tall?.6:.5)*fade);}
  ctx.restore();
  // grietas que deja en el suelo
- if(!o._dx||Math.abs(o.x-o._dx)>22){o._dx=o.x;if(VDEC.length<70)VDEC.push({x:o.x,t:0,th:o.th,s:vH(o.x|0,7)});}}
+ const st=o.tall?12:22;if(!o._dx||Math.abs(o.x-o._dx)>st){o._dx=o.x;if(VDEC.length<90)VDEC.push({x:o.x,t:0,th:o.th,s:vH(o.x|0,7),big:o.tall?2:1});}}
 // --- impacto en el suelo (golpe/aterrizaje): destello, anillo de polvo, grietas radiales, escombros ---
 function vfxImpact(x,th,big){VFX.push({k:'imp',x,t:0,th,big:big||1});const C=VTH[th].c;
- if(parts.length<300)for(let i=0;i<10*big;i++)parts.push({x:x+rnd(-30,30)*big,y:FLOOR-4,vx:rnd(-4,4)*big,vy:-rnd(3,8),life:rnd(26,40),c:C[i%3+1],s:rnd(3,6),g:.35});
+ if(parts.length<300)for(let i=0;i<12*big;i++)parts.push({x:x+rnd(-30,30)*big,y:FLOOR-4,vx:rnd(-4,4)*big,vy:-rnd(3,8),life:rnd(26,40),c:C[i%3+1],s:rnd(3,6),g:.35});
  for(let i=0;i<5;i++)VDEC.push({x:x+(i-2)*14*big,t:0,th,s:vH(x|0,i),big:1});}
 function drawVfxBack(){// grietas en suelo (detrás de actores)
  for(const d of VDEC){const x=d.x-cam;if(x<-40||x>W+40)continue;const C=VTH[d.th].c,al=Math.max(0,1-d.t/90);ctx.save();ctx.globalAlpha=al;
   const n=3+(d.s*3|0);for(let i=0;i<n;i++){let cx=x+(vH(i,d.s*99|0)-.5)*14,cy=FLOOR;const dx=(vH(i,5)-.5)*2;for(let j=0;j<4;j++){vR(cx,cy,2,2,C[0]);cx+=dx*3+(vH(i,j)-.5)*4;cy+=1+(j%2);}}
-  if((d.th==='molten'||d.th==='fire')&&d.t<40){ctx.globalCompositeOperation='lighter';ctx.globalAlpha=(1-d.t/40)*.9;vR(x-6,FLOOR,12,2,VTH[d.th].g);vR(x-2,FLOOR+2,4,2,'#ffe0a0');}
+  const gl=d.big>1?75:40;if((d.th==='molten'||d.th==='fire')&&d.t<gl){ctx.globalCompositeOperation='lighter';ctx.globalAlpha=(1-d.t/gl)*.95;const w=d.big>1?16:12;vR(x-w/2,FLOOR,w,3,VTH[d.th].g);vR(x-3,FLOOR+3,6,2,'#ffe0a0');if(d.big>1){vR(x-w/2-4,FLOOR+1+((d.s*4|0)%3),5,2,VTH[d.th].g);G(glowR,x,FLOOR,22,.5*(1-d.t/gl));}}
   if(d.th==='void'&&d.t<50){ctx.globalCompositeOperation='lighter';ctx.globalAlpha=(1-d.t/50)*.7;vR(x-1,FLOOR-8-d.t*.3,2,6,'#b06aff');}
   if(d.th==='water'&&d.t<30){ctx.globalAlpha=(1-d.t/30)*.7;vR(x-8,FLOOR-2,16,2,'#7ae0ff');}
   ctx.restore();}}
@@ -7295,12 +7301,12 @@ function drawVfxFront(){drawBossTel();for(const v of VFX){const x=v.x-cam;if(x<-
 function stepVfx(){for(const v of VFX)v.t++;VFX=VFX.filter(v=>v.t<32);for(const d of VDEC)d.t++;VDEC=VDEC.filter(d=>d.t<90);}
 // --- detectar golpes: cuando nace un par de ondas = impacto ---
 {const _e=eProj;let lastF=-1,lastX=-9e9;eProj=function(o){_e(o);const p=eproj[eproj.length-1];
- if(o.k==='wave'||o.k==='cwave'||o.k==='dwave'){if(o.k==='cwave')p.th='water';if(o.k==='dwave')p.th=o.c==='r'?'blood':'void';p.th=p.th||vTheme(p);
-  if(!(frame===lastF&&Math.abs(o.x-lastX)<60)){vfxImpact(o.x-(o.vx||0)*6,p.th,o.r>=18?1.2:1);lastF=frame;lastX=o.x;}else{const v=VFX[VFX.length-1];if(v&&v.k==='imp')v.x=(v.x+o.x-(o.vx||0)*6)/2;}}};}
+ if(o.k==='wave'||o.k==='cwave'||o.k==='dwave'){if(o.k==='cwave')p.th='water';if(o.k==='dwave')p.th=o.c==='r'?'blood':'void';p.th=p.th||vTheme(p);if(o.k==='wave'&&p.th==='molten'&&!p.pu&&!p.lt&&!p.fire){p.tall=48;p.y=FLOOR-48+p.r*.6;shake=Math.max(shake,p.near?10:16);}
+  if(!(frame===lastF&&Math.abs(o.x-lastX)<60)){vfxImpact(o.x-(o.vx||0)*6,p.th,p.tall?2.2:o.r>=16?1.4:1.1);lastF=frame;lastX=o.x;}else{const v=VFX[VFX.length-1];if(v&&v.k==='imp')v.x=(v.x+o.x-(o.vx||0)*6)/2;}}};}
 // --- sustituir dibujos viejos (triángulos/manchas) ---
 // --- sprites pixel para proyectiles que eran círculos/trazos ---
 function vPx(cx,cy,R,fn){for(let y=-R;y<=R;y+=3)for(let x=-R;x<=R;x+=3){const c=fn(x,y);if(c)vR(cx+x,cy+y,3,3,c);}}
-function vfxRock(o,x){const C=VTH.earth.c,r=Math.max(6,o.r|0),a=frame*.25*(Math.sign(o.vx)||1);ctx.save();ctx.globalCompositeOperation='source-over';
+function vfxRock(o,x){const C=VTH.earth.c,r=Math.max(8,(o.r*1.35)|0),a=frame*.25*(Math.sign(o.vx)||1);ctx.save();ctx.globalCompositeOperation='source-over';
  for(let i=1;i<4;i++)vR(x-(o.vx||0)*i*2-2,o.y-(o.vy||0)*i*2-2,4,4,`rgba(${VTH.earth.du},${.4-i*.1})`);
  vPx(x,o.y,r,(dx,dy)=>{const d=Math.hypot(dx,dy),an=Math.atan2(dy,dx)-a,ed=r*(.82+.18*Math.cos(an*5));if(d>ed)return null;const l=(Math.cos(an+a+2.3)*.5+.5)*(1-d/ed*.4);return d>ed-3?C[0]:l>.75?C[4]:l>.5?C[3]:l>.3?C[2]:C[1];});
  vR(x-1,o.y-1,2,2,C[0]);ctx.restore();}
