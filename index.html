@@ -7123,7 +7123,7 @@ ecoUpd=(function(f){return function(){if(ECOUI.open&&ECOUI.tab==='sp'){if(state!
  return f();};})(ecoUpd);
 ecoDraw=(function(f){return function(){f();const C=ctx;if(state!=='play'||!P||!ECOUI.open||OZD)return;const x0=150,y0=22,pw=500,ph=406,shop=ECOUI.open==='shop',s=SPS(),o=ECO();
  if(ECOUI.tab==='rp')return;
- if(ECOUI.tab!=='sp'){const bx=shop?x0+104:x0+18,bw=shop?pw-120:150,by=shop?y0+ph-110:y0+ph-40;C.fillStyle='rgba(90,60,180,.28)';C.fillRect(bx,by,bw,30);C.strokeStyle='#9a7aff';C.lineWidth=1.5;C.strokeRect(bx+.5,by+.5,bw,30);
+ if(ECOUI.tab!=='sp'){const bx=shop?x0+104:x0+18,bw=shop?pw-120:150,by=shop?y0+ph-110:y0+ph-78;C.fillStyle='rgba(90,60,180,.28)';C.fillRect(bx,by,bw,30);C.strokeStyle='#9a7aff';C.lineWidth=1.5;C.strokeRect(bx+.5,by+.5,bw,30);
   C.font='bold 13px Georgia';C.fillStyle='#e0d0ff';C.textAlign='center';C.fillText('✦ HECHIZOS ('+Object.keys(s.own).length+'/6)',bx+bw/2,by+20);C.textAlign='left';ECOUI.rows.push({x:bx,y:by,w:bw,h:30,i:'sp'});return;}
  C.fillStyle='rgba(16,10,22,1)';C.fillRect(x0+4,y0+52,pw-8,ph-56);ECOUI.rows=ECOUI.rows.filter(r=>r.i===-1);
  C.font='bold 14px Georgia';C.fillStyle='#e0d0ff';C.textAlign='center';C.fillText('✦ HECHIZOS DE DRAKMORATH ✦',x0+pw/2,y0+68);C.font='11px Georgia';C.fillStyle='#bba';C.fillText('◈ '+o.ag+' · equipa uno y lánzalo con ✦ (tecla G)',x0+pw/2,y0+84);
@@ -8076,6 +8076,115 @@ function combo72(e){const pst=e.pst72,st=e.st,ad=Math.abs(P.x-e.x),r=Math.random
   else if(st==='walk')e.ch72=0;}}
 // Isaveth: la forma 2 (medRise) reasignaba maxHp sin el +50% del comercio
 {const _u=update;update=function(){_u();for(const e of enemies)if(e.ag66&&e.type==='medusa'&&e.form>=2&&!e.f2x72&&!e.dead){e.f2x72=1;const r=e.hp/e.maxHp;e.maxHp=Math.round(e.maxHp*1.5);e.hp=Math.round(e.maxHp*r);}};}
+
+</script>
+<script>
+// ===== v73: Charlas con Ozmar + Pergaminos de la Herejía =====
+const TK73=[
+ {id:'c1',t:'Hierro y pantano',req:null,L:[['O','Valethorn huele a hierro mojado, ¿no le parece? La reina Isolde no confía ni en la lluvia.'],['S','Hace bien. La lluvia también se mete donde no la llaman.'],['O','Igual que usted, mi señora. Sin estandarte, sin nombre… y con mucha prisa.'],['S','Vende tus mercancías, Ozmar. No mis secretos.'],['O','Ah, pero los secretos son lo único que nunca se me acaba.']]},
+ {id:'c2',t:'Drakmorath',req:null,L:[['S','Dices que vienes de Drakmorath. Allá es de noche todo el día, ¿no?'],['O','De noche no: estrellado. Hay una diferencia, aunque cuesta verla.'],['O','Allá aprendimos que las estrellas también se apagan… solo que tardan en enterarse.'],['S','Entonces aprendieron a mirar. Yo prefiero aprender a tomar.'],['O','Por eso le cobro más caro.']]},
+ {id:'c3',t:'El Umbral Helado',req:'captain',L:[['O','¿Ha subido alguna vez a Frostgard, mi señora? El Umbral Helado.'],['S','No tengo nada que buscar en la nieve.'],['O','Eso decía un cartógrafo que conocí. Pasó el Umbral y llegó a las Tierras Blancas.'],['O','Volvió con el mapa en blanco. No borrado: en blanco. Como si la tinta hubiera tenido miedo.'],['S','O como si fuera un mal cartógrafo.'],['O','Eso pensé yo. Pero nunca quiso volver a hablar del tema.']]},
+ {id:'c4',t:'Bosques de cristal',req:'elf',L:[['S','La elfa del bosque hablaba de milenios como quien habla de ayer.'],['O','Los de Elowen son iguales. Sus bosques son de cristal, y dicen que guardan cada palabra dicha entre sus ramas.'],['S','Que guarden esta: no me interesan los árboles que hablan.'],['O','Debería. Un árbol que lo recuerda todo sabe dónde se enterró cada cosa.'],['S','…Sigue.'],['O','Eso, mi señora, ya cuesta almas.']]},
+ {id:'c5',t:'La reina que volvió',req:'gorrath',L:[['O','Usted que juega con los muertos… ¿ha oído hablar de Elyndor?'],['S','Las Costas Brumosas. Niebla, acantilados y gente que no sale de ahí.'],['O','Hace cuatrocientos años, los piratas de la Muerte Negra la saquearon. Mataron a su reina, Nyxara.'],['O','Y Nyxara regresó. No quedó un solo pirata para contarlo.'],['S','Una reina que vuelve de la muerte… Eso sí es poder.'],['O','Cuidado con lo que admira. A veces lo admirado también la está mirando.']]},
+ {id:'c6',t:'Dragones libres',req:'nhaz',L:[['S','El dragón de huesos. Le faltaba un pedazo del alma.'],['O','A todos nos falta algo. A los dragones que todavía vuelan libres, por ejemplo, les falta miedo.'],['S','Todavía.'],['O','Qué palabra tan suya, mi señora.'],['S','En Vexarion el viejo rey cuenta los días que le quedan. Yo cuento otras cosas.'],['O','Que la Diosa la libre de que alguien la cuente a usted.']]},
+ {id:'c7',t:'La letra de Rolgin',req:'medusa',L:[['O','La mujer de piedra leyó la letra de Rolgin. Por amor, dicen.'],['S','El amor es una mala razón para abrir un libro.'],['O','¿Y cuál sería la buena?'],['S','Saber cerrarlo cuando una ya terminó.'],['O','Rolgin no supo. Su cuerpo se deshizo… pero el Velo que ayudó a tejer sigue encima de todos nosotros.'],['S','Entonces dejó algo que vale la pena.']]},
+ {id:'c8',t:'Hierro de Isolde',req:'gargola',L:[['O','Las gárgolas de la muralla velaban el linaje de Isolde. Usted les rompió la guardia.'],['S','Isolde tiene muchas estatuas. Le sobrarán.'],['O','Isolde de Hierro no perdona, mi señora. Ni a sus estatuas.'],['S','Que no me perdone. Que me recuerde.'],['O','Eso, se lo aseguro, lo hará.']]},
+ {id:'c9',t:'Sol Carmesí',req:'bart',L:[['O','Vexarion… ¿extraña su tierra, mi señora?'],['S','Extraño su calor. No a su gente.'],['O','Dicen que allá la tierra es roja por tanto sol. Otros dicen que por otra cosa.'],['S','Los otros hablan demasiado.'],['O','Por eso yo solo vendo. Y escucho.']]}
+];
+const PG73=[
+ {id:'rg1',z:0,x:1720,t:'I · La puerta de antes',L:['Antes de que hubiera reinas en el pantano, los Altos Elfos ya guardaban estas tierras.','Bajo sus templos cerraron una puerta que nadie debía abrir: ahí el mundo y lo que hay detrás de él se tocan.','La sellaron antes de que un hombre aprendiera a sangrar dragones.','Ningún sello es para siempre. Solo para mientras.']},
+ {id:'rg2',z:0,x:2960,t:'II · El hombre y la eterna',L:['Rolgin era humano, y le tenía miedo a la muerte. Iristh era elfa, y no sabía qué era eso.','Nadie sabe quién le enseñó a quién.','Las crónicas solo dicen que juntos oyeron cantar a un dragón…','…y que él quiso la canción para sí.']},
+ {id:'rg3',z:1,x:2300,t:'III · La primera gota',L:['La primera gota de magia de sangre no cayó en un altar: cayó en la hierba.','El dragón tardó en morir. Rolgin entendió que no tenía por qué dejarlo morir.','Le arrancó el alma a jirones, y cada jirón se endureció como cristal: el primer Fragmento.','Lo sostuvo en la mano y, por primera vez, no tuvo miedo.']},
+ {id:'rg4',z:2,x:2420,t:'IV · La Herejía de la Sangre',L:['Lo llamaron hereje cuando ya tenía ejército.','Hombres que querían durar marcharon tras él, con Fragmentos cosidos al pecho.','Los Altos Elfos resistieron en el Templo del Alba hasta que no quedó quién sostuviera las puertas.','Rolgin entró sin prisa. Ahí encadenó a sus primeros dragones.']},
+ {id:'rg5',z:2,x:5620,t:'V · El Verdugo de los Deseos',L:['Le pedían juventud, hijos, venganza, amor. Él cumplía cada deseo.','Y cobraba con lo que el deseo dejaba vacío.','Por eso lo llamaron el Verdugo de los Deseos:','nadie le pidió nada que no le costara todo.']},
+ {id:'rg6',z:3,x:3020,t:'VI · El último chispazo',L:['Dicen que al final, entre tanta sangre, Rolgin vio lo que había hecho.','En su último chispazo de cordura buscó a los Altos Elfos que aún vivían.','Juntos tejieron el Velo sobre Vaeldrith: no un escudo, una celda. Para lo que él despertó… y para él mismo.','Su cuerpo no lo resistió y se deshizo como un Fragmento mal cortado.','Su alma, no.']},
+ {id:'rg7',z:4,x:2700,t:'VII · Lo que quedó escrito',L:['Quedaron sus libros. Quedó su letra, que todavía quema.','Morwenna Blackthorn reunió lo que pudo y lo selló donde nadie debía buscarlo.','No dejó escrito dónde.','Pero las hojas sueltas viajan, y una sola basta para condenar a quien la lee.']}
+];
+function PGS73(){if(!SAVE.pg73||typeof SAVE.pg73!=='object')SAVE.pg73={};return SAVE.pg73;}
+function TKS73(){if(!SAVE.tk73||typeof SAVE.tk73!=='object')SAVE.tk73={};return SAVE.tk73;}
+function tkOpen73(c){return !c.req||!!(SAVE.bd&&SAVE.bd[c.req]);}
+function tkList73(){return TK73.filter(tkOpen73);}
+function wr73(C,s,w){const out=[];let l='';for(const word of s.split(' ')){const t=l?l+' '+word:word;if(C.measureText(t).width>w&&l){out.push(l);l=word;}else l=t;}if(l)out.push(l);return out;}
+const UI73={drag:null};
+// ---- recogida en el mundo ----
+function pgCard73(p){const C=ctx;C.font='15px Georgia';let s='PERGAMINO DE LA HEREJÍA · '+p.t+'\n';for(const l of p.L){s+='\n'+wr73(C,l,470).join('\n');}return s;}
+function pgUpd73(){if(state!=='play'||trans||paused||ECOUI.open||!P)return;const g=PGS73();
+ for(const p of PG73)if(p.z===stage&&!g[p.id]&&Math.abs(P.x-p.x)<34&&Math.abs(P.y-FLOOR)<80){g[p.id]=1;saveG();S('note');burst(p.x,FLOOR-40,16,'#ff5a4a',3);
+  const n=Object.keys(g).length;toastTxt='📜 Pergamino '+n+'/'+PG73.length+' · reléelo en Inventario › Pergaminos';toastT=260;showCards([pgCard73(p)],()=>{state='play';});return;}}
+function pgDraw73(){if(!P)return;const g=PGS73();const C=ctx;
+ for(const p of PG73){if(p.z!==stage||g[p.id])continue;const x=p.x;if(x-cam<-80||x-cam>W+80)continue;const y=FLOOR-22+Math.sin(frame*.07+x)*3;
+  C.globalCompositeOperation='lighter';C.fillStyle='rgba(255,60,40,.18)';C.beginPath();C.arc(x,y,26+Math.sin(frame*.1)*3,0,7);C.fill();C.globalCompositeOperation='source-over';
+  C.fillStyle='#e8d2a0';C.fillRect(x-11,y-8,22,16);C.fillStyle='#b89a60';C.fillRect(x-14,y-10,4,20);C.fillRect(x+10,y-10,4,20);
+  C.fillStyle='#8a1010';C.beginPath();C.arc(x,y+2,4,0,7);C.fill();C.strokeStyle='#5a3a20';C.lineWidth=1;for(let i=0;i<3;i++){C.beginPath();C.moveTo(x-7,y-5+i*3);C.lineTo(x+7,y-5+i*3);C.stroke();}}}
+// ---- botones y pestañas en el panel ----
+function hub73(){return ECOUI.open==='shop'&&!(MER&&MER.sh);}
+ecoDraw=(function(f){return function(){f();const C=ctx;if(state!=='play'||!P||!ECOUI.open||(typeof OZD!=='undefined'&&OZD))return;
+ const x0=150,y0=22,pw=500,ph=406,tab=ECOUI.tab;
+ if(!tab){
+  if(hub73()){const bx=x0+6,by=y0+ph-110,bw=92,bh=66;C.fillStyle='rgba(40,110,130,.4)';C.fillRect(bx,by,bw,bh);C.strokeStyle='#7fe0ff';C.lineWidth=1.5;C.strokeRect(bx+.5,by+.5,bw,bh);
+   C.textAlign='center';C.font='22px serif';C.fillStyle='#bff';C.fillText('💬',bx+bw/2,by+28);C.font='bold 13px Georgia';C.fillStyle='#dff8ff';C.fillText('HABLAR',bx+bw/2,by+48);
+   const nw=tkList73().filter(c=>!TKS73()[c.id]).length;if(nw){C.font='bold 10px Georgia';C.fillStyle='#ffd27a';C.fillText(nw+' nueva'+(nw>1?'s':''),bx+bw/2,by+61);}C.textAlign='left';ECOUI.rows.push({x:bx,y:by,w:bw,h:bh,i:'tk'});}
+  if(ECOUI.open!=='shop'){const bx=x0+pw-176,by=y0+ph-78,bw=158;C.fillStyle='rgba(140,40,30,.32)';C.fillRect(bx,by,bw,30);C.strokeStyle='#e08a60';C.lineWidth=1.5;C.strokeRect(bx+.5,by+.5,bw,30);
+   C.font='bold 13px Georgia';C.fillStyle='#ffe0c8';C.textAlign='center';C.fillText('📜 PERGAMINOS ('+Object.keys(PGS73()).length+'/'+PG73.length+')',bx+bw/2,by+20);C.textAlign='left';ECOUI.rows.push({x:bx,y:by,w:bw,h:30,i:'pg'});}
+  return;}
+ if(tab!=='tk'&&tab!=='pg')return;
+ C.fillStyle='rgba(16,10,22,1)';C.fillRect(x0+4,y0+52,pw-8,ph-56);ECOUI.rows=ECOUI.rows.filter(r=>r.i===-1);
+ if(tab==='tk')drawTk73(C,x0,y0,pw,ph);else drawPg73(C,x0,y0,pw,ph);
+ if(ECOUI.msgT>0){C.textAlign='center';C.font='bold 13px Georgia';C.fillStyle='#ffe08a';C.fillText(ECOUI.msg,x0+pw/2,y0+ph-22);C.textAlign='left';}};})(ecoDraw);
+function backBtn73(C,x0,y0,pw,ph,lab,id){C.fillStyle='#3a2a5a';C.fillRect(x0+104,y0+ph-46,pw-120,32);C.font='bold 13px Georgia';C.fillStyle='#e0d0ff';C.textAlign='center';C.fillText(lab,x0+104+(pw-120)/2,y0+ph-25);C.textAlign='left';ECOUI.rows.push({x:x0+104,y:y0+ph-46,w:pw-120,h:32,i:id});}
+function drawTk73(C,x0,y0,pw,ph){const U=UI73,L=tkList73(),seen=TKS73();
+ spr54(SPR54.ozmar[0],x0+52,y0+200,140,0);
+ if(U.chat){const c=U.chat,n=U.ln;C.font='bold 14px Georgia';C.fillStyle='#7fe0ff';C.textAlign='center';C.fillText('«'+c.t+'»',x0+pw/2+50,y0+72);
+  let y=y0+96;const from=Math.max(0,n-3);
+  for(let k=from;k<=n;k++){const [who,tx]=c.L[k];const oz=who==='O';C.globalAlpha=k===n?1:.55;C.textAlign='left';C.font='bold 12px Georgia';C.fillStyle=oz?'#f1c40f':'#ff9a8a';C.fillText(oz?'OZMAR':'SERAPHYNE',x0+112,y);
+   C.font=(oz?'italic ':'')+'14px Georgia';C.fillStyle='#f5e6c8';const ls=wr73(C,'«'+tx+'»',pw-130);ls.forEach((l,j)=>C.fillText(l,x0+112,y+18+j*18));y+=26+ls.length*18;}
+  C.globalAlpha=1;C.textAlign='center';C.font='11px Georgia';C.fillStyle='#998';C.fillText(n<c.L.length-1?'toca o 👊 para seguir ('+(n+1)+'/'+c.L.length+')':'— fin · toca para volver —',x0+pw/2+50,y0+ph-56);
+  ECOUI.rows.push({x:x0+100,y:y0+52,w:pw-104,h:ph-104,i:'tn'});backBtn73(C,x0,y0,pw,ph,'← Volver a las charlas','tb');C.textAlign='left';return;}
+ C.font='bold 14px Georgia';C.fillStyle='#7fe0ff';C.textAlign='center';C.fillText('HABLAR CON OZMAR',x0+pw/2+50,y0+70);C.font='italic 11px Georgia';C.fillStyle='#bba';C.fillText('«Siéntese, mi señora. Las noticias no cobran… casi nunca.»',x0+pw/2+50,y0+86);
+ const rx=x0+108,rw=pw-124;TK73.forEach((c,i)=>{const y=y0+96+i*28,op=tkOpen73(c),sel=op&&L.indexOf(c)===ECOUI.sel;C.fillStyle=sel?'rgba(60,160,190,.32)':'rgba(255,255,255,.05)';C.fillRect(rx,y,rw,24);if(sel){C.strokeStyle='#7fe0ff';C.strokeRect(rx+.5,y+.5,rw,24);}
+  C.textAlign='left';C.font='bold 13px Georgia';C.fillStyle=op?'#f5e6c8':'#555';C.fillText(op?'💬 '+c.t:'🔒 ???  (sigue avanzando)',rx+8,y+17);
+  if(op&&!seen[c.id]){C.textAlign='right';C.font='bold 11px Georgia';C.fillStyle='#ffd27a';C.fillText('NUEVA',rx+rw-8,y+17);}if(op)ECOUI.rows.push({x:rx,y,w:rw,h:24,i:'tc'+L.indexOf(c)});});
+ backBtn73(C,x0,y0,pw,ph,'← Volver a la tienda','tk');C.textAlign='left';}
+function drawPg73(C,x0,y0,pw,ph){const U=UI73,g=PGS73(),got=PG73.filter(p=>g[p.id]);
+ if(U.read){const p=U.read,bx=x0+20,by=y0+60,bw=pw-40,bh=ph-120;C.fillStyle='#2a2016';C.fillRect(bx,by,bw,bh);C.strokeStyle='#8a6a3a';C.strokeRect(bx+.5,by+.5,bw,bh);
+  C.save();C.beginPath();C.rect(bx,by,bw,bh);C.clip();let y=by+28-U.scr;C.textAlign='center';C.font='bold 15px Georgia';C.fillStyle='#ffcf8a';C.fillText('📜 '+p.t,bx+bw/2,y);y+=30;
+  C.font='italic 15px Georgia';C.fillStyle='#f0e0c0';for(const l of p.L){for(const s of wr73(C,l,bw-60)){C.fillText(s,bx+bw/2,y);y+=22;}y+=10;}C.restore();
+  U.max=Math.max(0,y+U.scr-(by+bh)+10);if(U.scr>U.max)U.scr=U.max;
+  if(U.max>0){C.fillStyle='rgba(255,220,160,.25)';C.fillRect(bx+bw-6,by+4+(bh-38)*(U.scr/U.max),4,30);
+   C.fillStyle='#3a2a5a';C.fillRect(bx+bw-44,by+4,38,34);C.fillRect(bx+bw-44,by+bh-38,38,34);C.fillStyle='#fff';C.font='bold 16px Georgia';C.fillText('▲',bx+bw-25,by+27);C.fillText('▼',bx+bw-25,by+bh-15);
+   ECOUI.rows.push({x:bx+bw-44,y:by+4,w:38,h:34,i:'pu'},{x:bx+bw-44,y:by+bh-38,w:38,h:34,i:'pd'});}
+  backBtn73(C,x0,y0,pw,ph,'← Volver a los pergaminos','pb');C.textAlign='left';return;}
+ C.font='bold 14px Georgia';C.fillStyle='#ffcf8a';C.textAlign='center';C.fillText('📜 PERGAMINOS DE LA HEREJÍA ('+got.length+'/'+PG73.length+')',x0+pw/2,y0+72);
+ C.font='italic 11px Georgia';C.fillStyle='#bba';C.fillText(got.length?'Toca uno para leerlo':'Aún no encuentras ninguno. Busca un brillo rojo en el camino…',x0+pw/2,y0+88);
+ PG73.forEach((p,i)=>{const y=y0+98+i*34,has=!!g[p.id],sel=has&&got.indexOf(p)===ECOUI.sel;C.fillStyle=sel?'rgba(190,90,50,.32)':'rgba(255,255,255,.05)';C.fillRect(x0+40,y,pw-80,30);if(sel){C.strokeStyle='#ffcf8a';C.strokeRect(x0+40.5,y+.5,pw-80,30);}
+  C.textAlign='left';C.font='bold 13px Georgia';C.fillStyle=has?'#f5e6c8':'#555';C.fillText(has?'📜 '+p.t:'— pergamino perdido —',x0+52,y+20);if(has)ECOUI.rows.push({x:x0+40,y,w:pw-80,h:30,i:'pr'+got.indexOf(p)});});
+ C.fillStyle='#3a2a5a';C.fillRect(x0+40,y0+ph-46,pw-80,32);C.font='bold 13px Georgia';C.fillStyle='#e0d0ff';C.textAlign='center';C.fillText('← Volver al inventario',x0+pw/2,y0+ph-25);ECOUI.rows.push({x:x0+40,y:y0+ph-46,w:pw-80,h:32,i:'pg'});C.textAlign='left';}
+// ---- acciones ----
+function tkStart73(i){const c=tkList73()[i];if(!c)return;UI73.chat=c;UI73.ln=0;TKS73()[c.id]=1;saveG();S('note');}
+function tkNext73(){const U=UI73;if(!U.chat)return;if(U.ln<U.chat.L.length-1){U.ln++;S('note');}else{U.chat=null;}}
+function pgOpen73(i){const p=PG73.filter(q=>PGS73()[q.id])[i];if(!p)return;UI73.read=p;UI73.scr=0;S('note');}
+{const _ea=ecoAct;ecoAct=function(i){
+ if(i==='tk'){ECOUI.tab=ECOUI.tab==='tk'?null:'tk';UI73.chat=null;ECOUI.sel=0;ECOUI.err=0;S('note');return;}
+ if(i==='pg'){ECOUI.tab=ECOUI.tab==='pg'?null:'pg';UI73.read=null;ECOUI.sel=0;S('note');return;}
+ if(ECOUI.tab==='tk'){if(i<0){ECOUI.open=null;ECOUI.tab=null;UI73.chat=null;return;}if(i==='tn')tkNext73();else if(i==='tb')UI73.chat=null;else if(typeof i==='string'&&i.startsWith('tc')){ECOUI.sel=+i.slice(2);tkStart73(ECOUI.sel);}return;}
+ if(ECOUI.tab==='pg'){if(i<0){ECOUI.open=null;ECOUI.tab=null;UI73.read=null;return;}if(i==='pb')UI73.read=null;else if(i==='pu')UI73.scr=Math.max(0,UI73.scr-60);else if(i==='pd')UI73.scr=Math.min(UI73.max||0,UI73.scr+60);else if(typeof i==='string'&&i.startsWith('pr')){ECOUI.sel=+i.slice(2);pgOpen73(ECOUI.sel);}return;}
+ return _ea.apply(this,arguments);};}
+ecoUpd=(function(f){return function(){
+ if(ECOUI.open&&(ECOUI.tab==='tk'||ECOUI.tab==='pg')){const U=UI73;if(state!=='play'||trans){ECOUI.open=null;ECOUI.tab=null;return false;}if(ECOUI.msgT>0)ECOUI.msgT--;ECOUI.t++;const go=ECOUI.t>6&&(PR.punch||PR.sword||PR.orb),back=ECOUI.t>6&&(PR.dash||PR.inv||PR.special||PR.map);
+  if(ECOUI.tab==='tk'){if(U.chat){if(go)tkNext73();if(back)U.chat=null;}else{const n=Math.max(1,tkList73().length);if(PR.jump||PR.lookup)ECOUI.sel=(ECOUI.sel+n-1)%n;if(PR.down)ECOUI.sel=(ECOUI.sel+1)%n;if(go)tkStart73(ECOUI.sel);if(back)ECOUI.tab=null;}}
+  else{if(U.read){if(PR.jump||PR.lookup)U.scr=Math.max(0,U.scr-40);if(PR.down)U.scr=Math.min(U.max||0,U.scr+40);if(back||go)U.read=null;}else{const n=Math.max(1,PG73.filter(p=>PGS73()[p.id]).length);if(PR.jump||PR.lookup)ECOUI.sel=(ECOUI.sel+n-1)%n;if(PR.down)ECOUI.sel=(ECOUI.sel+1)%n;if(go)pgOpen73(ECOUI.sel);if(back)ECOUI.tab=null;}}
+  clearPR();anyPress=false;return true;}
+ const r=f();pgUpd73();return r;};})(ecoUpd);
+// tecla: hablar con T en la tienda de la Ciudadela; pergaminos con P en el inventario
+addEventListener('keydown',e=>{if(!ECOUI.open||ECOUI.tab&&ECOUI.tab!=='tk'&&ECOUI.tab!=='pg')return;if((e.key==='t'||e.key==='T')&&hub73()){ecoAct('tk');e.preventDefault();}if((e.key==='p'||e.key==='P')&&ECOUI.open!=='shop'){ecoAct('pg');e.preventDefault();}});
+// arrastre táctil / rueda para leer pergaminos largos
+(()=>{const cv=document.getElementById('c');if(!cv)return;const yOf=ev=>{const r=cv.getBoundingClientRect();return (ev.clientY-r.top)*H/r.height;};
+ cv.addEventListener('pointerdown',ev=>{if(ECOUI.open&&ECOUI.tab==='pg'&&UI73.read)UI73.drag={y:yOf(ev),s:UI73.scr};},true);
+ addEventListener('pointermove',ev=>{const d=UI73.drag;if(!d||!UI73.read)return;UI73.scr=Math.max(0,Math.min(UI73.max||0,d.s-(yOf(ev)-d.y)));});
+ addEventListener('pointerup',()=>{UI73.drag=null;});addEventListener('pointercancel',()=>{UI73.drag=null;});
+ cv.addEventListener('wheel',ev=>{if(ECOUI.open&&ECOUI.tab==='pg'&&UI73.read){UI73.scr=Math.max(0,Math.min(UI73.max||0,UI73.scr+ev.deltaY*.5));ev.preventDefault();}},{passive:false});})();
+// dibujo en el mundo (coordenadas de mundo, junto a los objetos de zona)
+{const _m=window.mer72D;window.mer72D=function(md){const r=_m?_m(md):md();try{pgDraw73();}catch(_){}return r;};}
 
 </script>
 </body>
