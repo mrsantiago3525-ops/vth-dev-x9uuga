@@ -165,7 +165,7 @@ function devWarp(z,i){enterZone(z,ALTD[z][i],{skip:1,f:1});cards=[];state='play'
 function devToggle(v){devOpen=v;const m=document.getElementById('devM');if(m)m.style.display=v?'flex':'none';}
 function devInit(){if(!DEV)return;const g=document.getElementById('game'),b=document.createElement('div');b.id='bDev';b.textContent='DEV';g.appendChild(b);
  const m=document.createElement('div');m.id='devM';g.appendChild(m);
- const it=[['Etapa 1',()=>devJump(0,0)],['Jefe Etapa 1',()=>devJump(0,1)],['Etapa 2',()=>devJump(1,0)],['Jefe Etapa 2',()=>devJump(1,1)],['Misión 2.5 · Pasillo del Velo',()=>{SAVE.bd.elf=SAVE.bd.witch=1;delete SAVE.gt.m25;delete SAVE.gt.elfSeen;M25.dev=1;devJump(1,0);P.x=4520;cam=P.x-W*.4;}],['Etapa 3',()=>devJump(2,0)],['Jefe Etapa 3',()=>devJump(2,1)],['Etapa 4',()=>devJump(3,0)],['Jefe Etapa 4',()=>devJump(3,1)],['Etapa 5 · Túnel',()=>devJump(4,0)],['Jefe Etapa 5 · Medusa',()=>devJump(4,1)],['M-01 · Cueva de las Mareas (oculta)',()=>{SAVE.ab.flame=1;SAVE.ab.wall=1;SAVE.gt.m01s=1;saveG();devJump(11,0);}],['M-01 · Santuario medio',()=>{SAVE.ab.flame=1;SAVE.ab.wall=1;SAVE.gt.m01s=1;saveG();devWarp(11,0);}],['M-01 · Fondo del pozo',()=>{SAVE.ab.flame=1;SAVE.ab.wall=1;SAVE.gt.m01s=1;saveG();resetPlayer();enterZone(11,760,{skip:1,f:1});cards=[];state='play';banner=null;devToggle(false);}],['M-01 · Cascadas (pozo vertical)',()=>{SAVE.ab.flame=1;SAVE.ab.wall=1;SAVE.gt.m01s=1;saveG();resetPlayer();enterZone(11,5200,{skip:1,f:1});cards=[];state='play';banner=null;devToggle(false);}],['M-01 · Cámara de rocallas',()=>{SAVE.ab.flame=1;SAVE.ab.wall=1;SAVE.gt.m01s=1;delete SAVE.gt.m01st;saveG();resetPlayer();enterZone(11,6650,{skip:1,f:1});cards=[];state='play';banner=null;devToggle(false);}],['M-01 · Gólems custodios',()=>{SAVE.ab.flame=1;SAVE.ab.wall=1;SAVE.gt.m01s=1;delete SAVE.gt.m01st;saveG();resetPlayer();enterZone(11,7820,{skip:1,f:1});cards=[];state='play';banner=null;devToggle(false);}],['M-01 · Santuario de Cirlene',()=>{SAVE.ab.flame=1;SAVE.ab.wall=1;SAVE.gt.m01s=1;SAVE.gt.m01st=1;saveG();devWarp(11,1);}],['Jefa oculta · Cirlene',()=>{SAVE.ab.wall=1;SAVE.gt.m01s=1;SAVE.gt.m01st=1;saveG();devJump(11,1);}],['Etapa 6 · Murallas',()=>devJump(5,0)],['Jefe Etapa 6 · Gárgola',()=>devJump(5,1)],['Etapa 7 · Torre',()=>devJump(6,0)],['Jefe Etapa 7 · placeholder',()=>devJump(6,1)],['Torre · Tramo 2 · Escalera de los Coros',()=>devJump(7,0)],['Jefe Etapa 7 · Bartaliel (Tramo 2)',()=>devJump(7,1)],['Etapa 8 · Cámara de la Súcubo (Tramo 3)',()=>devJump(8,0)],['Jefe Etapa 8 · Pesadilla de Erida',()=>{devJump(8,1);T3.dev=1;}],['Jefe Etapa 8 · Lilvaryn',()=>{devJump(8,1);T3.dev=2;}],["Etapa 9 · Puente de Vael'draxis (Tramo 4)",()=>devJump(9,0)],["Jefe Etapa 9 · Vael'draxis",()=>devJump(9,1)],['Etapa 10 · Cima de la Torre (Tramo 5)',()=>devJump(10,0)],['Jefe Etapa 10 · Coro del Eclipse',()=>devJump(10,1)],['Cobertura capa/falda (opcional) on/off',()=>{SAVE.cov2=covOn()?0:1;saveG();toastTxt='Cobertura '+(SAVE.cov2?'ACTIVADA':'desactivada');toastT=90;}],['Jefa Morgrave',()=>{devJump(1,1);gateOn=true;camMin=G1;P.x=G1+300;cam=G1;wave=1;enemies=[];mgEntrance();}],
+ const it=[['Etapa 1',()=>devJump(0,0)],['Jefe Etapa 1',()=>devJump(0,1)],['Etapa 2',()=>devJump(1,0)],['Jefe Etapa 2',()=>devJump(1,1)],['Misión 2.5 · Pasillo del Velo',()=>{SAVE.bd.elf=SAVE.bd.witch=1;delete SAVE.gt.m25;delete SAVE.gt.elfSeen;M25.dev=1;devJump(1,0);P.x=4520;cam=P.x-W*.4;}],['Etapa 3',()=>devJump(2,0)],['Jefe Etapa 3',()=>devJump(2,1)],['Etapa 4',()=>devJump(3,0)],['Jefe Etapa 4',()=>devJump(3,1)],['Etapa 5 · Túnel',()=>devJump(4,0)],['Jefe Etapa 5 · Isaveth',()=>devJump(4,1)],['M-01 · Cueva de las Mareas (oculta)',()=>{SAVE.ab.flame=1;SAVE.ab.wall=1;SAVE.gt.m01s=1;saveG();devJump(11,0);}],['M-01 · Santuario medio',()=>{SAVE.ab.flame=1;SAVE.ab.wall=1;SAVE.gt.m01s=1;saveG();devWarp(11,0);}],['M-01 · Fondo del pozo',()=>{SAVE.ab.flame=1;SAVE.ab.wall=1;SAVE.gt.m01s=1;saveG();resetPlayer();enterZone(11,760,{skip:1,f:1});cards=[];state='play';banner=null;devToggle(false);}],['M-01 · Cascadas (pozo vertical)',()=>{SAVE.ab.flame=1;SAVE.ab.wall=1;SAVE.gt.m01s=1;saveG();resetPlayer();enterZone(11,5200,{skip:1,f:1});cards=[];state='play';banner=null;devToggle(false);}],['M-01 · Cámara de rocallas',()=>{SAVE.ab.flame=1;SAVE.ab.wall=1;SAVE.gt.m01s=1;delete SAVE.gt.m01st;saveG();resetPlayer();enterZone(11,6650,{skip:1,f:1});cards=[];state='play';banner=null;devToggle(false);}],['M-01 · Gólems custodios',()=>{SAVE.ab.flame=1;SAVE.ab.wall=1;SAVE.gt.m01s=1;delete SAVE.gt.m01st;saveG();resetPlayer();enterZone(11,7820,{skip:1,f:1});cards=[];state='play';banner=null;devToggle(false);}],['M-01 · Santuario de Cirlene',()=>{SAVE.ab.flame=1;SAVE.ab.wall=1;SAVE.gt.m01s=1;SAVE.gt.m01st=1;saveG();devWarp(11,1);}],['Jefa oculta · Cirlene',()=>{SAVE.ab.wall=1;SAVE.gt.m01s=1;SAVE.gt.m01st=1;saveG();devJump(11,1);}],['Etapa 6 · Murallas',()=>devJump(5,0)],['Jefe Etapa 6 · Gárgola',()=>devJump(5,1)],['Etapa 7 · Torre',()=>devJump(6,0)],['Jefe Etapa 7 · placeholder',()=>devJump(6,1)],['Torre · Tramo 2 · Escalera de los Coros',()=>devJump(7,0)],['Jefe Etapa 7 · Bartaliel (Tramo 2)',()=>devJump(7,1)],['Etapa 8 · Cámara de la Súcubo (Tramo 3)',()=>devJump(8,0)],['Jefe Etapa 8 · Pesadilla de Erida',()=>{devJump(8,1);T3.dev=1;}],['Jefe Etapa 8 · Lilvaryn',()=>{devJump(8,1);T3.dev=2;}],["Etapa 9 · Puente de Vael'draxis (Tramo 4)",()=>devJump(9,0)],["Jefe Etapa 9 · Vael'draxis",()=>devJump(9,1)],['Etapa 10 · Cima de la Torre (Tramo 5)',()=>devJump(10,0)],['Jefe Etapa 10 · Coro del Eclipse',()=>devJump(10,1)],['Cobertura capa/falda (opcional) on/off',()=>{SAVE.cov2=covOn()?0:1;saveG();toastTxt='Cobertura '+(SAVE.cov2?'ACTIVADA':'desactivada');toastT=90;}],['Jefa Morgrave',()=>{devJump(1,1);gateOn=true;camMin=G1;P.x=G1+300;cam=G1;wave=1;enemies=[];mgEntrance();}],
   ['Modo Dios',()=>DEVF.god^=1,'god'],['Poder/Energía ∞',()=>DEVF.inf^=1,'inf'],['Ver hitboxes',()=>DEVF.hit^=1,'hit'],['Rellenar vida',()=>{if(P)P.hp=P.maxHp;}],
   ['Matar enemigos en pantalla',()=>{for(const e of enemies)if(!e.dead&&e.x>cam-40&&e.x<cam+W+40){e.inv=0;hitEnemy(e,99999,'special',1);}}],['Desbloquear todo (habilidades)',()=>{SAVE.dj=1;for(const k of ['wall','dash','flame'])SAVE.ab[k]=1;saveG();if(P){const st=state;unlockSpec('t',0);unlockSpec('p',0);unlockSpec('r',0);unlockSpec('m',0);unlockSpec('v',0);const c=(P.unl||[]).flat();P.unl=[];if(c.length&&st==='play'){showCards(c,()=>{state='play';});devToggle(false);}}toastTxt='Todo desbloqueado';toastT=90;}],['Subir nivel',()=>{if(P)gainXP(xpNeed(SAVE.lv)-SAVE.xp);}],['Reiniciar progreso',()=>{resetProgress();if(P)P.hp=P.maxHp;toastTxt='Progreso reiniciado';toastT=90;}],['Esqueletos on/off',()=>DEVF.sk^=1,'sk'],['Revelar mapa completo',()=>{revealMap();toastTxt='Mapa revelado';toastT=90;}],...[0,1,2,3,4,5,6,7,8,9,10].flatMap(z=>ALTD[z].map((x,i)=>[(ALTK[z][i]==='s'?'Santuario ':'Brasa ')+ZS[z]+(ALTK[z][i]==='s'?'':' '+(i+1))+(ALTK[z][i]==='e'?' (Fácil)':''),()=>devWarp(z,i)])),['Reiniciar jefes/cofres/sellos',()=>{SAVE.bd={};SAVE.gt={};SAVE.ch={};SAVE.pk={};saveG();toastTxt='Jefes, cofres y sellos reiniciados';toastT=90;}],['Cerrar',()=>devToggle(false)]];
  const draw=()=>{m.innerHTML='<div class="dt">MODO DESARROLLADOR</div>';for(const [t,f,k] of it){const x=document.createElement('button');x.textContent=t+(k?(DEVF[k]?' ✓':' ✗'):'');
@@ -254,8 +254,8 @@ function buildBG(th){
 }
 // ---------- STORY ----------
 const STAGES=[
- {title:'I · RUINAS DEL TEMPLO DEL SOL',sub:'Emboscada en las ruinas',
-  intro:['Valethorn. Reino de ceniza y juramentos rotos.','Ella cruzó la frontera sin estandarte, sin nombre:\nuna misión secreta, un fuego que nadie debía ver.','Busca el poder que duerme bajo el Templo del Alba...\ny el secreto para despertarlo.','Pero los Caballeros Negros nunca duermen.'],
+ {title:'I · CIUDADELA DEL ALBA',sub:'A los pies del Templo del Alba',
+  intro:['Valethorn. Donde terminan las montañas\ny empieza el mar.','Ella cruzó la frontera sin estandarte, sin nombre:\nuna misión secreta, un fuego que nadie debía ver.','Busca el poder que duerme bajo el Templo del Alba...\ny el secreto para despertarlo.','Al pie del templo duerme una ciudadela en ruinas.\nPero los Caballeros Negros nunca duermen.'],
   waves:[['captain']]},
  {title:'II · BOSQUE DE LAS ESPINAS NEGRAS',sub:'Donde el eclipse nunca termina',
   intro:['CAPITÁN CAÍDO: "Necia... más allá del templo\nsolo hay espinas. Ella te escuchará llegar."','Un eclipse rojo cuelga sobre el bosque.\nLos árboles respiran. Algo canta entre las raíces.','SERAPHYNE: "Que cante. Mi sol no conoce el miedo."'],
@@ -267,7 +267,7 @@ const STAGES=[
   intro:['Bajo el Sello Solar la roca se vuelve hueso,\ny los muertos son enormes.','SERAPHYNE: "Costillas de dragón... hechas puentes.\nAquí abajo nada descansa."','Algo muy grande respira en lo más hondo.\nY no está solo.'],
   waves:[['nhaz']]},
  {title:'V · TÚNEL DE LAS ESTATUAS',sub:'Donde la mirada es piedra',
-  intro:['Bajo el osario se abre un túnel de columnas y estatuas.\nCientos de guerreros de piedra, todos con la misma\nexpresión: un instante antes del miedo.','SERAPHYNE: «No son esculturas. Son personas.\nAlgo los miró... y no apartó la vista.»','Al fondo algo se arrastra y susurra con voz de mujer.\nLos muros respiran. Algo muerde desde las grietas.'],
+  intro:['Bajo el osario se abre un túnel de columnas y estatuas.\nCientos de guerreros de piedra, todos con la misma\nexpresión: un instante antes del miedo.','SERAPHYNE: «No son esculturas. Son personas.\nAlgo los miró... y no apartó la vista.»','Al fondo, una voz de mujer cuenta tus pasos. Te escuchó llegar.\nLos muros respiran. Algo muerde desde las grietas.'],
   waves:[['medusa']]},
  {title:'VI · MURALLAS DEL CASTILLO',sub:'La guardiana de piedra',
   intro:['Sobre el túnel, el castillo de Valethorn se alza bajo una luna roja.\nEl viento trae el crujir de las cadenas\ny el hierro de mil armaduras negras.','SERAPHYNE: «Los Caballeros Negros de Valethorn.\nGente viva, con arcos y con órdenes.\nNo es su culpa... pero tampoco la mía.»','Al fondo, entre almenas rotas y estandartes desgarrados,\nalgo de piedra vela el paso hacia la Torre del Templo.'],
@@ -457,7 +457,7 @@ function setupProf(){
   relic:{x:7200,y:130,got:!!SAVE.pk.garras},boT:0,amb:300,heart:0};
  DK.bo=0;DK.fl=0;}
 function readScrolls(){for(const s of scrolls)if(!s.r&&Math.abs(P.x-s.x)<(s.k==='chain'?60:34)&&Math.abs(P.y-s.y)<70){s.r=1;
-  if(s.k==='chain'){S('clang');banner={text:'SERAPHYNE',sub:'«Cadenas de Vexarion. El viejo rey siempre quiso un dragón con correa. Kael quiere dos.»',t:300};return false;}
+  if(s.k==='chain'){S('clang');banner={text:'SERAPHYNE',sub:'«Cadenas de Vexarion. El viejo rey siempre quiso un dragón con correa. Y su hijo ya sueña con dos.»',t:300};return false;}
   S('note');showCards([SCROLLS[s.id]],()=>{state='play';});return true;}return false;}
 function spawnAt(type,x,o){spawn(type,0);const e=enemies[enemies.length-1];e.x=clamp(x,gateOn?G1+30:40,WORLD-40);if(o)Object.assign(e,o);burst(e.x,e.y-40,14,'#40e0ff',4);return e;}
 function profMobs(L,n,asmN){const m=[];for(let i=0;i<n;i++){const s=i%2?1:-1,e=spawnAt('cwraith',P.x+s*(300+i*40),{cd:18+i*26});e.y=P.y-30;m.push(e);}
@@ -840,7 +840,7 @@ function tramoTeaser(){if(state!=='play'||trans)return;toastT=0;for(const o of s
 
 // ---------- METROIDVANIA (v14): zonas conectadas, Altares del Sol, mapa, barreras de habilidad ----------
 // Zona = antigua "etapa" (0 Ruinas, 1 Bosque, 2 Catacumbas). Puertas en los extremos; jefes derrotados persisten en SAVE.bd; los enemigos reaparecen al reentrar.
-const ZN=['I · RUINAS DEL SOL','II · BOSQUE DE LAS ESPINAS','III · CATACUMBAS CORRUPTAS','IV · CATACUMBAS PROFUNDAS','V · TÚNEL DE LAS ESTATUAS','VI · MURALLAS DEL CASTILLO','VII · LA TORRE DEL TEMPLO','VII · ESCALERA DE LOS COROS','VII · CÁMARA DE LA SÚCUBO','VIII · PUENTE DE VAEL\'DRAXIS','IX · LA CIMA DE LA TORRE'],ZS=['Ruinas','Bosque','Catacumbas','Profundas','Estatuas','Murallas','Torre del Templo','Escalera de los Coros','Cámara de la Súcubo','Puente de Vael\'draxis','Cima de la Torre','Fin ▶'];
+const ZN=['I · CIUDADELA DEL ALBA','II · BOSQUE DE LAS ESPINAS','III · CATACUMBAS CORRUPTAS','IV · CATACUMBAS PROFUNDAS','V · TÚNEL DE LAS ESTATUAS','VI · MURALLAS DEL CASTILLO','VII · LA TORRE DEL TEMPLO','VII · ESCALERA DE LOS COROS','VII · CÁMARA DE LA SÚCUBO','VIII · PUENTE DE VAEL\'DRAXIS','IX · LA CIMA DE LA TORRE'],ZS=['Ciudadela','Bosque','Catacumbas','Profundas','Estatuas','Murallas','Torre del Templo','Escalera de los Coros','Cámara de la Súcubo','Puente de Vael\'draxis','Cima de la Torre','Fin ▶'];
 const ZW=[4200,7400,8900,10900,10300,12400,7400,7300,8400,9500,7700],ZGt=[3400,3600,7800,9200,8600,11000,7000,6500,7500,8200,6600],NC=[6,10,12,14,12,14,8,8,12,14,12],ZCOL=['#d4a84a','#6ab04c','#c060e0','#40e0ff','#7fd8a8','#d05040','#ff8a3a','#bcd4ff','#c04ad8','#ff7a2a','#7dff6a'],ZBOSS=[['captain'],['elf','witch'],['gorrath'],['nhaz'],['medusa'],['gargola'],['knight'],['bart'],['lilvaryn'],['vael'],['coro5']];
 // v29: UN Santuario de la Diosa por zona (cura, guarda y recarga PODER) + Brasas de la Diosa (reaparición sin curar, tras pruebas duras).
 // ALTK: 's' = Santuario · 'b' = Brasa · 'e' = Brasa extra solo en FÁCIL. Los índices de ALTD son los de SAVE.ai / SAVE.ad.
@@ -1220,7 +1220,7 @@ const DEF={
  nhaz:{hp:1880,w:300,h:240,spd:1.1,dmg:22,boss:'NHAZRAKH, EL DRAGÓN NO-MUERTO'},
  beast:{hp:850,w:110,h:96,spd:1.4,dmg:20,boss:'GORRATH, LA BESTIA ENCADENADA'},
  golem:{hp:2800,w:150,h:380,spd:.8,dmg:17,name:'Golem de Roca'},
- medusa:{hp:880,w:56,h:190,spd:.9,dmg:14,boss:'MEDUSA, LA GORGONA DE JADE'},
+ medusa:{hp:880,w:56,h:190,spd:.9,dmg:14,boss:'ISAVETH, LA GORGONA DE JADE'},
  wworm:{hp:1,w:44,h:36,spd:0,dmg:9,name:'Gusano de Pared'},
  knight:{hp:1400,w:44,h:92,spd:1.8,dmg:18,boss:"VAEL'DRAXIS, EL CABALLERO NEGRO SUPREMO"}};
 // ---------- DIFFICULTY ----------
@@ -1396,12 +1396,12 @@ function medSplit(e){const rem=e.hp,h=Math.max(1,Math.round(rem*.54)),pool=e.max
  enemies.push(c);
  shake=Math.max(shake,18);flash=Math.max(flash,10);S('growl');S('hiss');S('petrify');
  burst(e.x,e.y-100,50,'#7dff9a',8);burst(e.x,e.y-100,40,'#d070ff',8);
- banner={text:'LA GORGONA SE DIVIDE',sub:'Dos cuerpos · una sola mirada a la vez · si una cae, la otra enfurece',t:220};
- e.bub={txt:'«Una mirada no bastaba...»',t:150};c.bub={txt:'«...¡así que tendrás dos!»',t:150};
+ banner={text:'SU REFLEJO DE PIEDRA',sub:'Ella y su reflejo · una sola mirada a la vez · si una cae, la otra enfurece',t:220};
+ e.bub={txt:'«Mi maldición tiene rostro...»',t:150};c.bub={txt:'«...¡y es el mío!»',t:150};
  addText(e.x,e.y-230,'¡SSSOMOS DOS!','#e0a0ff');}
 function medFury(e){e.fury=1;e.rage=1;e.dmg=Math.round(e.dmg*1.15);e.inv=Math.max(e.inv,50);e.vx=0;e.st='hiss';e.stT=58;e.cd=50;e.pend=null;eproj.length=0;if(TZ)TZ.gz=null;
  shake=Math.max(shake,16);flash=Math.max(flash,8);S('growl');S('hiss');burst(e.x,e.y-100,50,e.cl?'#d070ff':'#7dff9a',8);
- banner={text:'¡LA SUPERVIVIENTE ENFURECE!',sub:'Más rápida · más letal · sin pausa',t:170};e.bub={txt:'«¡¡HERMANA!! ¡Te haré pagar!»',t:150};}
+ banner={text:'¡LA SUPERVIVIENTE ENFURECE!',sub:'Más rápida · más letal · sin pausa',t:170};e.bub={txt:'«¡Déjala! ¡Ella soy yo!»',t:150};}
 function medSplitPat(e){return e.cl?['fan','pincer','spiral','tail','nova','lunge','homing','gaze','bounce','xfan']:['nova','lunge','fan','gaze','pincer','spiral','tail','homing','xfan','bounce'];}
 function bossFrac(b){if(b.type==='medusa'&&b.pool0){const s=medAlive(b);return s?(b.hp+s.hp)/b.pool0:b.hp/Math.max(1,b.hp>b.maxHp?b.hp:b.maxHp);}return b.hp/b.maxHp;}
 function medHudPair(b){const s=b.sib,x0=W/2-130,y=43;ctx.save();for(const [m,xx,col] of [[b,x0,'#35d070'],[s,x0+194,'#c050ff']]){ctx.fillStyle='#000';ctx.fillRect(xx,y,186,6);ctx.fillStyle=m.dead?'#333':col;ctx.fillRect(xx+1,y+1,184*clamp(m.hp/m.maxHp,0,1),4);}ctx.font='9px Georgia';ctx.fillStyle='#d8c0e8';ctx.textAlign='left';ctx.fillText('JADE',x0,y+16);ctx.textAlign='right';ctx.fillText('AMATISTA',x0+380,y+16);ctx.restore();}
@@ -1873,7 +1873,7 @@ function stageClear(){if(stage>=7)return;P.hp=Math.min(P.maxHp,P.hp+Math.round(5
    showCards([...c,...extra],open);return;}
   if(stage===4){SAVE.st=Math.max(SAVE.st||0,4);SAVE.mx=(SAVE.mx||0)+20;saveG();applyLv(0);P.hp=P.maxHp;const c=(P.unl||[]).flat();P.unl=[];
    const open=()=>{state='play';banner={text:'EL TÚNEL SE ABRE',sub:'Al fondo, la puerta a las MURALLAS DEL CASTILLO · tecla M: mapa',t:240};};
-   showCards([...c,'MEDUSA ha caído, por segunda vez.\nLas serpientes se aquietan... y por un instante\nvuelve a ser una mujer.','SERAPHYNE: «El fragmento la torció. Ciento doce guerreros\nde piedra, y ninguno pudo salvarla.»','✦ +20 VIDA MÁXIMA ✦\nLa piedra de las estatuas se resquebraja:\nquienes cayeron aquí descansan al fin.',SAVE.pk.lagrima?'Su lágrima de jade ya es tuya.':'Una lágrima de jade cae donde yacía la Gorgona...\nrecógela: LÁGRIMA DE LA GORGONA\n(rompe la petrificación mucho más rápido).'],open);return;}
+   showCards([...c,'ISAVETH ha caído, por segunda vez.\nLas serpientes se aquietan... y por un instante\nvuelve a ser una mujer.','SERAPHYNE: «Lo buscó por amor.\nQué desperdicio de poder.»','✦ +20 VIDA MÁXIMA ✦\nLa piedra de las estatuas se resquebraja:\nquienes cayeron aquí descansan al fin.',SAVE.pk.lagrima?'Su lágrima de jade ya es tuya.':'Una lágrima de jade cae donde yacía Isaveth...\nrecógela: LÁGRIMA DE ISAVETH\n(rompe la petrificación mucho más rápido).'],open);return;}
   if(stage===5){SAVE.st=Math.max(SAVE.st||0,5);SAVE.mx=(SAVE.mx||0)+25;SAVE.gt.sello1=1;const gotD=hasAb('dash');SAVE.ab.dash=1;saveG();applyLv(0);P.hp=P.maxHp;const c=(P.unl||[]).flat();P.unl=[];
    const open=()=>{state='play';banner={text:'EL CAMINO SIGUE',sub:'La puerta del fondo: LA TORRE DEL TEMPLO · tecla M: mapa',t:250};};
    showCards([...c,'LA GÁRGOLA ha caído.\nLa piedra se desmorona... y bajo el polvo\nbrilla un disco negro con un sol grabado al revés.','GÁRGOLA: «Mi reina... perdóname.»\nSERAPHYNE: «Descansa, guardiana. Yo cuidaré lo que viene.»','✦ OBJETO OBTENIDO ✦\nSELLO I · SELLO DE LAS MURALLAS','Piedra negra, fría como una tumba.\nLa Torre del Templo guarda tres cerraduras como esta.\nLa primera ya late en tu mano.','✦ +25 VIDA MÁXIMA ✦\nLa luna roja te baña desde las almenas.',...(gotD?[]:['PASO SOLAR\nLa guardiana lo custodiaba: ahora es tuyo.']),'Al fondo del paso de ronda se abre una puerta alta.\nMás allá, la Torre del Templo recorta la noche.\nQuedan dos sellos.'],open);return;}
@@ -1909,7 +1909,7 @@ SCROLLS.e1='PEDESTAL GRABADO\n\n"Ciento doce guerreros entraron al túnel a caza
 SCROLLS.e2='DIARIO DE UN CAZADOR SIN NOMBRE\n\n"No era un monstruo cuando la hallamos: una mujer encadenada\ncon un fragmento hundido en el pecho. Lo que el cristal le\nsusurró le torció el rostro... y la mirada.\nAhora convierte en roca a quien la teme. O a quien la ama."';
 SCROLLS.e4='LISTA DE LOS ESCULTORES\n\n"Cada estatua del túnel fue un guardia de verdad. El Arquitecto\nlos dejó de pie para que la piedra recordara cuántos eran.\nPero la piedra, cuando oye pasos, aprende a despertar.\nGolpéalas antes de que terminen de crujir."';
 SCROLLS.e5='GRAFITO, LETRA TEMBLOROSA\n\n"Si una estatua te mira, no la mires de vuelta.\nSi te sigue, corre. Si el gigante de roca te apunta con el ojo,\nagáchate o salta: el rayo va a la altura del pecho.\nAl fondo te espera un Santuario de la Diosa. Llega entero."';
-SCROLLS.e3='GRABADO EN EL MURO, MANO DE UN ARQUITECTO\n\n"El Arquitecto trazó este túnel para guardar lo que no debía salir.\nRolgin, que todo lo prueba, soltó aquí a su gorgona para ver\nqué quedaba de un héroe cuando lo miran los ojos del mito."';
+SCROLLS.e3='MURAL RASPADO EN EL MURO\n\n"Rolgin no la trajo. Ella vino a buscarlo.\nLeyó en su letra cómo devolver un alma...\ny el alma que volvió fue la suya, al revés."';
 const MEDQ=['«Qué luz tan bonita... qué lástima.»','«Todos vienen a mirarme. Ninguno se va.»','«Ven, pequeña. No muerdo... todavía.»','«Mira mis ojos, hija del sol.»','«Ciento doce estatuas y aún cabe una más.»'];
 function setupTun(){
  torches=[];camY=0;platforms=TUN_PLAT.map(([x,y,w])=>({x,y,w,y0:y}));pits=[];spikes=[];claws=[];tents=[];
@@ -2024,8 +2024,8 @@ function drawStoneUI(){if(!P.stone)return;const px=P.x-cam,py=P.y-P.h,p=clamp(P.
  for(let i=0;i<Math.floor(p*9);i++){const a=i*1.1+.4,y=py+14+(i*13%70);ctx.beginPath();ctx.moveTo(px+Math.cos(a)*3,y);ctx.lineTo(px+Math.cos(a)*14,y+9);ctx.lineTo(px+Math.cos(a+1)*8,y+19);ctx.stroke();}
  ctx.textAlign='center';ctx.font='bold 24px Georgia';ctx.fillStyle=frame%14<7?'#e8fff0':'#9ac8aa';ctx.strokeStyle='#000';ctx.lineWidth=4;ctx.strokeText('¡ROMPE LA PIEDRA!',W/2,140);ctx.fillText('¡ROMPE LA PIEDRA!',W/2,140);
  ctx.fillStyle='#000';ctx.fillRect(W/2-102,150,204,14);ctx.fillStyle='#8fa098';ctx.fillRect(W/2-100,152,200,10);ctx.fillStyle='#bfffd8';ctx.fillRect(W/2-100,152,200*p,10);ctx.font='12px Georgia';ctx.fillStyle='#cfe';ctx.strokeText('PULSA RÁPIDO: ataque · salto · ◀ ▶',W/2,182);ctx.fillText('PULSA RÁPIDO: ataque · salto · ◀ ▶',W/2,182);ctx.restore();}
-function medFall(e){e.hp=1;e.inv=9999;e.form=1.5;e.st='fall';e.stT=210;e.vx=0;eproj.length=0;e.stone=0;e.sq=1;e.bub=null;if(TZ)TZ.gz=null;S('petrify');shake=14;burst(e.x,e.y-100,40,'#9aa89e',6);P.inv=Math.max(P.inv,60);banner={text:'MEDUSA CAE...',sub:'«No... otra vez no... no quiero ser piedra...»',t:170};}
-function medRise(e){e.form=2;e.hp=e.maxHp=e.hp2;e.inv=70;e.boss='MEDUSA · LA GORGONA';e.phase=2;e.w=90;e.h=200;e.dmg=DEF.medusa.dmg;e.st='hiss';e.stT=60;e.cd=55;e.sq=1;e.nx=0;e.rage=0;e.gz=0;flash=16;shake=22;S('growl');S('hiss');burst(e.x,e.y-100,70,'#7dff9a',8);banner={text:'¡LA GORGONA DESPIERTA!',sub:'Rompe su mirada: cúbrete tras las estatuas o desliza/esquiva a través',t:200};}
+function medFall(e){e.hp=1;e.inv=9999;e.form=1.5;e.st='fall';e.stT=210;e.vx=0;eproj.length=0;e.stone=0;e.sq=1;e.bub=null;if(TZ)TZ.gz=null;S('petrify');shake=14;burst(e.x,e.y-100,40,'#9aa89e',6);P.inv=Math.max(P.inv,60);banner={text:'ISAVETH CAE...',sub:'«No... otra vez no... no quiero ser piedra...»',t:170};}
+function medRise(e){e.form=2;e.hp=e.maxHp=e.hp2;e.inv=70;e.boss='ISAVETH · LA GORGONA';e.phase=2;e.w=90;e.h=200;e.dmg=DEF.medusa.dmg;e.st='hiss';e.stT=60;e.cd=55;e.sq=1;e.nx=0;e.rage=0;e.gz=0;flash=16;shake=22;S('growl');S('hiss');burst(e.x,e.y-100,70,'#7dff9a',8);banner={text:'¡LA GORGONA DESPIERTA!',sub:'Rompe su mirada: cúbrete tras las estatuas o desliza/esquiva a través',t:200};}
 // ---- lógica de la zona ----
 function mkWorm(h){spawn('wworm',0);const e=enemies[enemies.length-1];e.hole=h;e.x=h.hx;e.y=h.hy+18;e.f=h.dir;h.e=e;e.cd=rnd(30,90);return e;}
 function awakenStatue(s){s.done=1;s.cr=0;spawn(s.k,0);const e=enemies[enemies.length-1];e.x=s.x;e.y=FLOOR;e.tint=1;e.cd=rnd(26,48);e.side=Math.sign(P.x-s.x)||1;e.f=e.side;e.inv=14;
@@ -2040,8 +2040,8 @@ function updTun(){
  for(const h of TZ.holes){if(h.e&&(h.e.dead||!enemies.includes(h.e))){h.e=null;h.rs=430;}
   if(!h.e){if(h.rs>0)h.rs--;else if(!gateOn&&Math.abs(P.x-h.hx)<700&&Math.abs(P.x-h.hx)>110)mkWorm(h);}}
  if(P.gzImm>0)P.gzImm--;
- const tr=TZ.tear;if(tr&&!tr.got&&Math.abs(P.x-tr.x)<32&&P.y>FLOOR-90){tr.got=1;SAVE.pk.lagrima=1;saveG();S('pickup');S('note');flash=Math.max(flash,8);addText(P.x,P.y-120,'LÁGRIMA DE LA GORGONA','#bfffd8');banner={text:'LÁGRIMA DE LA GORGONA',sub:'Romperás la petrificación mucho más rápido',t:200};}
- if(!TZ.hint&&!bossDone(4)&&TZ.cv.some(c=>Math.abs(P.x-c.x)<420&&c.x>G1)){TZ.hint=1;toastTxt='Las estatuas bloquean la mirada de Medusa · AGÁCHATE tras las bajas';toastT=240;}
+ const tr=TZ.tear;if(tr&&!tr.got&&Math.abs(P.x-tr.x)<32&&P.y>FLOOR-90){tr.got=1;SAVE.pk.lagrima=1;saveG();S('pickup');S('note');flash=Math.max(flash,8);addText(P.x,P.y-120,'LÁGRIMA DE ISAVETH','#bfffd8');banner={text:'LÁGRIMA DE ISAVETH',sub:'Romperás la petrificación mucho más rápido',t:200};}
+ if(!TZ.hint&&!bossDone(4)&&TZ.cv.some(c=>Math.abs(P.x-c.x)<420&&c.x>G1)){TZ.hint=1;toastTxt='Las estatuas bloquean la mirada de Isaveth · AGÁCHATE tras las bajas';toastT=240;}
  if(TZ.t%260===0&&Math.random()<.6)S('drip');if(TZ.t%700===350&&Math.random()<.5)S('scrape');
  if(TZ.gz&&(!TZ.gz.e||TZ.gz.e.dead||TZ.gz.e.st!=='gazeW'&&TZ.gz.e.st!=='gaze'))TZ.gz=null;
 }
@@ -6897,14 +6897,14 @@ MUS.bcir={f:'boss_cirlene.mp3',LS:56.7325,LE:134.734,VOL:.6,buf:null,ld:0,fail:0
 const OZX=48;
 // piezas raras
 const RP57={
- drak:{n:'Moneda de Drakmorath',i:'🪙',c:'#e8c060',src:'Escondida en las Ruinas del Sol',sell:80,tn:'2 Pociones de vida',tr:o=>{o.inv.vida=Math.min(ICAP.vida+(o.cap|0),o.inv.vida+2);}},
+ drak:{n:'Moneda de Drakmorath',i:'🪙',c:'#e8c060',src:'Escondida en la Ciudadela del Alba',sell:80,tn:'2 Pociones de vida',tr:o=>{o.inv.vida=Math.min(ICAP.vida+(o.cap|0),o.inv.vida+2);}},
  sol:{n:'Sello del Capitán Caído',i:'🔱',c:'#ffd23a',src:'Botín: El Capitán Caído',sell:120,tn:'2 Plumas del Santuario + Antídoto',tr:o=>{o.inv.ret=Math.min(ICAP.ret,o.inv.ret+2);o.inv.anti=Math.min(ICAP.anti,o.inv.anti+1);}},
  elf:{n:'Esquirla élfica',i:'💎',c:'#9fe8c0',src:'Botín: Sylvaraeth',sell:150,tn:'Cristal élfico: +15 energía máx.',tr:o=>{o.xm=(o.xm|0)+15;}},
  morg:{n:'Ojo de Morgrave',i:'👁',c:'#c080ff',src:'Botín: la bruja Morgrave',sell:150,tn:'1 Elixir',tr:o=>{o.inv.elix=Math.min(ICAP.elix,o.inv.elix+1);}},
  gorr:{n:'Colmillo de Gorrath',i:'🦷',c:'#f0e0c0',src:'Botín: Gorrath',sell:180,tn:'Corazón de bestia: +20 vida máx.',tr:o=>{o.xh=(o.xh|0)+20;}},
  runa:{n:'Runa del Túnel',i:'🔶',c:'#ffa050',src:'Cofre oculto del Túnel de las Estatuas',sell:140,tn:'Bolsa de Ozmar: +2 pociones de vida de capacidad',tr:o=>{o.cap=(o.cap|0)+2;}},
  nhaz:{n:'Hueso de Nhazrakh',i:'🦴',c:'#d8d0b8',src:'Botín: Nhazrakh',sell:220,tn:'Corazón ancestral: +25 vida máx.',tr:o=>{o.xh=(o.xh|0)+25;}},
- med:{n:'Lágrima de Medusa',i:'💧',c:'#7ad0ff',src:'Botín: Medusa',sell:220,tn:'2 Elixires',tr:o=>{o.inv.elix=Math.min(ICAP.elix,o.inv.elix+2);}},
+ med:{n:'Lágrima de Isaveth',i:'💧',c:'#7ad0ff',src:'Botín: Isaveth',sell:220,tn:'2 Elixires',tr:o=>{o.inv.elix=Math.min(ICAP.elix,o.inv.elix+2);}},
  perla:{n:'Perla abisal',i:'⚪',c:'#e0f0ff',src:'Rara: criaturas de la Cueva de las Mareas',sell:120,tn:'2 Pociones de maná + Antídoto',tr:o=>{o.inv.mana=Math.min(ICAP.mana,o.inv.mana+2);o.inv.anti=Math.min(ICAP.anti,o.inv.anti+1);}},
  cirl:{n:'Escama de Cirlene',i:'🐚',c:'#80e0e0',src:'Botín: Cirlene',sell:300,tn:'Amuleto de las Mareas: +20 vida y +15 energía',tr:o=>{o.xh=(o.xh|0)+20;o.xm=(o.xm|0)+15;}}};
 const RPO=Object.keys(RP57),RPB={captain:'sol',elf:'elf',witch:'morg',gorrath:'gorr',nhaz:'nhaz',medusa:'med',cirl:'cirl'};
@@ -6964,7 +6964,7 @@ ecoDraw=(function(f){return function(){f();const C=ctx;if(state!=='play'||!P)ret
  if(OZD){const x0=222,y0=50,w=452,h=136;C.fillStyle='rgba(10,12,30,.92)';C.fillRect(x0,y0,w,h);C.strokeStyle='#c9a050';C.lineWidth=2;C.strokeRect(x0+.5,y0+.5,w,h);
   P58('OZMAR',x0+12,y0+14,80);C.strokeStyle='#c9a050';C.lineWidth=1.5;C.strokeRect(x0+12.5,y0+14.5,79,79);C.font='bold 15px Georgia';C.fillStyle='#f1c40f';C.textAlign='left';C.fillText('OZMAR',x0+104,y0+26);
   C.font='14px Georgia';C.fillStyle='#f5e6c8';const L=wrap57('«'+OZL[OZD.i]+'»',w-116);L.forEach((l,i)=>C.fillText(l,x0+104,y0+48+i*18));
-  C.font='11px Georgia';C.fillStyle='#998';C.textAlign='right';C.fillText((OZD.i+1)+'/3 · toca o 👊 para seguir',x0+w-10,y0+h-10);C.textAlign='left';return;}
+  C.font='11px Georgia';C.fillStyle='#998';C.textAlign='right';C.fillText((OZD.i+1)+'/'+OZL.length+' · toca o 👊 para seguir',x0+w-10,y0+h-10);C.textAlign='left';return;}
  if(!ECOUI.open)return;const x0=150,y0=22,pw=500,ph=406,shop=ECOUI.open==='shop';
  if(shop&&ECOUI.tab!=='rp'){const by=y0+ph-74,n=rpList().reduce((s,k)=>s+o.rc[k],0);C.fillStyle='rgba(120,90,200,.25)';C.fillRect(x0+104,by,pw-120,30);C.strokeStyle='#a080ff';C.strokeRect(x0+104.5,by+.5,pw-120,30);
   C.font='bold 13px Georgia';C.fillStyle='#e0d0ff';C.textAlign='center';C.fillText('◆ PIEZAS RARAS ('+n+') · vender o cambiar  ⟳',x0+104+(pw-120)/2,by+20);C.textAlign='left';ECOUI.rows.push({x:x0+104,y:by,w:pw-120,h:30,i:'rp'});}
@@ -6978,7 +6978,7 @@ ecoDraw=(function(f){return function(){f();const C=ctx;if(state!=='play'||!P)ret
   C.fillStyle='#3a2a5a';C.fillRect(x0+104,y0+ph-74,pw-120,30);C.font='bold 13px Georgia';C.fillStyle='#e0d0ff';C.textAlign='center';C.fillText('← Volver a la tienda',x0+104+(pw-120)/2,y0+ph-54);ECOUI.rows.push({x:x0+104,y:y0+ph-74,w:pw-120,h:30,i:'rp'});
   C.fillStyle='rgba(16,10,22,1)';C.fillRect(x0+300,y0+ph-26,pw-304,20);C.textAlign='right';C.font='11px Georgia';C.fillStyle='#998';C.fillText('toca: cambiar · VENDER · ⟳ vender',x0+pw-14,y0+ph-14);C.textAlign='left';
   if(ECOUI.msgT>0){C.textAlign='center';C.font='bold 13px Georgia';C.fillStyle='#ffe08a';C.fillText(ECOUI.msg,x0+pw/2,y0+ph-36);C.textAlign='left';}}
- if(!shop){const L=rpList(),y=y0+300;C.font='bold 12px Georgia';C.fillStyle='#e0d0ff';C.textAlign='left';C.fillText('◆ Piezas raras'+(L.length?'':' — ninguna aún'),x0+18,y);
+ if(!shop){const L=rpList(),y=y0+300;C.font='bold 12px Georgia';C.fillStyle='#e0d0ff';C.textAlign='left';C.fillText('◆ Piezas raras'+(L.length?'':' — ninguna aún'),x0+18,y);if(typeof gem71txt==='function'){const g71=gem71txt();if(g71){C.save();C.textAlign='right';C.fillStyle='#9fe8ff';C.fillText(g71,x0+pw-18,y);C.restore();}}
   L.forEach((k,i)=>{const R=RP57[k],cx=x0+18+(i%3)*156,cy=y+8+((i/3)|0)*22;C.font='14px serif';C.fillStyle=R.c;C.fillText(R.i,cx,cy+14);C.font='11px Georgia';C.fillStyle='#ddd';C.fillText(R.n+(o.rc[k]>1?' x'+o.rc[k]:''),cx+20,cy+13);});}
  if(ECOUI.err>0&&shop){const a=Math.min(1,ECOUI.err/20),bw=380,bx=W/2-bw/2,by=190;C.globalAlpha=a;C.fillStyle='rgba(90,10,14,.96)';C.fillRect(bx,by,bw,64);C.strokeStyle='#ff6a6a';C.lineWidth=2;C.strokeRect(bx+.5,by+.5,bw,64);
   C.textAlign='center';C.font='bold 17px Georgia';C.fillStyle='#fff';C.fillText('No tienes suficientes almas de plata',W/2,by+27);C.font='13px Georgia';C.fillStyle='#ffd0d0';C.fillText('Tienes ◈ '+o.ag+' · necesitas ◈ '+ECOUI.need,W/2,by+49);C.textAlign='left';C.globalAlpha=1;}};})(ecoDraw);
@@ -7001,7 +7001,7 @@ function TB58(wn,txt,a){const w=444,h=82,x=226,y=58,cl=CL58[wn]||CL58.SERAPHYNE;
  let tx=x+14;if(P58(wn,x+8,y+8,66)){ctx.strokeStyle=cl[1];ctx.lineWidth=1.5;ctx.strokeRect(x+8.5,y+8.5,65,65);tx=x+86;}
  ctx.textAlign='left';ctx.font='bold 12px Georgia';ctx.fillStyle=cl[0];ctx.fillText(wn,tx,y+22);ctx.font='italic 14px Georgia';ctx.fillStyle='#f2ecff';
  const L=wrap57('«'+txt+'»',x+w-12-tx);L.slice(0,3).forEach((l,i)=>ctx.fillText(l,tx,y+44+i*18));ctx.restore();}
-const BN58={medusa:'MEDUSA',witch:'MORGRAVE',cirl:'CIRLENE'};
+const BN58={medusa:'ISAVETH',witch:'MORGRAVE',cirl:'CIRLENE'};
 // ---------- render: burbujas -> caja superior; FX de hechizos ----------
 const _render58=render;render=function(){const st=[];let sb=null;
  if(typeof enemies!=='undefined')for(const e of enemies)if(BN58[e.type]&&e.bub){st.push([e,e.bub]);e.bub=null;}
@@ -7860,7 +7860,95 @@ function stat70Block(e){// estatua más cercana entre Medusa y la jugadora en la
 ctx.globalAlpha=(.16+.22*q.p)*(.55+.45*pu);ctx.fillStyle=C[3];ctx.fillRect(x0,q.ya,x1-x0,q.yb-q.ya);
 ctx.globalAlpha=.55+.4*pu;ctx.strokeStyle=C[4];ctx.lineWidth=3;ctx.strokeRect(x0+1.5,q.ya+1.5,x1-x0-3,q.yb-q.ya-3);
 ctx.globalAlpha=.7+.3*pu;ctx.fillStyle=C[4];ctx.fillRect(x0,q.yb-5,x1-x0,5);ctx.restore();}}catch(err){}_fd();};}
-{const _ai=aiUpdate;aiUpdate=function(e){_ai(e);if(e.type==='medusa'&&!e.dead&&e.t>60&&toastT>0&&/Medusa/.test(toastTxt||'')){toastT=Math.min(toastT,(e.st==='vipW'||e.st==='vip')?1:24);}};}
+{const _ai=aiUpdate;aiUpdate=function(e){_ai(e);if(e.type==='medusa'&&!e.dead&&e.t>60&&toastT>0&&/Isaveth/.test(toastTxt||'')){toastT=Math.min(toastT,(e.st==='vipW'||e.st==='vip')?1:24);}};}
+
+</script>
+<script>
+// ===== v71 TEST: Lore hasta Isaveth (antes Medusa) + 2 Gemas del Velo + latido =====
+const V71={cq:[],hb:0,vg:0,still:0,talk:0};
+function cap71(wn,txt,t){V71.cq.push({wn,txt,t:t||170,T:t||170});}
+function lr71(){SAVE.lr71=SAVE.lr71||{};return SAVE.lr71;}
+function gv71(){SAVE.gv71=SAVE.gv71||{};return SAVE.gv71;}
+function gem71n(){const g=SAVE.gv71||{};return (g.a?1:0)+(g.b?1:0);}
+function gem71txt(){const n=gem71n();return n?'◈ Gema del Velo ('+n+'/5)':'';}
+// --- retratos/nombres ---
+PC58.ISAVETH=PC58.ISAVETH||PC58.MEDUSA;CL58.ISAVETH=CL58.ISAVETH||CL58.MEDUSA;
+try{OZL.splice(2,0,'Dicen que en este templo el sol sale dos veces. Una afuera… y otra abajo.');}catch(_){}
+try{M25L.splice(3,0,['ELFA','#9fe0a8','El Velo no es niebla. Es una herida.']);}catch(_){}
+try{MEDQ.push('«No mires lo que amas. Se queda.»');}catch(_){}
+// --- descripciones de piezas raras ---
+const RPD71={drak:'Ozmar la perdió aquí. O la dejó para que alguien la encontrara.',sol:'Hierro de Isolde. Juró morir en esta frontera. Cumplió.',elf:'Mármol del Alba. Tibio todavía, como piel.',morg:'Aún parpadea cuando mientes.',gorr:'Mordía para alimentar. Nunca para comer.',runa:'Una palabra de Rolgin, mal copiada. Bastó una letra.',nhaz:'Le falta un pedazo. El pedazo también lo busca.',med:'Lloró hacia adentro. La piedra no deja salir nada.'};
+for(const k in RPD71)if(RP57[k])RP57[k].d=RPD71[k];
+{const _g=rpGive;rpGive=function(k,x,y){const had=E57().rp[k];_g(k,x,y);if(!had&&E57().rp[k]&&RPD71[k])V71.cq.push({wn:RP57[k].n.toUpperCase(),txt:RPD71[k],t:200,T:200,hold:1});};}
+// --- objetos de mundo: estelas/murales (leer quieta) y recuerdos (tocar) ---
+const OBJ71=[
+ {z:0,x:1500,k:'stele',id:'st0',cards:['ESTELA DEL ALBA\n\n"Aquí el alba toca primero la tierra.\nPor eso la quisieron todos."']},
+ {z:1,x:2200,k:'mural',id:'mu1',cards:['MURAL ÉLFICO, CUBIERTO DE RAÍCES\n\n"La Raíz recuerda a los elfos.\nPor eso los ahoga."']},
+ {z:2,x:6640,k:'relic',id:'llave',n:'LLAVE DEL ARCHIVISTA',d:'Belorn cerró por dentro.'},
+ {z:3,x:5200,k:'relic',id:'pag',n:'PÁGINA ROJA',d:'Tinta de sangre de dragón. La letra es de un hombre con prisa por no morir.'},
+ {z:4,x:8250,k:'statue',id:'anillo',n:'ANILLO DE PIEDRA',d:'Dos nombres grabados. Uno ya ilegible.'}];
+// grilletes del Osario (viejos de Vexarion), junto a las cadenas de Kael
+OBJ71.push({z:3,x:8860,k:'shackle',id:'gri',cards:['GRILLETES EN LA ROCA\n\n"Hierro de Vexarion, más viejo que el rey.\nAquí encadenaron algo que no debía tener nombre."']});
+const GEM71=[{z:2,id:'a',x:2425,y:150,wall:[2392,2458,40,150]},{z:4,id:'b',x:2345,y:82}];
+function gemCards71(id){const n=gem71n(),h='◈ GEMA DEL VELO ('+n+'/5)\n\n';
+ return id==='a'?[h+'"Late, aunque no tiene corazón.\nAlguien la escondió detrás de un muro\nque solo existe para quien no lo toca."','"Cinco abren la Puerta Prohibida.\nNadie recuerda quién la cerró... ni desde qué lado."']
+ :[h+'"Fría como un ojo que no parpadea.\nAdentro, la niebla se mueve sola."','"Bajo las Mazmorras hay una puerta sin cerradura.\nSolo cinco luces del Velo la convencen."'];}
+function upd71(){if(state!=='play'||!P||trans||paused)return;
+ const sp=Math.abs(P.vx)<.4&&!P.air;
+ for(const o of OBJ71){if(o.z!==stage)continue;const L=lr71(),near=Math.abs(P.x-o.x)<46;
+  if(o.cards){if(near&&sp&&!L[o.id]){if(++V71.still>40){L[o.id]=1;saveG();V71.still=0;S('note');showCards(o.cards.slice(),()=>{state='play';});return;}}else if(near&&!sp)V71.still=0;}
+  else if(!L[o.id]&&Math.abs(P.x-o.x)<30&&P.y>FLOOR-40){L[o.id]=1;saveG();S('pickup');addText(o.x,FLOOR-110,'✦ '+o.n,'#e8d8ff');cap71(o.n,o.d,220);}}
+ for(const g of GEM71){if(g.z!==stage||gv71()[g.id])continue;
+  if(Math.abs(P.x-g.x)<30&&P.y>=g.y-10&&P.y-P.h<=g.y-40){gv71()[g.id]=1;saveG();S('pickup');S('note');flash=Math.max(flash,10);burst(g.x,g.y-16,30,'#9fe8ff',5);toastTxt='◈ Gema del Velo ('+gem71n()+'/5)';toastT=200;showCards(gemCards71(g.id),()=>{state='play';});return;}}
+ // voces y muertes de jefes
+ const NM={captain:'CAPITÁN CAÍDO',elf:'SYLVARAETH',witch:'MORGRAVE',gorrath:'GORRATH',nhaz:'NHAZRAKH',medusa:'ISAVETH'};
+ const IN={captain:'Una vexariana en suelo de Isolde. Date la vuelta.',elf:'Otra hija del sol que viene a robar luz.',gorrath:'¿Vienes por mis hijos? Todos vienen por mis hijos.',nhaz:'…Otra mano… que viene a abrirme…'};
+ const DE={elf:'La Raíz… también me olvidó.',witch:'Rompiste mi hechizo… pero el tuyo sigue incompleto, niña.',gorrath:'…ninguno… me llamó madre.'};
+ for(const e of enemies){if(!NM[e.type])continue;
+  if(!e.dead&&!e.i71&&IN[e.type]&&gateOn&&Math.abs(P.x-e.x)<650){e.i71=1;cap71(NM[e.type],IN[e.type],190);}
+  if(e.dead&&!e.d71){e.d71=1;if(e.type==='medusa'){if(!enemies.some(x=>x.type==='medusa'&&!x.dead)){cap71('ISAVETH','¡¡¡NOOO!!! ¡Yo estoy maldita... te arrepentirás!',180);}}
+   else if(DE[e.type])cap71(NM[e.type],DE[e.type],190);}}
+ // latido doble/triple (sutil)
+ if(stage>=2&&stage<=4){const isa=stage===4&&enemies.some(e=>e.type==='medusa'&&!e.dead&&Math.abs(P.x-e.x)<1400);
+  if(++V71.hb>=(isa?150:380)){V71.hb=0;const k=isa?3:2;for(let i=0;i<k;i++)setTimeout(()=>{S('hb71');V71.vg=14;},i*230);}}
+ if(V71.vg>0)V71.vg--;}
+// SFX latido
+SFX.hb71=t=>{osc(t,58,.22,'sine',.35,0,{f2:36});nz(t,.08,.05,'lowpass',180);};
+// --- Isaveth: diálogo canon al iniciar la arena ---
+{const _ai=aiUpdate;aiUpdate=function(e){
+ if(e.type==='medusa'&&!e.dead&&e.form===1&&!V71.talk&&gateOn&&Math.abs(P.x-e.x)<560){V71.talk=1;e.tk71=330;
+  cap71('ISAVETH','Detente. No avances más. El conocimiento de Rolgin está maldito... y yo soy la prueba viviente.',110);
+  cap71('SERAPHYNE','Apártate. No interfieras, o tendré que liquidarte.',80);cap71('ISAVETH','No, por favor... solo vete.',70);cap71('SERAPHYNE','Ya tomaste tu decisión.',70);}
+ if(e.tk71>0){e.tk71--;if(e.hp<e.maxHp){e.tk71=0;V71.cq=V71.cq.filter(c=>c.wn!=='ISAVETH'&&c.wn!=='SERAPHYNE');}else{e.vx=0;e.bub=null;e.cd=Math.max(e.cd|0,30);e.t=(e.t|0)+1;if(e.tk71===0)S('hiss');return;}}
+ _ai(e);};}
+// tras su caída: Seraphyne
+{const _sc=showCards;showCards=function(a,then){if(Array.isArray(a)&&a.some(s=>typeof s==='string'&&s.indexOf('ISAVETH ha caído')===0)){V71.cq.length=0;}return _sc(a,then);};}
+// --- update / dibujo ---
+{const _u=update;update=function(){_u();try{upd71();}catch(err){}if(V71.cq.length){const c=V71.cq[0];if(state==='play'&&!(c.hold&&banner&&banner.t>0)&&--c.t<=0)V71.cq.shift();}};}
+{const _d=drawZoneObjs;drawZoneObjs=function(){_d();try{draw71();}catch(err){}};}
+function draw71(){const f=frame;
+ for(const o of OBJ71){if(o.z!==stage)continue;const x=o.x,L=lr71();if(x-cam<-120||x-cam>W+120)continue;ctx.save();
+  if(o.k==='stele'||o.k==='mural'){ctx.fillStyle=o.k==='stele'?'#6d6656':'#3d4a36';ctx.fillRect(x-22,FLOOR-96,44,96);ctx.fillStyle=o.k==='stele'?'#8a8270':'#56664a';ctx.fillRect(x-26,FLOOR-102,52,8);
+   ctx.strokeStyle=o.k==='stele'?'rgba(255,220,140,.55)':'rgba(160,230,160,.45)';ctx.lineWidth=1.5;for(let i=0;i<5;i++){ctx.beginPath();ctx.moveTo(x-14,FLOOR-82+i*14);ctx.lineTo(x+14-(i%2)*8,FLOOR-82+i*14);ctx.stroke();}
+   if(o.k==='stele'){ctx.fillStyle='rgba(255,210,120,'+(.5+.3*Math.sin(f*.05))+')';ctx.beginPath();ctx.arc(x,FLOOR-88,5,Math.PI,0);ctx.fill();}
+   if(!L[o.id]&&Math.abs(P.x-o.x)<120){ctx.font='11px Georgia';ctx.textAlign='center';ctx.fillStyle='rgba(240,230,255,.85)';ctx.fillText('quédate quieta para leer',x,FLOOR-112);}}
+  else if(o.k==='shackle'){ctx.strokeStyle='#5a5048';ctx.lineWidth=4;for(const dx of [-16,16]){ctx.beginPath();ctx.moveTo(x+dx,FLOOR-140);ctx.lineTo(x+dx,FLOOR-70);ctx.stroke();ctx.beginPath();ctx.arc(x+dx,FLOOR-62,9,0,6.3);ctx.stroke();}
+   if(!L[o.id]&&Math.abs(P.x-o.x)<120){ctx.font='11px Georgia';ctx.textAlign='center';ctx.fillStyle='rgba(240,230,255,.85)';ctx.fillText('quédate quieta para leer',x,FLOOR-150);}}
+  else if(o.k==='statue'){ctx.fillStyle='#7d857c';ctx.beginPath();ctx.ellipse(x,FLOOR-8,48,10,0,0,6.3);ctx.fill();ctx.fillRect(x-14,FLOOR-130,28,122);ctx.beginPath();ctx.arc(x,FLOOR-142,15,0,6.3);ctx.fill();
+   ctx.fillRect(x+10,FLOOR-118,34,9);ctx.fillStyle='#5b625a';ctx.fillRect(x-14,FLOOR-60,28,4);
+   if(!L[o.id]){ctx.globalAlpha=.6+.4*Math.sin(f*.12);ctx.strokeStyle='#d8f0ff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x+30,FLOOR-14,5,0,6.3);ctx.stroke();}}
+  else if(o.k==='relic'&&!L[o.id]){ctx.globalAlpha=.65+.35*Math.sin(f*.1);ctx.fillStyle='#f0d8ff';ctx.fillRect(x-7,FLOOR-14,14,10);ctx.fillStyle='rgba(220,180,255,.35)';ctx.beginPath();ctx.arc(x,FLOOR-10,14,0,6.3);ctx.fill();}
+  ctx.restore();}
+ for(const g of GEM71){if(g.z!==stage)continue;const x=g.x;if(x-cam<-120||x-cam>W+120)continue;ctx.save();
+  if(!gv71()[g.id]){const b=1+.15*Math.sin(f*.15)*Math.sin(f*.15);ctx.globalAlpha=.9;ctx.fillStyle='rgba(120,220,255,.25)';ctx.beginPath();ctx.arc(x,g.y-16,18*b,0,6.3);ctx.fill();
+   ctx.fillStyle='#9fe8ff';ctx.beginPath();ctx.moveTo(x,g.y-30);ctx.lineTo(x+9,g.y-16);ctx.lineTo(x,g.y-2);ctx.lineTo(x-9,g.y-16);ctx.closePath();ctx.fill();ctx.fillStyle='#fff';ctx.fillRect(x-2,g.y-20,3,3);
+   if(f%9===0)fxP&&fxP(g.x+frnd(-10,10),g.y-16,0,-.6,40,'#bff4ff',2,0,0);}
+  if(g.wall){const [a,b,y0,y1]=g.wall,d=Math.abs(P.x-(a+b)/2),al=Math.max(0,Math.min(1,(d-40)/90))*(P.y<y1+60?1:1);
+   if(al>0){ctx.globalAlpha=al;ctx.fillStyle='#3b3540';ctx.fillRect(a,y0,b-a,y1-y0);ctx.strokeStyle='#2a2530';ctx.lineWidth=2;for(let yy=y0;yy<y1;yy+=18){ctx.beginPath();ctx.moveTo(a,yy);ctx.lineTo(b,yy);ctx.stroke();const o=((yy-y0)/18)%2?16:34;ctx.beginPath();ctx.moveTo(a+o,yy);ctx.lineTo(a+o,yy+18);ctx.stroke();}}}
+  ctx.restore();}}
+{const _r=render;render=function(){_r();try{
+ if(V71.vg>0&&(state==='play')){const a=.10*V71.vg/14,g=ctx.createRadialGradient(W/2,H/2,H*.35,W/2,H/2,W*.62);g.addColorStop(0,'rgba(60,0,10,0)');g.addColorStop(1,'rgba(90,0,20,'+a+')');ctx.save();ctx.fillStyle=g;ctx.fillRect(0,0,W,H);ctx.restore();}
+ if(state==='play'&&V71.cq.length&&!(V71.cq[0].hold&&banner&&banner.t>0)){const c=V71.cq[0],a=Math.min(1,c.t/15,(c.T-c.t+1)/8);TB58(c.wn,c.txt,a);}}catch(err){}};}
 
 </script>
 </body>
