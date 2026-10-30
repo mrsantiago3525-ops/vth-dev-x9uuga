@@ -7777,5 +7777,91 @@ setTimeout(()=>{for(const q of [0,.25,.5,.75,1,1.25,1.5,1.75,2]){fxArcBake(165,9
 ;(function(){if(typeof S!=='function')return;const _S=S;S=function(n){const r=Math.random;Math.random=()=>frnd(0,1);try{return _S(n);}finally{Math.random=r;}};})();
 
 </script>
+<script>
+// ===== v70 TEST: arreglos rápidos (altares, Capitán: combo + fase, Medusa forma 1 + transformación + estatuas rompibles) =====
+// --- 1) Altares: ≤~2500 px entre altares en zonas 0-4 y uno justo antes de cada arena. Se AÑADEN al final (índices de guardado intactos). ---
+(function(){const ADD={0:[3200],1:[3420,4300,5800],3:[1700,4750],4:[1800]};
+ for(const z in ADD)for(const x of ADD[z]){ALTD[z].push(x);ALTK[z]+='b';}
+ // las brasas "solo fácil" de Z2 (6750) y Z3 (7600) pasan a todas las dificultades (cierra huecos de 2740/2750 px)
+ ALTK[2]=ALTK[2].replace('e','b');ALTK[3]=ALTK[3].replace('e','b');})();
+// --- utilidades ---
+const V70={};
+function hitFront70(e,reach,back,hy){const dx=P.x-e.x;return (dx*e.f>-(back||30))&&Math.abs(dx)<reach&&Math.abs(P.y-e.y)<(hy||90);}
+// --- 2) Capitán: fase a 50% (60% con tienda) + combo «Tajo de la Guardia Negra» ---
+function cap70Phase(e){if(e.phase>1||e.dead)return;const th=SHOP66()?.6:.5;if(e.hp>=e.maxHp*th)return;
+ e.phase=2;e.inv=70;shake=Math.max(shake,22);flash=Math.max(flash,12);hitstop=Math.max(hitstop,8);S('growl');S('slam');
+ banner={text:'CAPITÁN CAÍDO: "¡Por Valethorn... no caeré ante ti!"',t:120};addText(e.x,e.y-e.h-34,'¡FURIA DEL JURAMENTO!','#ff5030');
+ for(let i=0;i<40;i++){const a=frnd(0,6.28),v=frnd(2,8);fxP(e.x,e.y-90,Math.cos(a)*v,Math.sin(a)*v-2,frnd(20,40),VTH.fire.c[2+(i%3)],i%3?3:5,.1,1);}
+ fxS({k:'ring',x:e.x,y:FLOOR-2,R:160,sq:.2,th:'fire',T:24,l:24,bold:1});fxS({k:'ring',x:e.x,y:e.y-90,R:110,sq:1,th:'fire',T:20,l:20,bold:1});fxCrack(e.x-140,e.x+140,'fire',2);}
+function cap70(e){const dx=P.x-e.x,ad=Math.abs(dx),dir=Math.sign(dx)||1,ph2=e.phase>1,ps=e.st;e.t++;e.stT--;
+ const fx=()=>{try{FXB.captain&&FXB.captain(e,ps);}catch(_){}};
+ const C=e.c70;
+ if(e.st==='sweepW'){e.vx=0;const T=C===1?(ph2?30:40):(ph2?14:18);
+  fxTelQ(e,'box',{xa:e.x-e.f*20,xb:e.x+e.f*175,ya:FLOOR-150,yb:FLOOR,th:'fire',s70:1,p:1-Math.max(0,e.stT)/T});
+  if(e.t%3===0)fxSparks(e.x+e.f*40,e.y-120,2,'fire',2);
+  if(e.stT<=0){e.st='sweep';e.stT=14;e.hit=0;e.vx=e.f*(ph2?5:4);S('swing');shake=Math.max(shake,6);}}
+ else if(e.st==='sweep'){e.vx*=.82;if(!e.hit&&hitFront70(e,175)){e.hit=1;hurtPlayer(Math.round(e.dmg*(C===1?.8:.9)),e.f);}
+  if(e.stT<=0){if(C===1){e.c70=2;e.st='sweepW';e.stT=ph2?14:18;e.f=dir;}else{e.c70=3;e.st='slamW';e.stT=ph2?24:30;e.f=dir;S('growl');}}}
+ else if(e.st==='slamW'){e.vx=0;fxTelQ(e,'low',{R:150,h:70,th:'fire',p:1-Math.max(0,e.stT)/(ph2?24:30)});if(e.t%2===0)fxSparks(e.x,e.y-150,2,'fire',3);
+  if(e.stT<=0){e.st='slam';e.stT=26;shake=Math.max(shake,18);S('slam');const sp=ph2?1.35:1;[-1,1].forEach(s=>eProj({x:e.x+s*30,y:FLOOR-14,vx:s*5*sp,vy:0,dmg:14,k:'wave',r:16,life:120}));if(ad<110)hurtPlayer(e.dmg+4,dir);}}
+ else if(e.st==='slam'){e.vx=0;if(e.stT<=0){e.st='rec70';e.stT=ph2?40:52;}}
+ else if(e.st==='rec70'){e.vx=0;if(e.t%8===0)fxP(e.x+frnd(-20,20),e.y-130,0,-1,20,'#c0c0c0',3,0,0);if(e.stT<=0){e.st='walk';e.c70=0;e.cd=rnd(60,90)/(ph2?1.35:1);}}
+ fx();}
+// --- 3) Medusa forma 1: «Nido de Víboras» (víboras brotan del suelo en línea hacia la jugadora) ---
+function med70Vip(e){const dx=P.x-e.x,ad=Math.abs(dx);e.t++;e.stT--;e.vx=0;const th='jade';
+ if(e.st==='vipW'){const p=1-Math.max(0,e.stT)/48;for(const x of e.vx70)fxTelQ(e,'box',{xa:x-38,xb:x+38,ya:FLOOR-96,yb:FLOOR,th,p,s70:1});
+  if(e.t%4===0)fxSparks(e.x+e.f*20,e.y-150,2,th,2);if(e.t%3===0)for(const x of e.vx70){fxSparks(x+(frnd()-.5)*60,FLOOR-4,2,th,3);}
+  if(e.stT===47){S('hiss');}if(e.stT<=0){e.st='vip';e.stT=48;e.k70=0;}}
+ else if(e.st==='vip'){const k=48-e.stT;e.vx70.forEach((x,i)=>{const t0=i*10;if(k===t0){S('drip');S('hiss');shake=Math.max(shake,5);fxS({k:'erupt',x,d:1,x0:-24,x1:24,n:5,h:150,seed:(x|0)%97,th,T:20,l:20});fxDebris(x,FLOOR,6,th,4);fxDust(x,3,'earth',20);}
+   if(k>=t0&&k<t0+12&&!(e.h70&(1<<i))&&Math.abs(P.x-x)<40&&P.y>FLOOR-95){e.h70|=1<<i;hurtPlayer(Math.round(e.dmg*.9),Math.sign(P.x-x)||1);P.poison=Math.max(P.poison||0,90);}});
+  if(e.stT<=0){e.st='walk';e.cd=rnd(80,120);}}}
+// --- estatuas rompibles en la arena de Medusa (se reconstruyen al reentrar/reintentar: setupTun las crea de nuevo) ---
+{const _st=setupTun;setupTun=function(){_st();if(!TZ||!TZ.cv)return;TZ.cv.push({x:8880,k:'tall'});TZ.cv.sort((a,b)=>a.x-b.x);
+ for(const c of TZ.cv)if(c.x>G1-40||c.x>8600){c.br70=1;c.hp70=c.hp0=c.k==='tall'?2:1;}};}
+function stat70Hit(c,n,src){if(!c||!c.br70||c.hp70<=0)return;c.hp70-=n;c.fl70=10;S('crumble');shake=Math.max(shake,6);
+ fxDebris(c.x,FLOOR-80,10,'jade',5);fxDust(c.x,6,'earth',30);for(let i=0;i<8;i++)fxP(c.x+frnd(-20,20),FLOOR-frnd(30,150),frnd(-3,3),-frnd(1,5),frnd(28,42),i%2?'#8a9a92':'#5a6a62',i%3?4:7,.35,0);
+ if(c.hp70<=0){const i=TZ.cv.indexOf(c);if(i>=0)TZ.cv.splice(i,1);S('collapse');shake=Math.max(shake,12);fxCrack(c.x-40,c.x+40,'jade',1);addText(c.x,FLOOR-190,'¡LA ESTATUA SE ROMPE!','#bfe8d0');
+  for(let i=0;i<22;i++)fxP(c.x+frnd(-30,30),FLOOR-frnd(10,180),frnd(-5,5),-frnd(2,7),frnd(30,50),i%2?'#8a9a92':'#4a5a52',i%3?5:9,.4,0);}}
+function stat70Block(e){// estatua más cercana entre Medusa y la jugadora en la línea de mirada
+ let best=null,bd=1e9;for(const c of TZ.cv){if(!c.br70)continue;const d=(c.x-e.x)*e.f,dp=(P.x-e.x)*e.f;if(c.k==='tall'&&d>40&&d<520&&d<dp+20&&d<bd){bd=d;best=c;}
+  if(c.k==='low'&&d>0&&dp>d&&Math.abs(P.x-c.x)<100&&(P.crouch||P.slideT>0)&&d<bd){bd=d;best=c;}}return best;}
+{const _dc=drawCoverStatue;drawCoverStatue=function(c){_dc(c);if(!c.br70||c.hp70>=c.hp0)return;const x=c.x,h=c.k==='tall'?190:90;ctx.save();ctx.strokeStyle='rgba(20,30,26,.9)';ctx.lineWidth=2;ctx.beginPath();
+  let px=x-6,py=FLOOR-h;ctx.moveTo(px,py);for(let i=0;i<7;i++){px=x+((i*37+(x|0))%22)-11;py+=h/8;ctx.lineTo(px,py);}ctx.stroke();ctx.strokeStyle='rgba(125,255,154,.55)';ctx.lineWidth=1;ctx.stroke();
+  if(c.fl70>0){c.fl70--;ctx.globalAlpha=c.fl70/10*.5;ctx.fillStyle='#e8fff0';ctx.fillRect(x-26,FLOOR-h,52,h);}ctx.restore();};}
+// --- transformación más dramática (fase de piedra + despertar) ---
+{const _mr=medRise;medRise=function(e){_mr(e);shake=Math.max(shake,30);flash=Math.max(flash,22);hitstop=Math.max(hitstop,14);S('growl');S('collapse');
+ const C=VTH.jade.c;for(let i=0;i<80;i++){const a=frnd(0,6.28),v=frnd(2,10);fxP(e.x,e.y-110,Math.cos(a)*v,Math.sin(a)*v-2,frnd(24,50),C[2+(i%3)],i%4?3:6,.12,1);}
+ fxS({k:'ring',x:e.x,y:e.y-110,R:150,sq:1,th:'jade',T:28,l:28,bold:1});fxS({k:'ring',x:e.x,y:e.y-110,R:90,sq:1,th:'jade',T:22,l:22,bold:1});fxS({k:'ring',x:e.x,y:FLOOR-2,R:240,sq:.18,th:'jade',T:30,l:30,bold:1});
+ fxCrack(e.x-220,e.x+220,'jade',2);fxDebris(e.x-60,FLOOR,12,'jade',6);fxDebris(e.x+60,FLOOR,12,'jade',6);fxDust(e.x,14,'earth',200);
+ addText(e.x,e.y-240,'¡GRRRAAAHHH!','#7dff9a');};}
+// --- envoltura de IA ---
+{const _a=aiUpdate;aiUpdate=function(e){
+ if(e.type==='captain'&&!e.dead){cap70Phase(e);
+  if(e.c70){cap70(e);return;}
+  if(e.st==='walk'&&e.cd<=0&&Math.abs(P.x-e.x)<300){const r=Math.random();if(r<(e.phase>1?.45:.3)){e.c70=1;e.f=Math.sign(P.x-e.x)||1;e.st='sweepW';e.stT=e.phase>1?30:40;e.vx=0;S('growl');cap70(e);return;}}
+  if(e.phase>1&&frame%3===0)fxP(e.x+frnd(-24,24),e.y-frnd(40,160),frnd(-.4,.4),-frnd(.6,1.8),frnd(16,28),VTH.fire.c[3+(frame&1)],3,0,1);}
+ if(e.type==='medusa'&&!e.dead){
+  if(e.form<2&&(e.st==='vipW'||e.st==='vip')){med70Vip(e);return;}
+  if(e.form<2&&e.st!=='fall'&&e.st!=='bolt'&&e.cd<=0&&e.t>90){const ad=Math.abs(P.x-e.x);if(ad>140&&ad<620&&Math.random()<.035){e.f=Math.sign(P.x-e.x)||1;e.st='vipW';e.stT=48;e.h70=0;
+    const L=[];for(let k=0;k<3;k++)L.push(e.x+e.f*(150+125*k));const px=clamp(P.x,camMin+60,WORLD-60);if(Math.abs(px-L[2])>60&&(px-e.x)*e.f>L[2]*e.f-e.x*e.f)L.push(px);e.vx70=L;med70Vip(e);return;}}
+  if(e.form>=1.5&&e.form<2&&e.st==='fall'){const k=210-e.stT;if(k>60&&k<175&&k%5===0){const C=VTH.jade.c;fxP(e.x+frnd(-40,40),e.y-frnd(30,190),frnd(-2,2),-frnd(1,4),frnd(20,34),C[3],3,.1,1);}if(k===150){fxS({k:'ring',x:e.x,y:e.y-110,R:70,sq:1,th:'jade',T:18,l:18});}}
+  // estatuas rompibles: mirada y ataques
+  const ps=e.st;_a(e);
+  if(TZ&&TZ.cv&&e.form>=2){
+   if(ps==='gazeW'&&e.st==='gaze'){const c=stat70Block(e);if(c){stat70Hit(c,1,'gaze');}}
+   if(ps!=='tail'&&e.st==='tail'){for(const c of TZ.cv.slice())if(c.br70&&Math.abs(c.x-e.x)<185)stat70Hit(c,1,'tail');}
+   if(e.st==='lunge'){for(const c of TZ.cv.slice())if(c.br70&&!c.ln70&&Math.abs(c.x-e.x)<70){c.ln70=1;stat70Hit(c,1,'lunge');}}
+   if(e.st!=='lunge')for(const c of TZ.cv)c.ln70=0;}
+  return;}
+ _a(e);};}
+
+// v70b: telegrafos fuertes + banner fuera durante Medusa
+{const _fd=fxDraw;fxDraw=function(){try{for(const q of fxTQ){if(!q.s70||q.k!=='box'||q.e.dead)continue;const C=VTH[q.th].c,x0=Math.min(q.xa,q.xb)-cam,x1=Math.max(q.xa,q.xb)-cam,pu=.5+.5*Math.sin(frame*.45);ctx.save();
+ctx.globalAlpha=(.16+.22*q.p)*(.55+.45*pu);ctx.fillStyle=C[3];ctx.fillRect(x0,q.ya,x1-x0,q.yb-q.ya);
+ctx.globalAlpha=.55+.4*pu;ctx.strokeStyle=C[4];ctx.lineWidth=3;ctx.strokeRect(x0+1.5,q.ya+1.5,x1-x0-3,q.yb-q.ya-3);
+ctx.globalAlpha=.7+.3*pu;ctx.fillStyle=C[4];ctx.fillRect(x0,q.yb-5,x1-x0,5);ctx.restore();}}catch(err){}_fd();};}
+{const _ai=aiUpdate;aiUpdate=function(e){_ai(e);if(e.type==='medusa'&&!e.dead&&e.t>60&&toastT>0&&/Medusa/.test(toastTxt||'')){toastT=Math.min(toastT,(e.st==='vipW'||e.st==='vip')?1:24);}};}
+
+</script>
 </body>
 </html>
