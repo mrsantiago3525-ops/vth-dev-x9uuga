@@ -8187,5 +8187,117 @@ addEventListener('keydown',e=>{if(!ECOUI.open||ECOUI.tab&&ECOUI.tab!=='tk'&&ECOU
 {const _m=window.mer72D;window.mer72D=function(md){const r=_m?_m(md):md();try{pgDraw73();}catch(_){}return r;};}
 
 </script>
+<script>
+// ===== v74: Llama de Marea · fuego azul espectacular en la espada de Seraphyne =====
+// Detecta el filo en cada frame del sprite (una vez, en caché), y dibuja lenguas de fuego pixel-art,
+// brasas con pool fijo, resplandor aditivo, estela de fuego en el tajo, estallido al golpear y llama ligera al dash.
+const FL74={bl:new WeakMap(),em:[],emN:150,bn:[],er:{t:99},fl:0,flT:120,tr:[],trN:14,hb:[],hbN:6,lastAtk:-1,crk:0,dashE:0,glow:null,on:1};
+for(let i=0;i<FL74.emN;i++)FL74.em.push({l:0});
+for(let i=0;i<FL74.hbN;i++)FL74.hb.push({t:99});
+FL74.pal=['#0a2a8a','#1a5cff','#3aa8ff','#7ae0ff','#c8f6ff','#ffffff'];
+(function(){const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d'),r=g.createRadialGradient(32,32,0,32,32,32);
+ r.addColorStop(0,'rgba(150,230,255,.9)');r.addColorStop(.35,'rgba(60,150,255,.45)');r.addColorStop(1,'rgba(20,60,255,0)');g.fillStyle=r;g.fillRect(0,0,64,64);FL74.glow=c;})();
+// filo: píxeles de acero (claros, poco saturados) o azules (variantes 'b'); se guardan ~22 puntos ordenados de empuñadura a punta
+function fl74Blade(a,i){let m=FL74.bl.get(a.img);if(!m){m=[];FL74.bl.set(a.img,m);}if(m[i]!==undefined)return m[i];
+ let pts=null;try{const c=document.createElement('canvas');c.width=a.w;c.height=a.h;const g=c.getContext('2d');g.drawImage(a.img,i*a.w,0,a.w,a.h,0,0,a.w,a.h);
+  const d=g.getImageData(0,0,a.w,a.h).data,W=a.w,H=a.h,cx=a.ax,cy=a.h*.5,mk=new Uint8Array(W*H);
+  for(let q=0;q<W*H;q++){const k=q*4;if(d[k+3]<200)continue;const r=d[k],gg=d[k+1],b=d[k+2],mx=Math.max(r,gg,b),mn=Math.min(r,gg,b);if((mn>=100&&mx-mn<=36)||(b>170&&b>r+45&&gg>r))mk[q]=1;}
+  // componente conectada más grande (8 vecinos, salto de 1 px) = el filo
+  const lab=new Int32Array(W*H),st=[];let best=null;
+  for(let q=0;q<W*H;q++){if(!mk[q]||lab[q])continue;const cur=[];lab[q]=1;st.push(q);while(st.length){const v=st.pop();cur.push(v);const vx=v%W,vy=(v/W)|0;
+    for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++){const nx=vx+dx,ny=vy+dy;if(nx<0||ny<0||nx>=W||ny>=H)continue;const u=ny*W+nx;if(mk[u]&&!lab[u]){lab[u]=1;st.push(u);}}}
+   if(cur.length>=10){let mx=0,my=0;for(const v of cur){mx+=v%W;my+=(v/W)|0;}mx/=cur.length;my/=cur.length;let sxx=0,syy=0,sxy=0;for(const v of cur){const dx=v%W-mx,dy=((v/W)|0)-my;sxx+=dx*dx;syy+=dy*dy;sxy+=dx*dy;}
+    const tr=sxx+syy,dt=Math.sqrt(Math.max(0,(sxx-syy)*(sxx-syy)/4+sxy*sxy)),l1=tr/2+dt,l2=Math.max(1e-3,tr/2-dt),el=Math.sqrt(l1/l2),sc=cur.length*Math.min(el,8);
+    if(el>=3.2&&(!best||sc>best.sc)){best=cur;best.sc=sc;}}}
+  if(best&&best.length>=12){const L=best.map(v=>{const x=v%W,y=(v/W)|0;return[x,y,Math.hypot(x-cx,y-cy)];});L.sort((p,q)=>p[2]-q[2]);
+   const far=L.slice(Math.floor(L.length*.18)),n=Math.min(22,far.length),sp=far.length/n;pts=[];for(let j=0;j<n;j++){const p=far[Math.floor(j*sp)];pts.push([p[0],p[1]]);}pts.tip=L[L.length-1];}
+ }catch(e){pts=null;}m[i]=pts;return pts;}
+function fl74Frame(o){const [k,p]=heroAnim(o);let a=HS[k];if(!a)return null;let i=p<0?Math.floor(frame*a.fps/60)%a.count:Math.min(a.count-1,Math.floor(p*a.count));
+ const n=(typeof hs59==='function')?hs59(o,k,p):null;if(n&&n.a.img.complete&&n.a.img.naturalWidth){a=n.a;i=n.i;}if(!a.img.complete||!a.img.naturalWidth)return null;return{a,i,k};}
+function fl74Emit(x,y,vx,vy,l,s,c){const E=FL74.em;for(let j=0;j<E.length;j++){const e=E[j];if(e.l<=0){e.x=x;e.y=y;e.vx=vx;e.vy=vy;e.l=e.l0=l;e.s=s;e.c=c;return;}}}
+function fl74Hit(x,y,e){const fin=P.swC===2;if(typeof shake!=='undefined')shake=Math.max(shake,fin?9:5);
+ if(e){const B=FL74.bn;let o2=B.find(b=>b.e===e)||B.find(b=>!(b.t>0));if(!o2&&B.length<6){o2={};B.push(o2);}if(!o2)o2=B[0];o2.e=e;o2.t=fin?60:40;}
+ if(fin){const R2=FL74.er;R2.x=x;R2.y=y;R2.t=0;for(let j=0;j<26;j++)fl74Emit(x+frnd(-20,20),y+frnd(-10,20),frnd(-1.2,1.2),frnd(-6,-2),frnd(24,44),frnd(0,1)<.4?3:2,frnd(0,1)<.5?4:3);S('ferp74');}
+ const H=FL74.hb;let o=H[0];for(const h of H)if(h.t>o.t)o=h;o.x=x;o.y=y;o.t=0;
+ for(let j=0;j<28;j++){const an=frnd(0,6.283),v=frnd(1.5,6.5);fl74Emit(x,y,Math.cos(an)*v,Math.sin(an)*v-1.2,frnd(14,28),frnd(0,1)<.4?3:2,frnd(0,1)<.5?4:3);}S('fhit74');}
+// mundo→pantalla para un punto del sprite
+function fl74P(o,a,px,py){const sc=a.px1?1:HSC*(a.sc||1),f=o.f;return[Math.round(o.x-cam)+f*sc*(px-a.ax),Math.round(o.y)+sc*(py-a.h+(a.fy||0))];}
+// respaldo para poses sin filo visible (salto: la espada va a la espalda, asoma sobre el hombro)
+function fl74Fallback(F){const a=F.a;if(F.k!=='jump')return null;const P0=[a.ax-4,a.h*.27],P1=[a.ax-34,a.h*.04],pts=[];for(let j=0;j<10;j++){const u=j/9;pts.push([P0[0]+(P1[0]-P0[0])*u,P0[1]+(P1[1]-P0[1])*u]);}pts.tip=P1;pts.fb=1;return pts;}
+function fl74Draw(){const o=P,C=ctx,F=fl74Frame(o);const swing=o.atk==='sword'&&o.atkT>0;
+ let pts=null,tip=null,fb=0;if(F&&!o.stone){let b=fl74Blade(F.a,F.i);if(!b)b=fl74Fallback(F);if(b){fb=b.fb|0;pts=b.map(q=>fl74P(o,F.a,q[0],q[1]));tip=fl74P(o,F.a,b.tip[0],b.tip[1]);}}
+ C.save();C.globalCompositeOperation='lighter';C.imageSmoothingEnabled=true;
+ // resplandor suave
+ if(pts){const m=pts[pts.length>>1],pu=.75+.25*Math.sin(frame*.23)+frnd(-.06,.06),R=(swing?84:fb?46:66)*pu;C.globalAlpha=.68;C.drawImage(FL74.glow,m[0]-R,m[1]-R,R*2,R*2);C.globalAlpha=.6;C.drawImage(FL74.glow,tip[0]-R*.65,tip[1]-R*.65,R*1.3,R*1.3);C.globalAlpha=.9;C.drawImage(FL74.glow,m[0]-R*.3,m[1]-R*.3,R*.6,R*.6);const gx=Math.round(o.x-cam),gy=Math.round(o.y);C.globalAlpha=.16*pu;C.drawImage(FL74.glow,(m[0]+gx)/2-70,gy-150,140,140);C.globalAlpha=.24*pu;C.drawImage(FL74.glow,m[0]*.6+gx*.4-90,gy-14,180,26);C.globalAlpha=1;}
+ // estela: media luna pegada al filo (puntos relativos a Seraphyne → no se despega aunque avance)
+ const T=FL74.tr;if(swing&&pts){if(FL74.lastAtk!==o.atkId){FL74.lastAtk=o.atkId;T.length=0;S('fwh74');}
+  const md=pts[Math.floor(pts.length*.3)],L=T[T.length-1],nt=[tip[0]+cam-o.x,tip[1]-o.y,0,md[0]+cam-o.x,md[1]-o.y];
+  if(!L||Math.hypot(L[0]-nt[0],L[1]-nt[1])>1.5)T.push(nt);if(T.length>FL74.trN)T.shift();}
+ for(const t of T)t[2]++;while(T.length&&T[0][2]>(swing?13:7))T.shift();
+ if(T.length>1){const bx=o.x-cam,by=o.y,n=T.length;
+  // cinta suavizada: borde exterior (puntas) y borde interior (medio del filo), alfa por antigüedad
+  for(let j=1;j<n;j++){const A=T[j-1],B=T[j],u=j/n,ag=Math.max(0,1-B[2]/13)*u;if(ag<=0)continue;
+   C.fillStyle='rgba(30,110,255,'+(.56*ag).toFixed(3)+')';C.beginPath();C.moveTo(bx+A[3],by+A[4]);C.lineTo(bx+A[0],by+A[1]);C.lineTo(bx+B[0],by+B[1]);C.lineTo(bx+B[3],by+B[4]);C.closePath();C.fill();
+   const k=.55,ax=A[0]+(A[3]-A[0])*(1-k),ay=A[1]+(A[4]-A[1])*(1-k),cx2=B[0]+(B[3]-B[0])*(1-k),cy2=B[1]+(B[4]-B[1])*(1-k);
+   C.fillStyle='rgba(110,220,255,'+(.64*ag).toFixed(3)+')';C.beginPath();C.moveTo(bx+ax,by+ay);C.lineTo(bx+A[0],by+A[1]);C.lineTo(bx+B[0],by+B[1]);C.lineTo(bx+cx2,by+cy2);C.closePath();C.fill();}
+  C.lineCap='round';C.lineJoin='round';
+  for(let w=0;w<2;w++){C.strokeStyle=w?'rgba(240,253,255,.95)':'rgba(90,200,255,.7)';
+   for(let j=1;j<n;j++){const A=T[j-1],B=T[j],ag=Math.max(0,1-B[2]/13)*(j/n);C.lineWidth=(w?4:12)*ag+.5;C.beginPath();
+    if(j>1){const Z=T[j-2];C.moveTo(bx+(Z[0]+A[0])/2,by+(Z[1]+A[1])/2);C.quadraticCurveTo(bx+A[0],by+A[1],bx+(A[0]+B[0])/2,by+(A[1]+B[1])/2);}else{C.moveTo(bx+A[0],by+A[1]);C.lineTo(bx+(A[0]+B[0])/2,by+(A[1]+B[1])/2);}
+    C.stroke();}}
+  for(let j=1;j<n;j++){const B=T[j],ag=Math.max(0,1-B[2]/13)*(j/n);if(ag<.15)continue;const x0=Math.round(bx+B[0]),y0=Math.round(by+B[1]),hh=4+9*ag+3*Math.sin(frame*.5+j*1.9);
+   for(let s2=0;s2<hh;s2++){const v=s2/hh;C.globalAlpha=ag*(1-v*.8);C.fillStyle=FL74.pal[v<.25?5:v<.6?4:3];C.fillRect(x0+Math.round(Math.sin(frame*.4+j+v*4)*2*v),y0-s2,v<.4?2:1,1);}}
+  C.globalAlpha=1;
+  if(swing){const q2=T[Math.floor(frnd(0,n))];fl74Emit(o.x+q2[0]+frnd(-3,3),o.y+q2[1]+frnd(-3,3),frnd(-.25,.25),frnd(-.5,-.1),frnd(30,55),frnd(0,1)<.3?2:1,frnd(0,1)<.5?3:4);}
+  if(swing&&frame%2===0){const q=T[n-1];for(let j=0;j<2;j++)fl74Emit(o.x+q[0]+frnd(-6,6),o.y+q[1]+frnd(-6,6),frnd(-.6,.6)-o.f*.5,frnd(-2.2,-.6),frnd(14,24),2,frnd(0,1)<.5?3:4);}}
+ if(pts){const n=pts.length,ph=frame*.32;
+  // núcleo al rojo blanco a lo largo del filo (aditivo: el acero se sigue viendo)
+  C.fillStyle='rgba(90,180,255,.35)';for(const p of pts)C.fillRect((p[0]|0)-2,(p[1]|0)-1,4,3);C.fillStyle='rgba(230,250,255,.75)';for(let j=0;j<n;j+=1){const p=pts[j];C.fillRect(p[0]|0,p[1]|0,1,1);}
+  // lenguas verticales y ondulantes (1–3 px), se enroscan hacia arriba
+  const step=1;for(let j=1;j<n;j+=step){const p=pts[j],u=j/(n-1),sd=j*2.17;
+   const fk=1+.8*Math.max(0,FL74.fl)/18,h=((fb?10:swing?20:17)+(fb?6:13)*u)*fk+5*Math.sin(ph*1.1+sd)+3*Math.sin(ph*2.3+sd*1.7);if(h<4)continue;
+   const x0=p[0]|0,y0=p[1]|0,amp=1.8+3*u,dir=(j&2)?1:-1;
+   for(let s2=0;s2<h;s2++){const v=s2/h,cx=x0+Math.round(Math.sin(ph*1.6+sd+v*4.2)*amp*v*dir+v*v*3*dir),w=v<.3?3:v<.7?2:1;
+    C.globalAlpha=(1-v*.75)*((j&1)?.6:.9);C.fillStyle=FL74.pal[v<.18?5:v<.4?4:v<.7?3:2];C.fillRect(cx-(w>>1),y0-s2,w,1);}}
+  C.globalAlpha=1;
+  // brasas que suben
+  const rate=swing?4:2;for(let r=0;r<rate;r++)if(frnd(0,1)<.75){const p=pts[Math.floor(frnd(0,pts.length))];fl74Emit(p[0]+cam+frnd(-3,3),p[1]-frnd(4,14),frnd(-.6,.6),frnd(-2,-.6),frnd(24,50),frnd(0,1)<.25?2:1,frnd(0,1)<.3?5:frnd(0,1)<.6?3:2);}
+  if(o.dashT>0){for(let r=0;r<2;r++)fl74Emit(o.x+frnd(-14,14)-o.f*10,o.y-frnd(10,90),-o.f*frnd(.5,2),frnd(-1,-.2),frnd(10,20),2,frnd(0,1)<.5?2:3);}
+  if(FL74.fl>0)FL74.fl--;if(!swing&&--FL74.flT<=0){FL74.flT=Math.floor(frnd(90,180));FL74.fl=18;S('fflr74');for(let j=0;j<10;j++){const p=pts[Math.floor(frnd(0,pts.length))];fl74Emit(p[0]+cam,p[1]-frnd(4,16),frnd(-.8,.8),frnd(-2.6,-1),frnd(26,46),2,frnd(0,1)<.4?5:3);}}
+  if(--FL74.crk<=0){FL74.crk=Math.floor(frnd(50,110));S('flm74');}}
+ // brasas (pool fijo)
+ for(const e of FL74.em){if(e.l<=0)continue;const v=e.l/e.l0;C.globalAlpha=Math.min(1,v*1.4);C.fillStyle=FL74.pal[Math.min(5,e.c+(v>.7?1:0))];const z=e.s;C.fillRect(Math.round(e.x-cam),Math.round(e.y),z,z);}
+ // estallidos de impacto
+ for(const h of FL74.hb){if(h.t>=14)continue;const u=h.t/14,R=12+48*u,X=h.x-cam;C.globalAlpha=1-u;C.drawImage(FL74.glow,X-R*1.6,h.y-R*1.6,R*3.2,R*3.2);if(h.t<2){C.globalAlpha=.55;C.drawImage(FL74.glow,X-130,h.y-130,260,260);C.globalAlpha=1-u;}
+  if(h.t<3){C.fillStyle='rgba(255,255,255,.9)';C.beginPath();C.arc(X,h.y,22-h.t*5,0,7);C.fill();}
+  C.strokeStyle=u<.4?'#ffffff':'#7ae0ff';C.lineWidth=3*(1-u)+1;C.beginPath();C.arc(X,h.y,R,0,7);C.stroke();
+  for(let j=0;j<12;j++){const an=j*.5236+h.t*.05,r0=R*.5,r1=R*(1.1+.3*(j&1));C.beginPath();C.moveTo(X+Math.cos(an)*r0,h.y+Math.sin(an)*r0);C.lineTo(X+Math.cos(an)*r1,h.y+Math.sin(an)*r1);C.stroke();}}
+ // enemigo encendido (solo visual)
+ for(const b of FL74.bn){if(!(b.t>0))continue;const e=b.e;if(!e||e.dead||e.hp<=0||enemies.indexOf(e)<0){b.t=0;continue;}const X=Math.round(e.x-cam),Y=Math.round(e.y),w=e.w||30,hh=e.h||40,k=Math.min(1,b.t/25),ph=frame*.35;
+  C.globalAlpha=.35*k;C.drawImage(FL74.glow,X-w,Y-hh*.9,w*2,hh*1.2);
+  for(let j=0;j<9;j++){const x0=X-w*.45+w*.9*j/8,y0=Y-hh*(.1+.25*Math.abs(Math.sin(j*1.7))),sd=j*2.3,h=(10+10*Math.abs(Math.sin(ph+sd)))*k;
+   for(let s2=0;s2<h;s2++){const v=s2/h;C.globalAlpha=k*(1-v*.8)*.9;C.fillStyle=FL74.pal[v<.2?5:v<.5?4:v<.8?3:2];C.fillRect(Math.round(x0+Math.sin(ph*1.5+sd+v*4)*2.5*v),y0-s2,v<.35?2:1,1);}}
+  if(frnd(0,1)<.5)fl74Emit(e.x+frnd(-w*.4,w*.4),e.y-frnd(0,hh*.8),frnd(-.4,.4),frnd(-1.8,-.5),frnd(16,30),frnd(0,1)<.3?2:1,frnd(0,1)<.5?3:4);}
+ // erupción del remate (3er golpe)
+ {const E2=FL74.er;if(E2.t<22){const u=E2.t/22,X=E2.x-cam,Y=E2.y,ph=frame*.4;C.globalAlpha=(1-u)*.8;C.drawImage(FL74.glow,X-90,Y-150,180,220);
+  for(let j=0;j<14;j++){const x0=X-34+68*j/13,sd=j*1.9,h=(40+50*Math.abs(Math.sin(sd)))*(u<.25?u/.25:1-(u-.25)/.75);
+   for(let s2=0;s2<h;s2++){const v=s2/h;C.globalAlpha=(1-u)*(1-v*.7);C.fillStyle=FL74.pal[v<.2?5:v<.5?4:v<.8?3:2];C.fillRect(Math.round(x0+Math.sin(ph+sd+v*5)*4*v),Math.round(Y+22-s2),v<.3?3:v<.7?2:1,1);}}}}
+ // anillo de llamas en cada impacto
+ for(const h of FL74.hb){if(h.t>=16)continue;const u=h.t/16,R=16+60*u,X=h.x-cam;for(let j=0;j<20;j++){const an=j*.314,px=X+Math.cos(an)*R,py=h.y+Math.sin(an)*R*.8,tl=(7+5*Math.sin(j*2.1+frame*.5))*(1-u);
+  for(let s2=0;s2<tl;s2++){const v=s2/tl;C.globalAlpha=(1-u)*(1-v*.7);C.fillStyle=FL74.pal[v<.3?5:v<.7?4:3];C.fillRect(Math.round(px+Math.sin(j+v*4)*1.5*v),Math.round(py-s2),1,1);}}}
+ C.globalAlpha=1;C.restore();}
+function fl74Upd(){for(const e of FL74.em){if(e.l<=0)continue;e.l--;e.x+=e.vx;e.y+=e.vy;e.vx=e.vx*.96+Math.sin((e.l+e.x)*.15)*.04;e.vy=e.vy*.97-.03;}for(const h of FL74.hb)if(h.t<99)h.t++;for(const b of FL74.bn)if(b.t>0)b.t--;if(FL74.er.t<99)FL74.er.t++;FL74.hitN=0;}
+// reemplaza el brillo azul viejo: la estela dorada sin marea se conserva
+{const _old=tideHero;tideHero=function(){if(!P||state==='title')return;if(!TIDE()||!FL74.on){FL74.tr.length=0;_old();return;}fl74Draw();};}
+{const _u=update;update=function(){_u();if(hitstop>0)return;fl74Upd();};}
+{const _he=hitEnemy;hitEnemy=function(e,d,kind,dir){const hp0=e.hp;_he(e,d,kind,dir);if(TIDE()&&kind==='sword'&&e.hp<hp0)fl74Hit(e.x-(dir||P.f)*e.w*.3,e.y-e.h*.55,e);};}
+Object.assign(SFX,{
+ flm74:t=>{for(let i=0;i<4;i++)nz(t+i*.035+frnd(0,.02),.02,.045,'highpass',frnd(3200,6200));},
+ fwh74:t=>{nz(t,.24,.1,'bandpass',700,0,{f2:2400,q:1.2});for(let i=0;i<3;i++)nz(t+.04+i*.03,.02,.04,'highpass',4200);},
+ fhit74:t=>{nz(t,.06,.2,'lowpass',180);nz(t,.26,.16,'bandpass',600,0,{f2:2800,q:1.4});for(let i=0;i<6;i++)nz(t+.025*i,.03,.09,'highpass',3600+i*300);},
+ ferp74:t=>{nz(t,.5,.2,'lowpass',260,0,{f2:900});nz(t+.04,.45,.13,'bandpass',500,0,{f2:3200,q:1});for(let i=0;i<8;i++)nz(t+.05+i*.035,.03,.07,'highpass',frnd(3000,6500));},
+ fflr74:t=>{nz(t,.3,.08,'bandpass',400,0,{f2:1600,q:.9});for(let i=0;i<4;i++)nz(t+.03*i,.02,.05,'highpass',frnd(3500,6000));}});
+
+</script>
 </body>
 </html>
