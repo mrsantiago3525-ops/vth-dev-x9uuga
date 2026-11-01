@@ -4488,7 +4488,7 @@ function drawTitle(){
  ctx.font='16px Georgia';ctx.fillStyle=`rgba(255,255,255,${.5+.5*Math.sin(frame*.08)})`;ctx.fillText(hasSave()?'Toca para continuar · Nivel '+SAVE.lv+' · '+(SAVE.az>=0&&cpOK(SAVE.az,SAVE.ai)?cpName(SAVE.az,SAVE.ai):ZS[Math.min(2,SAVE.z||0)]):'Toca la pantalla o pulsa cualquier tecla',W/2,244);
  ctx.fillStyle='rgba(0,0,0,.5)';ctx.fillRect(0,228,W,140);ctx.font='bold 11px Georgia';ctx.fillStyle='#e0bf70';ctx.fillText('DIFICULTAD  ·  ← → o toca para cambiar',W/2,268);drawDiffSel(DM_TY,76);
   {const nb=document.getElementById('bNew');if(nb)nb.style.display=hasSave()?'block':'none';}
- ctx.font='11px Georgia';ctx.fillStyle='#999';ctx.fillText('Teclado: ←→ mover · ↑/Esp saltar · J puño · K espada (↓+K tras doble salto: picada) · L orbe (↓+L en el aire: hacia abajo) · I especial · Shift esquivar · ↓ agacharse (+dir: barrida) · P pausa · M mapa',W/2,438);ctx.textAlign='left';drawDmConf();}
+ ctx.font='11px Georgia';ctx.fillStyle='#999';ctx.fillText('Teclado: ←→ mover · ↑/Esp saltar · J puño · K espada · ↓ tras doble salto: picada · L orbe (↓+L en el aire: hacia abajo) · I especial · Shift esquivar · ↓ agacharse (+dir: barrida) · P pausa · M mapa',W/2,438);ctx.textAlign='left';drawDmConf();}
 function drawCards(){
  ctx.fillStyle='rgba(0,0,0,.82)';ctx.fillRect(0,0,W,H);ctx.textAlign='center';
  const a=Math.min(1,cardT/25);ctx.globalAlpha=a;ctx.font='20px Georgia';ctx.fillStyle='#eadcc0';wrapText(cards[cardI]||'',W/2,200,30);
@@ -10345,7 +10345,7 @@ const V92SRC={fall:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGIAAACyCAYAAA
 const V92={HANG:3,VY:30,R:130,CD:60,LAG:12,IFR:8,MINH:40,rings:[]};
 function v92Can(){return hasAb('dive')&&state==='play'&&P.air&&P.dj2&&!P.dv92&&!(P.dvCd>0)&&!P.cling&&!P.grab&&!(P.rootT>0)&&!(P.hurtT>0)&&!(P.dashT>0)&&!(P.slideT>0)&&P.y<FLOOR-V92.MINH&&!trans;}
 // llamado antes del bloque de ataques; consume la espada si arranca la picada
-function v92Try(){if(!(PR.sword&&K.down&&v92Can()))return false;delete PR.sword;P.dv92=1;P.dvT=0;P.vx=0;P.vy=0;P.atkT=0;P.atk=null;S('whoosh');burst(P.x,P.y-50,10,'#ffe28a',3);return true;}
+function v92Try(){const fr=K.down&&!V92.dp;if(K.orb||PR.orb)return false;if(!((PR.sword&&K.down)||fr)||!v92Can())return false;delete PR.sword;P.dv92=1;P.dvT=0;P.vx=0;P.vy=0;P.atkT=0;P.atk=null;S('whoosh');burst(P.x,P.y-50,10,'#ffe28a',3);return true;}
 // física de la picada (sustituye gravedad mientras dura)
 function v92Phys(){P.dvT++;P.vx=0;if(P.dv92===1){P.vy=0;if(P.dvT>=V92.HANG){P.dv92=2;S('swing');}}
  else{let v=V92.VY;if(!overPit(P.x)&&FLOOR>=P.y)v=Math.min(v,FLOOR-P.y);for(const p of platforms)if(!p.hide&&P.x>p.x-6&&P.x<p.x+p.w+6&&p.y>=P.y-2&&!(P.dropT>0&&p===P.dropP))v=Math.min(v,Math.max(0,p.y-P.y));P.vy=Math.max(v,.01);if(frame%1===0&&parts.length<340)parts.push({x:P.x+rnd(-6,6),y:P.y-rnd(20,70),vx:0,vy:-rnd(1,3),life:rnd(10,18),c:frame%2?'#ffd24a':'#fff2b0',s:rnd(2,5),glow:1});}}
@@ -10360,7 +10360,7 @@ function v92Impact(){P.dv92=0;P.dvLand=V92.LAG+4;P.dvCd=V92.CD;P.rootT=Math.max(
 function v92Draw(){v92FxDraw();for(let i=V92.rings.length-1;i>=0;i--){const r=V92.rings[i];r.t++;const k=r.t/18,rad=20+k*(V92.R-20);ctx.save();ctx.globalAlpha=Math.max(0,1-k);ctx.strokeStyle='#ffd24a';ctx.lineWidth=6*(1-k)+1;ctx.beginPath();ctx.ellipse(r.x-cam,r.y-2,rad,rad*.22,0,0,Math.PI*2);ctx.stroke();ctx.strokeStyle='#fff6c8';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(r.x-cam,r.y-2,rad*.8,rad*.16,0,0,Math.PI*2);ctx.stroke();ctx.restore();if(r.t>=18)V92.rings.splice(i,1);}
 }
 // desbloqueo: tras vencer a Nhaz'rakh (jefe Etapa 4); también migra partidas ya avanzadas
-function v92Unlock(){if(SAVE.ab.dive||!SAVE.bd.nhaz||state!=='play'||trans||banner)return;SAVE.ab.dive=1;saveG();toastTxt='✦ Caída Solar: tras el doble salto, presiona ↓ + espada para caer en picada';toastT=300;S('pickup');burst(P.x,P.y-60,24,'#ffd24a',5);}
+function v92Unlock(){if(SAVE.ab.dive||!SAVE.bd.nhaz||state!=='play'||trans||banner)return;SAVE.ab.dive=1;saveG();toastTxt='✦ Caída Solar: tras el doble salto, presiona ↓ para caer en picada';toastT=300;S('pickup');burst(P.x,P.y-60,24,'#ffd24a',5);}
 // v92c: sprites propios de la picada (suspensión/caída e impacto) + VFX épicos
 const V92A={};{const mk=(k,src,w,h,ax,fy)=>{const im=new Image();im.src=src;V92A[k]={img:im,w,h,ax,fy,count:1,fps:1,sc:1};};
  mk('fall',V92SRC.fall,98,178,48,22);mk('land',V92SRC.land,141,114,72,4);}
@@ -10393,6 +10393,28 @@ function v92ImpactFx(x,y){hitstop=Math.max(hitstop||0,3);shake=Math.max(shake,12
 // flecha ↓ dibujada en el canvas (algunas fuentes no traen el glifo)
 function v92Txt(t,cx,y){const parts=t.split('↓'),aw=12,g=4;let tw=0;for(const s of parts)tw+=ctx.measureText(s).width;tw+=(parts.length-1)*(aw+g*2);
  const al=ctx.textAlign;ctx.textAlign='left';let x=cx-tw/2;parts.forEach((s,i)=>{ctx.fillText(s,x,y);x+=ctx.measureText(s).width;if(i<parts.length-1){x+=g;ctx.beginPath();ctx.moveTo(x+aw*.3,y-12);ctx.lineTo(x+aw*.7,y-12);ctx.lineTo(x+aw*.7,y-6);ctx.lineTo(x+aw,y-6);ctx.lineTo(x+aw/2,y+1);ctx.lineTo(x,y-6);ctx.lineTo(x+aw*.3,y-6);ctx.closePath();ctx.fill();x+=aw+g;}});ctx.textAlign=al;}
+
+{const _u93=update;update=function(){_u93();V92.dp=!!K.down;};}
+
+</script>
+<script>
+// ===== v93: curarse en jefe sin raíz. La poción se gasta al instante, cura 25% del total ya y el resto en 30 frames mientras te mueves. Un golpe corta solo lo que falta. =====
+const H93C={NOW:.25,T:30};let H93=null;
+{const _prev=ecoUse;ecoUse=function(k){
+ if((k==='vida'||k==='elix')&&BOSS72()&&state==='play'&&!trans){
+  if(H93)return false;const o=ECO();
+  if(!(o.inv[k]>0)||(k==='vida'&&P.hp>=P.maxHp))return ECO72RAW(k);
+  const hp0=P.hp;if(!ECO72RAW(k))return false;const g=P.hp-hp0,now=Math.ceil(g*H93C.NOW);P.hp=hp0+now;ECOUI.open=null;
+  if(g-now>0)H93={left:g-now,per:(g-now)/H93C.T,acc:0,t:H93C.T,tot:g,ph:0};
+  for(const e of enemies)if(e.boss&&e.ag66&&!e.dead)pun72(e);return true;}
+ return _prev(k);};}
+function v93Upd(){if(!H93)return;if(state!=='play'){H93=null;return;}
+ if(P.hurtT>0||P.hp<=0){addText(P.x,P.y-P.h-20,'¡Cura cortada!','#ff9a80');H93=null;return;}
+ const h=H93;h.acc+=h.per;let n=Math.floor(h.acc);h.acc-=n;h.t--;if(h.t<=0)n=h.left;n=Math.min(n,h.left,P.maxHp-P.hp);
+ if(n>0){P.hp+=n;h.left-=n;}h.ph++;if(frame%3===0)parts.push({x:P.x+rnd(-16,16),y:P.y-rnd(10,90),vx:rnd(-.4,.4),vy:-rnd(.8,2),life:26,c:'#7dffb0',s:2.5,glow:1});
+ if(h.t<=0||h.left<=0||P.hp>=P.maxHp)H93=null;}
+{const _d=v92Draw;v92Draw=function(){_d();if(!H93)return;const a=.5+.18*Math.sin(H93.ph*.4);ctx.save();ctx.globalCompositeOperation='lighter';const gx=P.x-cam,gy=P.y-P.h*.55,gr=ctx.createRadialGradient(gx,gy,4,gx,gy,70);gr.addColorStop(0,'rgba(140,255,180,'+a+')');gr.addColorStop(1,'rgba(140,255,180,0)');ctx.fillStyle=gr;ctx.fillRect(gx-70,gy-70,140,140);ctx.restore();};}
+{const _u=update;update=function(){_u();if(state==='play'&&!paused)v93Upd();};}
 
 </script>
 </body>
