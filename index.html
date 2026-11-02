@@ -79,9 +79,8 @@ canvas{width:100%;height:100%;display:block;background:#000}
  <div id="dp"><div class="dk" data-d="up">▲</div><div class="dk" data-d="left">◀</div><div class="dk" data-d="right">▶</div><div class="dk" data-d="down">▼</div></div>
  <div class="btn" id="bJ" data-k="jump">▲</div>
  <div class="btn" id="bDash" data-k="dash">»</div>
- <div class="btn" id="bP" data-k="punch">👊</div>
  <div class="btn" id="bS" data-k="sword">⚔️</div>
- <div class="btn" id="bSl" data-k="slide">⤳</div><div class="btn" id="bBk" data-k="bdash">«</div>
+ <div class="btn" id="bBk" data-k="bdash">«</div>
  <div class="btn" id="bO" data-k="orb">🔆</div>
  <div class="btn" id="bX" data-k="special">✦</div>
  <div class="btn" id="bSw" data-k="swap">⟳</div>
@@ -97,7 +96,7 @@ const K={down:0,left:0,right:0,jump:0,lookup:0,punch:0,sword:0,orb:0,special:0,d
 const PR={}; let anyPress=false;
 function press(k,v){ if(v&&!K[k]){PR[k]=1;anyPress=true;} K[k]=v; }
 const keymap={ArrowDown:'down',s:'down',S:'down',ArrowLeft:'left',a:'left',A:'left',ArrowRight:'right',d:'right',D:'right',ArrowUp:'jump',w:'jump',W:'jump',' ':'jump',v:'lookup',V:'lookup',
- j:'punch',J:'punch',k:'sword',K:'sword',l:'orb',L:'orb',i:'special',I:'special',Shift:'dash',u:'dash',U:'dash',Enter:'jump',c:'slide',C:'slide',q:'swap',Q:'swap',m:'map',M:'map'};
+ k:'sword',K:'sword',l:'orb',L:'orb',i:'special',I:'special',Shift:'dash',u:'dash',U:'dash',Enter:'jump',q:'swap',Q:'swap',m:'map',M:'map'};
 addEventListener('keydown',e=>{if(e.key==='Escape'&&dmConf){dmConf=0;return;}if(e.key==='Escape'&&mapOpen){mapOpen=false;return;}if((e.key==='Escape'||e.key==='p'||e.key==='P')&&state==='play'){paused=!paused;return;}const k=keymap[e.key];if(k){press(k,1);e.preventDefault();}else anyPress=true;});
 addEventListener('keyup',e=>{const k=keymap[e.key];if(k)press(k,0);});
 // --- Touch controller v18: every finger tracked by pointerId; re-evaluated on move; released on any loss of focus ---
@@ -183,7 +182,7 @@ function devInit(){if(!DEV)return;const g=document.getElementById('game'),b=docu
  draw();b.addEventListener('pointerdown',ev=>{ev.stopPropagation();ev.preventDefault();draw();devToggle(!devOpen);});
  ['pointerdown','touchstart','touchmove','wheel'].forEach(t=>m.addEventListener(t,ev=>ev.stopPropagation(),{passive:true}));{let dy=null,y0=0,mv=0;m.addEventListener('pointerdown',ev=>{if(ev.pointerType!=='mouse')return;dy=ev.clientY;y0=m.scrollTop;mv=0;});window.addEventListener('pointermove',ev=>{if(dy===null)return;const d=ev.clientY-dy;if(Math.abs(d)>4)mv=1;m.scrollTop=y0-d;});window.addEventListener('pointerup',()=>{dy=null;});m.addEventListener('click',ev=>{if(mv){ev.stopPropagation();ev.preventDefault();mv=0;}},true);}}
 // ---------- GAMEPAD ----------
-const GPM={12:'map',11:'slide',8:'swap',0:'jump',2:'sword',1:'punch',3:'orb',5:'special',7:'special',4:'dash',6:'dash'};let padPrev={},padOn=false,paused=false,startPrev=false,anyPrev=false,toastT=0,toastTxt='';
+const GPM={12:'map',8:'swap',0:'jump',2:'sword',3:'orb',5:'special',7:'special',4:'dash',6:'dash'};let padPrev={},padOn=false,paused=false,startPrev=false,anyPrev=false,toastT=0,toastTxt='';
 function getPad(){try{return [...(navigator.getGamepads?navigator.getGamepads():[])].find(g=>g&&g.connected)||null;}catch(e){return null;}}
 function rumble(ms,str){try{const gp=getPad(),va=gp&&gp.vibrationActuator;if(va&&va.playEffect)va.playEffect('dual-rumble',{duration:ms,strongMagnitude:str,weakMagnitude:Math.min(1,str+.2)}).catch(()=>{});}catch(e){}}
 function showTouch(v){const t=document.querySelector('.tc');if(t)t.style.display=v?'':'none';}
@@ -2111,7 +2110,7 @@ function update(){if(typeof v92Post==='function'){v92Post();v92Unlock();}
  else if(P.hurtT>0){P.vx*=.9;}
  else{if(P.dv92){delete PR.jump;delete PR.dash;delete PR.punch;delete PR.orb;delete PR.special;}let mv=P.rootT>0?0:(K.right?1:0)-(K.left?1:0);
   P.crouch=K.down&&!P.air?1:0;if(P.slideCd>0)P.slideCd--;
-  if(((K.down&&(PR.dash||(mv&&(PR.down||PR.left||PR.right))))||PR.slide)&&!P.air&&P.rootT<=0&&P.slideCd<=0&&!P.atkT&&!overPit(P.x+(mv||P.f)*30)){if(mv)P.f=mv;P.slideT=21;P.crouch=0;S('swing');S('land');delete PR.dash;}
+  if(((K.down&&(PR.dash||(mv&&(PR.down||PR.left||PR.right)))))&&!P.air&&!v97No()&&P.rootT<=0&&P.slideCd<=0&&!P.atkT&&!overPit(P.x+(mv||P.f)*30)){if(mv)P.f=mv;P.slideT=21;P.crouch=0;S('swing');S('land');delete PR.dash;}
   if(P.crouch||P.slideT)mv=0;const sp=(busy?1.2:4.2)*(P.slow>0?.5:1)*parSlow();if(P.rootT>0&&(K.right||K.left))P.f=K.right?1:-1;
   if(P.wjLock>0){P.wjLock--;}else if(mv){P.vx+=(mv*sp-P.vx)*.35;if(!P.atkT)P.f=mv;}else P.vx*=.7;
   if(P.wjCd>0)P.wjCd--;
@@ -2126,7 +2125,7 @@ function update(){if(typeof v92Post==='function'){v92Post();v92Unlock();}
    else if(PR.jump&&P.air&&SAVE.dj&&!P.dj2&&P.rootT<=0&&!P.grab){P.dj2=1;P.vy=-11;S('jump');for(let i=0;i<16;i++){const a=Math.PI*(i/15),v=rnd(2,4);parts.push({x:P.x,y:P.y-6,vx:Math.cos(a)*v,vy:Math.sin(a)*v*.4+1,life:rnd(14,24),c:i%2?'#fff2a8':'#bfe6ff',s:rnd(2,4),glow:1});}}
   if(!K.jump&&P.vy<-4)P.vy+=.6;
   if(PR.dash&&P.dashCd<=0&&(!P.air||(hasAb('dash')&&!P.adUsed))){P.dashT=12;P.dashCd=45;P.inv=Math.max(P.inv,14);if(P.air){P.adUsed=1;P.adT=12;S('whoosh');muAirDashFx();}}
-  if(v92Try()){}else if(P.atkT<=0){if(PR.punch)doAttack('punch');else if(PR.sword)doAttack('sword');
+  if(v92Try()){}else if(P.atkT<=0){if(PR.sword)doAttack('sword');
    else if(PR.orb){if(P.en>=20){P.en-=20;doAttack('orb');if(K.down&&P.y<FLOOR-3)pproj.push({x:P.x+P.f*4,y:P.y-14,vx:0,vy:9.5,d:P.f,life:70,id:Math.random(),dn:1});else pproj.push({x:P.x+P.f*24,y:P.y-62,vx:P.f*9,life:80,id:Math.random()});}else addText(P.x,P.y-80,'Sin energía','#7af');}}
   if(PR.special)fireSpec();}
  P.h=(P.crouch||P.slideT>0)?50:100;
@@ -4488,7 +4487,7 @@ function drawTitle(){
  ctx.font='16px Georgia';ctx.fillStyle=`rgba(255,255,255,${.5+.5*Math.sin(frame*.08)})`;ctx.fillText(hasSave()?'Toca para continuar · Nivel '+SAVE.lv+' · '+(SAVE.az>=0&&cpOK(SAVE.az,SAVE.ai)?cpName(SAVE.az,SAVE.ai):ZS[Math.min(2,SAVE.z||0)]):'Toca la pantalla o pulsa cualquier tecla',W/2,244);
  ctx.fillStyle='rgba(0,0,0,.5)';ctx.fillRect(0,228,W,140);ctx.font='bold 11px Georgia';ctx.fillStyle='#e0bf70';ctx.fillText('DIFICULTAD  ·  ← → o toca para cambiar',W/2,268);drawDiffSel(DM_TY,76);
   {const nb=document.getElementById('bNew');if(nb)nb.style.display=hasSave()?'block':'none';}
- ctx.font='11px Georgia';ctx.fillStyle='#999';ctx.fillText('Teclado: ←→ mover · ↑/Esp saltar · J puño · K espada · ↓ tras doble salto: picada · L orbe (↓+L en el aire: hacia abajo) · I especial · Shift esquivar · ↓ agacharse (+dir: barrida) · P pausa · M mapa',W/2,438);ctx.textAlign='left';drawDmConf();}
+ ctx.font='11px Georgia';ctx.fillStyle='#999';ctx.fillText('Teclado: ←→ mover · ↑/Esp saltar · K espada · ↓ tras doble salto: picada · L orbe (↓+L en el aire: hacia abajo) · I especial · Shift esquivar · ↓ agacharse · ↓+←/→ barrida · P pausa · M mapa',W/2,438);ctx.textAlign='left';drawDmConf();}
 function drawCards(){
  ctx.fillStyle='rgba(0,0,0,.82)';ctx.fillRect(0,0,W,H);ctx.textAlign='center';
  const a=Math.min(1,cardT/25);ctx.globalAlpha=a;ctx.font='20px Georgia';ctx.fillStyle='#eadcc0';wrapText(cards[cardI]||'',W/2,200,30);
@@ -10623,6 +10622,23 @@ function fr96(k){const t=V96.FR[k];if(!t||!P||P.atk!==k)return -1;const el=Math.
 // smear: el cuadro anterior a 35% durante el primer frame de cada cambio de pose
 {const _dh=drawHero;drawHero=function(x,y,f,o){if(o===P&&P&&V96.SM[P.atk]&&P.atkT>0){const el=ATK[P.atk].dur-P.atkT;if(V96.SM[P.atk].indexOf(el)>=0||V96.SM[P.atk].indexOf(el-1)>=0){const cur=fr96(P.atk);if(cur>0){V96.force=cur-1;const ga=ctx.globalAlpha;ctx.globalAlpha=ga*(V96.SM[P.atk].indexOf(el)>=0?.45:.2);try{_dh(x-f*3,y,f,o);}catch(e){}ctx.globalAlpha=ga;V96.force=-1;}}}return _dh(x,y,f,o);};}
 
+</script>
+<style>#game{--B:var(--b);--S:calc(var(--b)*1.35);--q:8px;--mr:calc(2.5% + env(safe-area-inset-right,0px));--mb:4%}
+#bJ{right:var(--mr);bottom:var(--mb)}
+#bS{width:var(--S);height:var(--S);right:calc(var(--mr) + var(--B) + var(--q));bottom:calc(var(--mb) + .175*var(--B));font-size:clamp(26px,calc(7.4*var(--g)),42px);border-width:3px}
+#bO{right:calc(var(--mr) + 2.35*var(--B) + 2*var(--q));bottom:var(--mb)}
+#bDash{right:calc(var(--mr) + 1.175*var(--B) + var(--q));bottom:calc(var(--mb) + 1.525*var(--B) + 2*var(--q))}
+#bBk{right:var(--mr);bottom:calc(var(--mb) + var(--B) + 1.25*var(--q))}
+#bX{right:calc(var(--mr) + 2.35*var(--B) + 2*var(--q));bottom:calc(var(--mb) + 1.1*var(--B) + var(--q))}
+#bSw{right:calc(var(--mr) + 2.35*var(--B) + 2*var(--q) + (var(--B) - var(--sw))/2);bottom:calc(var(--mb) + 2.1*var(--B) + 2*var(--q))}
+</style><script>// ===== v97: sin puño; barrida con ↓+adelante; botones en arco =====
+var V97={on:1};
+function v97No(){ // no barrida: sobre/junto a elevador, o si se pulsa saltar (↓+saltar = bajar plataforma)
+ if(PR.jump||K.jump)return true;
+ for(const d of doors){if((d.lift||d.up)&&Math.abs(P.x-d.x)<40&&(d.y==null||Math.abs(P.y-d.y)<30))return true;}
+ return false;}
+{const _d=doAttack;doAttack=function(k){if(k==='punch')return;return _d.apply(this,arguments);};}
+{const _u=update;update=function(){if(PR){delete PR.punch;delete PR.slide;}K.punch=0;K.slide=0;return _u.apply(this,arguments);};}
 </script>
 </body>
 </html>
