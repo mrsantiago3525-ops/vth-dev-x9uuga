@@ -10326,7 +10326,7 @@ function mz88Map(){const C=ctx;{const gr=C.createLinearGradient(0,0,0,H);gr.addC
 <script>
 "use strict";
 // ===== v89: bajar de plataforma (↓ + saltar) =====
-function v89Plat(){if(P.air||P.y>=FLOOR-4)return null;for(const p of platforms)if(!p.hide&&!(p.w>=480||p.sd===2||p.ground)&&P.x>p.x-6&&P.x<p.x+p.w+6&&Math.abs(P.y-p.y)<1.6)return p;return null;}
+function v89Plat(){if(P.air||P.y>=FLOOR-4)return null;for(const p of platforms)if(!p.hide&&!(((p.w>=480||p.sd===2)&&!p.mzv)||p.ground)&&P.x>p.x-6&&P.x<p.x+p.w+6&&Math.abs(P.y-p.y)<1.6)return p;return null;}
 function v89Busy(){if(state!=='play'||trans)return true;
  for(const d of doors){if((d.lift||d.up)&&Math.abs(P.x-d.x)<40&&(d.y==null||Math.abs(P.y-d.y)<30))return true;}
  return false;}
@@ -10640,5 +10640,6 @@ function v97No(){ // no barrida: sobre/junto a elevador, o si se pulsa saltar (�
 {const _d=doAttack;doAttack=function(k){if(k==='punch')return;return _d.apply(this,arguments);};}
 {const _u=update;update=function(){if(PR){delete PR.punch;delete PR.slide;}K.punch=0;K.slide=0;return _u.apply(this,arguments);};}
 </script>
+<script>var V98={on:1}; // v98: la pasarela superior del Pozo (M-02, puerta III) permite bajar con ↓+saltar</script>
 </body>
 </html>
