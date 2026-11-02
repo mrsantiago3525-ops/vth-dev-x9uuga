@@ -10790,5 +10790,26 @@ co87Draw=function(e){const im=V102.img;if(!im.complete||!im.naturalWidth)return;
  if(V102.vg>0||V102.vp>0){const C=ctx;C.save();C.setTransform(1,0,0,1,0,0);const g=C.createRadialGradient(400,250,170-60*V102.vp,400,250,520);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba('+Math.round(40*V102.vp)+',0,0,'+Math.min(.85,.55*V102.vg*(e&&e.p2?1.15:1)+.3*V102.vp)+')');C.fillStyle=g;C.fillRect(0,0,800,450);C.restore();}}catch(_){}return _dh(...a);};}
 
 </script>
+<script>
+// ===== v103 TEST: música nueva · capa inquietante sobre Las Mazmorras + tema nuevo del Coloso =====
+// Capa: transpuesta -2 semitonos (Mi→Re, misma escala frigia que mazmorras84), bucle 96 s (4→100) igual que la pista principal: arrancan sincronizadas.
+MUS.m02L={f:'mazmorras_capa103.mp3',LS:4,LE:100,VOL:.25,buf:null,ld:0,fail:0};
+// Coloso: intro 0→56 s, bucle 56.0→150.4002 s (crossfade de 1.5 s horneado en el archivo)
+MUS.bcol.f='boss_coloso103.mp3';MUS.bcol.LS=56.0;MUS.bcol.LE=150.4002;MUS.bcol.buf=null;MUS.bcol.ld=0;MUS.bcol.fail=0;
+var V103={src:null,g:null,bus:null,FI:4,FO:2};
+{const _s=n1Start;n1Start=function(){const b=AU.n1src;_s();if(AU.n1src&&AU.n1src!==b&&AU.c){AU.n1t0=AU.c.currentTime+.05;AU.n1k=AU.mode;}};}
+function v103Off(){const L=V103;if(!L.src)return;const C=AU.c,t=C.currentTime,s=L.src,g=L.g;L.src=null;L.g=null;L.bus=null;
+ try{g.gain.cancelScheduledValues(t);g.gain.setValueAtTime(g.gain.value,t);g.gain.linearRampToValueAtTime(0,t+L.FO);}catch(e){}
+ setTimeout(()=>{try{s.stop();}catch(e){}try{g.disconnect();}catch(e){}},L.FO*1000+500);}
+function v103Lay(){const C=AU.c;if(!C)return;const L=V103,M=MUS.m02L;
+ const want=AU.mode==='m02'&&AU.n1k==='m02'&&!!AU.n1src&&!!AU.bus&&!AU.muted;
+ if(L.src&&(!want||L.bus!==AU.bus))v103Off();
+ if(!want||L.src)return;if(!M.buf){mLoad('m02L');return;}
+ const s=C.createBufferSource(),g=C.createGain();s.buffer=M.buf;s.loop=true;s.loopStart=M.LS;s.loopEnd=Math.min(M.LE,M.buf.duration);
+ const t=C.currentTime+.05,el=Math.max(0,t-(AU.n1t0||t)),P=M.LE-M.LS,pos=el<M.LE?el:M.LS+((el-M.LS)%P);
+ g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(M.VOL,t+L.FI);s.connect(g);g.connect(AU.bus);s.start(t,pos);L.src=s;L.g=g;L.bus=AU.bus;L.pos=pos;}
+{const _m=auMode;auMode=function(...a){const r=_m(...a);try{v103Lay();}catch(e){}return r;};}
+
+</script>
 </body>
 </html>
