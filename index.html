@@ -7976,7 +7976,7 @@ merRoll=function(z){MER=null;if(z===0){MER={x:OZX,tier:hub72Tier(),z:0,oz:1};ret
  glow54(x,FLOOR-70+b,80,'140,190,255',.4+.08*Math.sin(frame*.1));
  spr54(SPR54.ozmar[0],x,FLOOR-14+b,124,P.x<m.x,a);ctx.save();ctx.globalCompositeOperation='lighter';spr54(SPR54.ozmar[0],x,FLOOR-14+b,124,P.x<m.x,.35);ctx.restore();
  if(frame%7===0&&parts.length<300)parts.push({x:m.x+frnd(-22,22),y:FLOOR-frnd(10,120),vx:frnd(-.2,.2),vy:-frnd(.3,.9),life:40,c:'#bcd8ff',s:2,glow:1});
- if(!OZD&&Math.abs(P.x-m.x)<160){ctx.font='bold 12px Georgia';ctx.textAlign='center';ctx.lineWidth=3;ctx.strokeStyle='#000';const t=Math.abs(P.x-m.x)<56?'▲ OFRENDAS':'REFLEJO DE OZMAR';ctx.strokeText(t,x,FLOOR-150);ctx.fillStyle='#bcd8ff';ctx.fillText(t,x,FLOOR-150);ctx.textAlign='left';}};}
+ if(!OZD&&Math.abs(P.x-m.x)<160){ctx.font='bold 12px Georgia';ctx.textAlign='center';ctx.font='bold 13px Georgia';ctx.lineWidth=4;ctx.lineJoin='round';ctx.strokeStyle='rgba(0,0,0,.95)';const t=Math.abs(P.x-m.x)<56?'▲ OFRENDAS':'REFLEJO DE OZMAR';ctx.strokeText(t,x,FLOOR-150);ctx.save();ctx.shadowColor='rgba(150,200,255,.9)';ctx.shadowBlur=8;ctx.fillStyle='#f2f8ff';ctx.fillText(t,x,FLOOR-150);ctx.restore();ctx.textAlign='left';}};}
 // botón táctil COMERCIAR / OFRENDAS
 (()=>{const b=document.createElement('div');b.id='bOz';
  b.style.cssText='position:absolute;left:50%;bottom:24%;transform:translateX(-50%);padding:8px 16px;border-radius:18px;background:rgba(20,12,30,.8);border:1px solid #d8a84a;color:#ffe2a0;font:bold 14px Georgia;display:none;z-index:6;cursor:pointer;pointer-events:auto;user-select:none;-webkit-user-select:none;touch-action:none';
@@ -10809,6 +10809,51 @@ function v103Lay(){const C=AU.c;if(!C)return;const L=V103,M=MUS.m02L;
  const t=C.currentTime+.05,el=Math.max(0,t-(AU.n1t0||t)),P=M.LE-M.LS,pos=el<M.LE?el:M.LS+((el-M.LS)%P);
  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(M.VOL,t+L.FI);s.connect(g);g.connect(AU.bus);s.start(t,pos);L.src=s;L.g=g;L.bus=AU.bus;L.pos=pos;}
 {const _m=auMode;auMode=function(...a){const r=_m(...a);try{v103Lay();}catch(e){}return r;};}
+
+</script>
+<script>
+// ===== v104 TEST: segundo reflejo de Ozmar en el Altar del Hueso (entre la Galería de los Ahorcados y el Mar de Huesos) · advertencia del Coloso =====
+var V104={OZ:33790,R:'PS',vig:0};
+const C104={id:'c104',t:'Lo que espera tras la puerta',req:null,L:[
+ ['O','Deténgase, mi señora. No dé un paso más sin escucharme.'],
+ ['S','Un reflejo que me da órdenes. Habla rápido.'],
+ ['O','Detrás de esa puerta el Velo no se filtra: sangra. Es dolor puro. Maldad pura, juntada durante siglos.'],
+ ['O','Son los muertos que sufrieron aquí abajo. Todos sus gritos cosidos en un solo cuerpo de hueso… y está despierto.'],
+ ['S','Tantas almas en un solo lugar… Eso no es una amenaza, Ozmar. Es poder.'],
+ ['O','Es hambre, mi señora. Nada de lo que ha enfrentado se le parece. Cuando despierte, el paso se sella y no hay vuelta atrás.'],
+ ['S','Entonces no pienso salir con las manos vacías.'],
+ ['O','Llene la bolsa de pociones. Revise sus hechizos y sus reliquias. Si entra a medias, ese mar de huesos la va a sumar a su cuenta.'],
+ ['S','Que lo intente. Yo vine a tomar, no a que me tomen.']]};
+TK94.push(C104);
+{const _o=tkOpen73;tkOpen73=function(c){if(c&&c.id==='c104')return !!TKS73().c104;return _o(c);};}
+function v104In(){return stage===12&&MZ75&&MZ75.cur&&MZ75.cur.id===V104.R;}
+function v104Talk(){return ECOUI.open==='shop'&&ECOUI.tab==='m94'&&V94.m==='talk'&&V94.c===C104;}
+{const _on=on94;on94=function(){return _on()||v104Talk();};}
+function v104Open(){ECOUI.open='shop';ECOUI.tab='m94';ECOUI.t=0;ECOUI.rows=[];talkStart94(C104);}
+function v104Close(){if(ECOUI.tab==='m94'&&MER&&MER.sh){ECOUI.open=null;ECOUI.tab=null;V94.c=null;V94.m='menu';}}
+// al terminar o salir de la charla en el reflejo: se cierra (no hay lista de charlas en los santuarios)
+{const _t=talkTap94;talkTap94=function(){const w=V94.c===C104;_t();if(w&&!V94.c)v104Close();};}
+{const _a=act94;act94=function(a){const w=V94.c===C104&&V94.m==='talk';_a(a);if(w&&(a==='back'||a==='close'))v104Close();};}
+// el reflejo de las Mazmorras se muestra donde está Seraphyne: Pozo (v100) o Altar del Hueso (v104)
+function v104Pos(){if(MER&&MER.sh&&MER.z===12&&stage===12)MER.x=v104In()?V104.OZ:V100.OZ;}
+{const _u=update;update=function(){v104Pos();_u();try{v104Pos();
+ if(state==='play'&&v104In()){const nr=Math.abs(P.x-V104.OZ),ground=!P.air&&Math.abs(P.y-FLOOR)<40,boss=enemies.some(e=>e.boss&&!e.dead);
+  // zona segura junto al reflejo
+  if(ground&&nr<130&&!boss)P.inv=Math.max(P.inv|0,2);
+  // primera vez: Ozmar habla solo al acercarse
+  if(!TKS73().c104&&!ECOUI.open&&ground&&nr<200&&!boss&&!trans&&!MZ75.tr&&!(SAVE.bd&&SAVE.bd.colosoPozo))v104Open();}
+ V104.vig=v104Talk()?Math.min(1,V104.vig+.03):Math.max(0,V104.vig-.05);}catch(_){}};}
+// ▲ junto al reflejo del Altar del Hueso: repetir la advertencia · ▼ ofrendas
+{const _e=ecoUpd;ecoUpd=function(){if(!ECOUI.open&&state==='play'&&v104In()&&TKS73().c104&&MER&&MER.sh&&Math.abs(P.x-V104.OZ)<56&&!P.air&&P.y>=FLOOR-30&&PR.lookup){PR.lookup=0;v104Open();clearPR();return true;}return _e.apply(this,arguments);};}
+// ambiente: viñeta roja que late como un corazón mientras habla
+{const _d=ecoDraw;ecoDraw=function(){if(V104.vig>0&&state==='play'){const C=ctx,t=frame%54,b=(t<6?t/6:t<12?1-(t-6)/6:t<18?(t-12)/6*.6:t<26?.6*(1-(t-18)/8):0),a=V104.vig*(.38+.22*b);
+  C.save();C.setTransform(1,0,0,1,0,0);C.fillStyle='rgba(0,0,0,'+(.3*V104.vig)+')';C.fillRect(0,0,W,H);const g=C.createRadialGradient(W/2,H/2,H*.25,W/2,H/2,W*.62);g.addColorStop(0,'rgba(60,0,0,0)');g.addColorStop(1,'rgba(110,0,0,'+a+')');C.fillStyle=g;C.fillRect(0,0,W,H);C.restore();
+  if(t===0&&v104Talk())shake=Math.max(shake,1.5);}
+ _d();
+ if(state==='play'&&v104In()&&!ECOUI.open&&TKS73().c104&&Math.abs(P.x-V104.OZ)<90){const C=ctx,x=V104.OZ-cam;C.save();C.font='bold 11px Georgia';C.textAlign='center';C.lineWidth=3;C.strokeStyle='#000';const s='▲ escuchar de nuevo · ▼ ofrendas';C.strokeText(s,x,FLOOR-168);C.fillStyle="#ffb0a0";C.fillText(s,x,FLOOR-168);C.restore();}};}
+// nombre del reflejo legible: se vuelve a dibujar encima de la oscuridad de la zona (todos los reflejos de santuario)
+{const _d=ecoDraw;ecoDraw=function(){_d();try{const m=MER;if(state!=='play'||!m||!m.sh||m.z!==stage||(typeof OZD!=='undefined'&&OZD)||ECOUI.open||Math.abs(P.x-m.x)>=160)return;const C=ctx,x=m.x-cam,t=Math.abs(P.x-m.x)<56?'▲ OFRENDAS':'REFLEJO DE OZMAR';
+ C.save();C.setTransform(1,0,0,1,0,0);C.font='bold 13px Georgia';C.textAlign='center';C.lineWidth=4;C.lineJoin='round';C.strokeStyle='rgba(0,0,0,.95)';C.strokeText(t,x,FLOOR-150);C.shadowColor='rgba(150,200,255,.9)';C.shadowBlur=8;C.fillStyle='#f2f8ff';C.fillText(t,x,FLOOR-150);C.restore();}catch(_){}};}
 
 </script>
 </body>
