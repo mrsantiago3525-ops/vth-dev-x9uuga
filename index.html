@@ -11505,5 +11505,54 @@ function beam114(C,x0,by,L,hs,al){const m=V114.M.bm,im=V114.I.bm;if(!im||!im.wid
  _so();};}
 
 </script>
+<script>
+// ===== v115: líneas de tajo procedurales (geometría pre-v114) con efecto de fuego =====
+const V115={E:[],G:[],cnt:{},err:null,lf:-1,seed:0x9e3779b9};
+function r115(){let a=V115.seed=(V115.seed+0x6D2B79F5)|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}
+function c115(k){V115.cnt[k]=(V115.cnt[k]|0)+1;}
+// el dibujo usa su propio azar: el render ya no consume el Math.random del juego
+{const _r=render;render=function(){const m=Math.random;Math.random=r115;try{return _r.apply(this,arguments);}finally{Math.random=m;}};}
+// sprites de tajo v114 fuera (la picada y la onda cargada se quedan)
+slash114=function(){};
+// pose hacia arriba: nunca el cuadro con la espada alzada
+{const _c=cast114;cast114=function(){const r=_c();if(r&&r.k==='cu'&&r.i===1)r.i=r.t<r.R*.75?0:2;return r;};}
+const FP115={o:[[255,60,15],[20,50,255]],m:[[255,165,35],[60,195,255]],c:[[255,250,215],[238,252,255]]};
+function arcPts115(cx,cy,R,th,b,e,n){const p=[];for(let i=0;i<=n;i++){const t=b+(e-b)*i/n,A=th(t);p.push([cx+Math.cos(A)*R,cy+Math.sin(A)*R]);}return p;}
+// geometría idéntica a swTrail/arc95 previos; agachado es nueva (antes no tenía)
+function geo115(){if(!P||state==='title'||P.hp<=0)return null;const x=P.x,y=P.y,f=P.f;const M=A=>f>0?A:Math.PI-A;
+ if(P.atk==='sword'&&P.atkT>0){const a=ATK.sword,u=clamp((a.dur-P.atkT)/a.dur,0,1),c=(P.swC|0)%3;
+  if(P.crouch){const s=Math.min(1,u*3),b=Math.max(0,(u-.3)/.7)*s;return{k:'cr',w:9*(1-u*.4),p:arcPts115(x+f*8,y-22,60,t=>M(-1.1+t*1.45),b,s,14)};}
+  if(c===2){const t=Math.min(1,u*2),x0=x+f*(22+40*t),x1=x+f*(22+150*t),yy=y-50,b=Math.max(0,(u-.5)/.5);const p=[];for(let i=0;i<=10;i++){const q=b+(1-b)*i/10;p.push([x0+(x1-x0)*q,yy]);}return{k:'c2',w:10*(1-u*.5),p};}
+  const s=Math.min(1,u*1.6),a0=c===0?-1.35:1.15,d=c===0?2.5:-2.5,b=Math.max(0,(u-.5)/.5)*s;return{k:'c'+c,w:10*(1-u*.4),p:arcPts115(x+f*14,y-52,88,t=>M(a0+d*t),b,s,16)};}
+ if(P.atk==='upsl'&&P.atkT>0){const s=1-P.atkT/20,e=Math.min(1,s*1.8),b=Math.max(0,e-.55);if(e>b)return{k:'upsl',w:11,p:arcPts115(x+f*4,y-100,88,t=>f>0?(.35-t*(Math.PI+.7)):(Math.PI-.35+t*(Math.PI+.7)),b,e,16)};}
+ if(P.atk==='asl'&&P.atkT>0){const s=1-P.atkT/18,e=Math.min(1,s*1.7),b=Math.max(0,e-.5);if(e>b)return{k:'asl',w:10.5,p:arcPts115(x,y-62,98,t=>M(-Math.PI/2-.4+t*Math.PI*1.7),b,e,18)};}
+ if(P.dv92&&P.vy>0){const H=V115.dh=V115.dh||[];H.push([x+f*10,y+4]);if(H.length>9)H.shift();if(H.length>2)return{k:'dive',w:9,p:H.slice()};return null;}
+ V115.dh=null;return null;}
+function fire115(C,p,w,blue,al,cx){const n=p.length;if(n<2)return;const b=blue?1:0;
+ const N=[];for(let i=0;i<n;i++){const a=p[Math.max(0,i-1)],c=p[Math.min(n-1,i+1)];let dx=c[0]-a[0],dy=c[1]-a[1];const L=Math.hypot(dx,dy)||1;N.push([-dy/L,dx/L]);}
+ const Q=p.map((q,i)=>{const t=i/(n-1),wb=Math.sin(frame*.8+i*1.4)*1.6*t;return[q[0]-cx+N[i][0]*wb,q[1]+N[i][1]*wb];});
+ C.save();C.globalCompositeOperation='lighter';C.lineCap='round';
+ for(const [col,wm,am] of [[FP115.o[b],2.7,.28],[FP115.m[b],1.35,.62],[FP115.c[b],.42,.95]]){
+  for(let i=1;i<n;i++){const t=i/(n-1),tp=Math.min(1,t*1.5)*Math.min(1,(1-t)*5+.45),fl=.82+.36*r115();
+   C.lineWidth=Math.max(.5,w*wm*tp*fl);C.strokeStyle='rgba('+col+','+(al*am*Math.pow(t,.8)).toFixed(3)+')';C.beginPath();C.moveTo(Q[i-1][0],Q[i-1][1]);C.lineTo(Q[i][0],Q[i][1]);C.stroke();}}
+ // lenguas de fuego en el borde exterior
+ const o=FP115.o[b],m=FP115.m[b];for(let i=2;i<n-1;i+=3){const t=i/(n-1);if(t<.3)continue;const q=Q[i],nx=N[i][0],ny=N[i][1],L=(5+9*r115())*w/10*t;
+  C.fillStyle='rgba('+m+','+(.22*al*t).toFixed(3)+')';C.beginPath();C.moveTo(q[0]-ny*3,q[1]+nx*3);C.lineTo(q[0]+ny*3,q[1]-nx*3);C.lineTo(q[0]+nx*L*.6,q[1]+ny*L*.6-L);C.closePath();C.fill();}
+ C.restore();}
+function draw115(){const C=ctx,cx=cam,bl=!!TIDE();const g=geo115();
+ if(g){g.blue=bl;c115('f_'+g.k);
+  if(frame!==V115.lf&&g.p.length>3){const n=r115()<.7?2:1;for(let j=0;j<n;j++){const q=g.p[Math.floor(g.p.length*(.4+.6*r115()))-1]||g.p[g.p.length-1];V115.E.push({x:q[0],y:q[1],vx:(r115()-.5)*1.2,vy:-.6-r115()*1.1,t:0,d:16+r115()*14|0,s:1.5+r115()*1.5,blue:bl});}}}
+ // fantasmas: al terminar el tajo la cinta permanece unos cuadros y se apaga desde la cola
+ if(g){V115.last=g;fire115(C,g.p,g.w,bl,1,cx);}else if(V115.last){V115.G.push({p:V115.last.p,w:V115.last.w,blue:V115.last.blue,a:.85});V115.last=null;}
+ for(let i=V115.G.length-1;i>=0;i--){const o=V115.G[i];if(frame!==V115.lf){o.a-=.17;const k=Math.max(1,Math.ceil(o.p.length*.18));o.p=o.p.slice(Math.min(k,o.p.length-2));}if(o.a<=0||o.p.length<2){V115.G.splice(i,1);continue;}fire115(C,o.p,o.w,o.blue,o.a,cx);}
+ if(V115.G.length>2)V115.G.splice(0,V115.G.length-2);
+ // brasas
+ const cap=40-((typeof V114==='object'&&V114.fx)?V114.fx.length:0);while(V115.E.length>Math.max(0,cap))V115.E.shift();
+ C.save();C.globalCompositeOperation='lighter';
+ for(let i=V115.E.length-1;i>=0;i--){const e=V115.E[i];if(frame!==V115.lf){e.t++;e.x+=e.vx;e.y+=e.vy;e.vy-=.02;e.vx*=.97;}if(e.t>=e.d){V115.E.splice(i,1);continue;}const k=1-e.t/e.d,c=e.blue?(k>.5?'200,240,255':'60,150,255'):(k>.5?'255,230,140':'255,110,30');C.fillStyle='rgba('+c+','+(.9*k).toFixed(3)+')';C.fillRect(e.x-cx-e.s/2,e.y-e.s/2,e.s,e.s);}
+ C.restore();if(V115.E.length)c115('ember');V115.lf=frame;}
+{const _th=tideHero;tideHero=function(){_th();try{draw115();}catch(e){V115.err=V115.err||String(e&&e.stack||e);}};}
+
+</script>
 </body>
 </html>
