@@ -12857,5 +12857,253 @@ function vd131Draw(e){
 console.log('v131 ready', V131.ok, typeof H86!=='undefined'&&H86.vd&&H86.vd.CHARGE, Object.keys(V131.F).length);
 
 </script>
+
+<script>
+// ===== v132 TEST: brillo dorado (y azul de marea) en poderes de Seraphyne y hechizos de Ozmar =====
+// Solo visual: no cambia daño, cajas ni tiempos. Sprites de resplandor cacheados (sin shadowBlur por cuadro).
+const V132={ok:1,on:1,baked:0,gold:null,blue:null,sparkG:null,sparkB:null,spk:[],spkN:48,lf:-1,cnt:{},err:null,seed:0xC0FFEE};
+window.V132=V132;
+for(let i=0;i<V132.spkN;i++)V132.spk.push({l:0,x:0,y:0,vx:0,vy:0,l0:1,s:2,blue:0});
+
+function bake132(){
+  if(V132.baked)return;
+  function rad(stops,sz){
+    const c=document.createElement('canvas');c.width=c.height=sz;
+    const g=c.getContext('2d');
+    const gr=g.createRadialGradient(sz/2,sz/2,0,sz/2,sz/2,sz/2);
+    for(const [t,col] of stops)gr.addColorStop(t,col);
+    g.fillStyle=gr;g.fillRect(0,0,sz,sz);
+    return c;
+  }
+  // Núcleo blanco-caliente → oro → ámbar, halo suave (calidad de orbe de súcubo, más dorado)
+  V132.gold=rad([
+    [0,'rgba(255,255,250,1)'],
+    [.08,'rgba(255,252,230,.98)'],
+    [.18,'rgba(255,230,140,.88)'],
+    [.34,'rgba(255,196,70,.62)'],
+    [.55,'rgba(255,150,36,.32)'],
+    [.78,'rgba(255,110,16,.12)'],
+    [1,'rgba(255,80,0,0)']
+  ],128);
+  // Misma calidad, paleta de marea (blanco → cian → azul)
+  V132.blue=rad([
+    [0,'rgba(255,255,255,1)'],
+    [.08,'rgba(230,250,255,.98)'],
+    [.18,'rgba(160,230,255,.88)'],
+    [.34,'rgba(80,190,255,.62)'],
+    [.55,'rgba(40,140,255,.30)'],
+    [.78,'rgba(20,90,230,.11)'],
+    [1,'rgba(10,50,200,0)']
+  ],128);
+  V132.sparkG=rad([
+    [0,'rgba(255,255,245,1)'],
+    [.35,'rgba(255,220,120,.85)'],
+    [.7,'rgba(255,160,50,.35)'],
+    [1,'rgba(255,120,20,0)']
+  ],32);
+  V132.sparkB=rad([
+    [0,'rgba(255,255,255,1)'],
+    [.35,'rgba(190,240,255,.85)'],
+    [.7,'rgba(70,170,255,.35)'],
+    [1,'rgba(30,100,230,0)']
+  ],32);
+  V132.baked=1;
+}
+bake132();
+
+function r132(){let a=V132.seed=(V132.seed+0x6D2B79F5)|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}
+
+function G132(img,x,y,r,a){
+  if(!img||a<=0||r<=0)return;
+  const C=ctx;C.globalAlpha=a;C.drawImage(img,x-r,y-r,r*2,r*2);C.globalAlpha=1;
+}
+
+// Halo aditivo en capas: halo suave + corona + núcleo. Todo con el sprite cacheado.
+function halo132(x,y,r,a,blue){
+  if(a<=0||r<=1)return;
+  const img=blue?V132.blue:V132.gold;
+  const C=ctx,sm=C.imageSmoothingEnabled;
+  C.save();C.globalCompositeOperation='lighter';C.imageSmoothingEnabled=true;
+  G132(img,x,y,r,a*.95);
+  G132(img,x,y,r*.48,a*.8);
+  G132(img,x,y,r*.2,Math.min(1,a*1.05));
+  C.imageSmoothingEnabled=sm;C.restore();
+  V132.cnt.halo=(V132.cnt.halo|0)+1;
+}
+
+function emit132(x,y,vx,vy,life,s,blue,cv){
+  const E=V132.spk;let o=null;
+  for(let i=0;i<E.length;i++)if(E[i].l<=0){o=E[i];break;}
+  if(!o){o=E[0];for(const e of E)if(e.l<o.l)o=e;}
+  o.x=x;o.y=y;o.vx=vx;o.vy=vy;o.l=o.l0=life;o.s=s;o.blue=blue?1:0;o.cv=cv?1:0;
+}
+
+function step132(){
+  if(V132.lf===frame)return;
+  V132.lf=frame;
+  for(const e of V132.spk){
+    if(e.l<=0)continue;
+    e.l--;e.x+=e.vx;e.y+=e.vy;e.vx*=.96;e.vy*=.96;
+  }
+}
+
+function sparks132(){
+  const C=ctx,sm=C.imageSmoothingEnabled,cv0=typeof camV!=='undefined'?camV:0;
+  C.save();C.globalCompositeOperation='lighter';C.imageSmoothingEnabled=true;
+  for(const e of V132.spk){
+    if(e.l<=0)continue;
+    const k=e.l/e.l0,img=e.blue?V132.sparkB:V132.sparkG,r=e.s*(.6+.8*k);
+    G132(img,e.x-cam,e.y-(e.cv?cv0:0),r,k);
+  }
+  C.imageSmoothingEnabled=sm;C.restore();
+}
+
+function trail132(x,y,vx,vy,blue,n,cv){
+  n=n||3;
+  for(let i=1;i<=n;i++){
+    emit132(x-vx*i*2.2+((r132()-.5)*3),y-vy*i*2.2+((r132()-.5)*3),(r132()-.5)*.5,(r132()-.5)*.5,8+((r132()*8)|0),2.2+r132()*2,blue,cv);
+  }
+}
+
+function stampBeam132(wx,wy,L,w,a,blue,cv){
+  if(a<=0)return;
+  const f=Math.sign(L)||1,len=Math.abs(L),step=88,camY=cv?(typeof camV!=='undefined'?camV:0):0;
+  const x0=wx-cam,y=wy-camY;
+  halo132(x0,y,w*2.4,a,blue);
+  for(let d=step;d<len-20;d+=step)halo132(x0+f*d,y,w*1.55,a*.7,blue);
+  halo132(x0+f*len,y,w*1.8,a*.75,blue);
+  if(frame%2===0){
+    const d=r132()*len;
+    emit132(wx+f*d,wy+(r132()-.5)*w*.8,f*(.6+r132()*1.4),(r132()-.5)*1.2,10+(r132()*10)|0,2.5+r132()*2,blue,cv);
+  }
+}
+
+function draw132Specs(){
+  if(!V132.on||!V132.baked||!P||state==='title')return;
+  try{
+    step132();
+    const C=ctx,blue=typeof TIDE==='function'&&TIDE();
+    // Orbes (plasma solar / proyectil de Seraphyne)
+    if(typeof pproj!=='undefined'){
+      for(const o of pproj){
+        const b=!!(o.dn?blue:0); // orbe downward / marea: azul; disparo horizontal es dorado
+        const x=o.x,y=o.y,pu=1+.12*Math.sin((frame+((o.id||0)*40))* .35);
+        halo132(x-cam,y,38*pu,.95,b);
+        if(o.dn){halo132(x-cam,y-16,16,.45,b);halo132(x-cam,y-28,10,.28,b);}
+        if(frame%2===0)trail132(x,y,o.vx||0,o.vy||0,b,o.dn?2:3);
+        V132.cnt.orb=(V132.cnt.orb|0)+1;
+      }
+    }
+    // Plasma Solar (rayo sostenido)
+    if(P.beamT>0){
+      const k=Math.min(1,P.beamT/8,(60-P.beamT)/4);
+      stampBeam132(P.x+P.f*30,P.y-62,700*P.f,32*k,Math.max(.3,k),0,0);
+      V132.cnt.beam=(V132.cnt.beam|0)+1;
+    }
+    // Tormenta Solar
+    if(P.stormT>0){
+      const k=Math.min(1,P.stormT/12,(72-P.stormT)/8);
+      const px=P.x-cam;
+      halo132(px,P.y-120,150*k,.55*k,0);
+      halo132(px,P.y-40,80*k,.5*k,0);
+      if(frame%2===0)emit132(P.x+(r132()-.5)*80,P.y-20-r132()*200,(r132()-.5)*1.2,-.4-r132(),14,2.5,0);
+      V132.cnt.storm=(V132.cnt.storm|0)+1;
+    }
+    // Ráfaga Solar
+    if(P.specT>0){
+      const k=P.specT/70,px=P.x-cam,py=P.y-40;
+      halo132(px,py,70+240*(1-k),k*.85,0);
+      halo132(px,py,50,k,0);
+      V132.cnt.rafaga=(V132.cnt.rafaga|0)+1;
+    }
+    // Resplandor Solar
+    if(P.rT>0){
+      const k=1-P.rT/14,al=Math.max(0,1-k),f=P.f,cy=P.y-60,px=P.x-cam;
+      halo132(px+f*(40+30*k),cy,28+50*k,.8*al,0);
+      V132.cnt.resp=(V132.cnt.resp|0)+1;
+    }
+    sparks132();
+  }catch(e){V132.err=V132.err||String(e&&e.message||e);}
+}
+
+function draw132HeroFX(){
+  if(!V132.on||!V132.baked||!P||state==='title'||P.hp<=0)return;
+  try{
+    const blue=typeof TIDE==='function'&&TIDE(),x=P.x-cam,y=P.y,f=P.f;
+    // Carga / destello en la mano al lanzar poderes
+    if(typeof cast114==='function'&&typeof V114==='object'&&V114.HAND){
+      const c=cast114();
+      if(c&&V114.HAND[c.k]&&V114.HAND[c.k][c.i]){
+        const h=V114.HAND[c.k][c.i],hx=x+f*h[0],hy=y+h[1];
+        const charge=c.t<c.R?(.4+.75*c.t/c.R):Math.max(0,1-(c.t-c.R)/12);
+        if(charge>0){
+          halo132(hx,hy,22+28*charge,.72*charge,blue);
+          if(frame%2===0&&charge>.45)emit132(P.x+f*h[0]+(r132()-.5)*8,P.y+h[1]+(r132()-.5)*8,(r132()-.5)*1.1,-.8-r132(),12,2.2,blue);
+        }
+        V132.cnt.cast=(V132.cnt.cast|0)+1;
+      }
+    }
+    // Llama dorada (filo) / Llama de Marea (azul, misma calidad)
+    const swinging=P.atk==='sword'||P.atk==='upsl'||P.atk==='asl';
+    let tx=x+f*56,ty=y-62,got=0;
+    if(typeof V115==='object'&&V115.last&&V115.last.p&&V115.last.p.length){
+      const p=V115.last.p,q=p[p.length-1];
+      tx=q[0]-cam;ty=q[1];got=1;
+    }
+    if(swinging||blue){
+      const pu=.7+.3*Math.sin(frame*.23);
+      const R=swinging?(got?52:44):(blue?34:0);
+      if(R>0){
+        halo132(tx,ty,R*pu,swinging?.7:.38,blue);
+        if(swinging)halo132(tx-f*18,ty+8,R*.55,.45,blue);
+      }
+      V132.cnt.flame=(V132.cnt.flame|0)+1;
+    }else if(SAVE&&SAVE.ab&&SAVE.ab.flame){
+      // Llama Áurea: resplandor suave en el filo cuando está desbloqueada
+      halo132(x+f*26,y-58,26,.22,0);
+    }
+  }catch(e){V132.err=V132.err||String(e&&e.message||e);}
+}
+
+function draw132Spells(){
+  if(!V132.on||!V132.baked||typeof SPX==='undefined'||!P)return;
+  try{
+    const cv0=typeof camV!=='undefined'?camV:0;
+    for(const f of SPX.fx){
+      if(f.k==='lan'){
+        const a=Math.min(1,f.t/12),hs=(f.t>30?(40-f.t)/10:1)*a;
+        stampBeam132(cam-20,f.y,W+40,34*Math.max(.2,hs),Math.max(.28,a),0,1);
+        V132.cnt.lan=(V132.cnt.lan|0)+1;
+      }else if(f.k==='bolt'){
+        const x=f.x-cam,ey=f.y-cv0;
+        halo132(x,ey,58,.85,0);
+        halo132(x,ey*0.5,42,.5,0);
+        if(frame%2===0)emit132(f.x+(r132()-.5)*16,f.y-r132()*40,(r132()-.5),.4,12,2.4,0,1);
+        V132.cnt.tor=(V132.cnt.tor|0)+1;
+      }
+    }
+    for(const m of SPX.met){
+      const x=m.cx-cam,y=m.cy-cv0;
+      halo132(x,y,46,.95,0);
+      halo132(x,y,20,.8,0);
+      const vx=(m.tx-m.x)*.04,vy=(m.ty-m.y)*.04;
+      if(frame%2===0)trail132(m.cx,m.cy,vx,vy,0,3,1);
+      V132.cnt.met=(V132.cnt.met|0)+1;
+    }
+    sparks132();
+  }catch(e){V132.err=V132.err||String(e&&e.message||e);}
+}
+
+// Enganches solo de dibujo, al final de la cadena (encima de v114/v115)
+{const _ds=drawSpecs;drawSpecs=function(){_ds.apply(this,arguments);draw132Specs();};}
+{const _th=tideHero;tideHero=function(){_th.apply(this,arguments);draw132HeroFX();};}
+{const _sd=spFxDraw;spFxDraw=function(){_sd.apply(this,arguments);draw132Spells();};}
+
+// Mejora el sprite cacheado de Llama de Marea (mismo trazo, mejor núcleo blanco→cian)
+if(typeof FL74==='object'&&FL74&&V132.blue)FL74.glow=V132.blue;
+
+console.log('v132 ready',V132.ok,V132.baked,!!V132.gold,!!V132.blue);
+
+</script>
 </body>
 </html>
