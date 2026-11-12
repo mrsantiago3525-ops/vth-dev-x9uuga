@@ -14568,5 +14568,170 @@ function draw135World(){
 console.log('v136 ready',V136.ok,V135&&V135.DMG,V135&&V135.BDMG);
 
 </script>
+
+<script>
+// ===== v137 TEST: Vendaval / Eco no atraviesan paredes de las Mazmorras (no publicado) =====
+const V137={
+  ok:1,on:1,
+  STEP:4,PAD:22,GLOPAD:20,
+  wall:0,
+  cnt:{stop:0,blockSeek:0}
+};
+window.V137=V137;
+
+function bounds137(xHint){
+  const pad=V137.PAD, g=V137.GLOPAD;
+  let lo=g, hi=(typeof WORLD==='number'&&isFinite(WORLD)?WORLD:1e9)-g;
+  if(typeof camMin==='number'&&isFinite(camMin)) lo=Math.max(lo,camMin+pad);
+  if(typeof stage!=='undefined'&&stage===MZ_Z&&typeof mzRoom==='function'){
+    const r=mzRoom(xHint);
+    if(r){
+      let x0=r.x0, x1=r.x1;
+      try{if(typeof mzSpan==='function'){const sp=mzSpan(r);x0=sp[0];x1=sp[1];}}catch(_){}
+      try{if(typeof mzX1==='function')x1=mzX1(r);}catch(_){}
+      lo=Math.max(lo,x0+pad);
+      hi=Math.min(hi,x1-pad);
+    }
+  }
+  if(typeof gateOn!=='undefined'&&gateOn&&typeof G1!=='undefined'&&isFinite(G1)) lo=Math.max(lo,G1+20);
+  if(hi<lo)hi=lo;
+  return {lo,hi};
+}
+
+function pushSolids137(x,y,skipE){
+  let nx=x,wall=0;
+  const pw=(P&&P.w)||36, ph=(P&&P.h)||100;
+  for(const o of (solids||[])){
+    const hw=o.w/2+pw/2;
+    if(y>o.y0+2&&y-ph<o.y1&&Math.abs(nx-o.x)<hw){
+      nx=nx<o.x?o.x-hw:o.x+hw;wall=1;
+    }
+  }
+  if(!skipE){
+    for(const e of (enemies||[]))if(e.solid&&!e.dead){
+      const hw=((e.w||40)/2)+pw/2;
+      if(y>(e.y-(e.h||60))+6&&Math.abs(nx-e.x)<hw){
+        nx=nx<e.x?e.x-hw:e.x+hw;wall=1;
+      }
+    }
+  }
+  return {x:nx,wall};
+}
+
+function stepMove137(x0,y0,x1,y1,opt){
+  opt=opt||{};
+  const hint=opt.hint!=null?opt.hint:x0;
+  const b=bounds137(hint);
+  const ph=(P&&P.h)||100;
+  const dist=Math.hypot(x1-x0,y1-y0);
+  const n=Math.max(1,Math.ceil(dist/V137.STEP));
+  let x=x0,y=y0,wall=0;
+  const sx=(x1-x0)/n, sy=(y1-y0)/n;
+  for(let i=0;i<n;i++){
+    let nx=x+sx, ny=y+sy;
+    if(nx<b.lo){nx=b.lo;wall=1;}
+    if(nx>b.hi){nx=b.hi;wall=1;}
+    const s=pushSolids137(nx,ny,opt.skipEnemy);
+    nx=s.x;if(s.wall)wall=1;
+    if(typeof stage!=='undefined'&&stage===MZ_Z&&typeof MZ_CEIL==='number'){
+      if(ny-ph<MZ_CEIL)ny=MZ_CEIL+ph;
+    }
+    x=nx;y=ny;
+    if(wall)break;
+  }
+  return {x,y,wall,lo:b.lo,hi:b.hi};
+}
+
+function losClear137(x0,y0,x1,y1){
+  const r=stepMove137(x0,y0,x1,y1,{hint:x0,skipEnemy:true});
+  if(r.wall)return false;
+  return Math.hypot(r.x-x1,r.y-y1)<14;
+}
+
+function insideSolid137(x,y,hint){
+  const b=bounds137(hint!=null?hint:x);
+  if(x<b.lo-0.01||x>b.hi+0.01)return true;
+  const s=pushSolids137(x,y,true);
+  return !!s.wall;
+}
+
+function land137(){
+  const was=P.air,pvy=P.vy;P.air=true;
+  const pit=(typeof overPit==='function')&&overPit(P.x);
+  if(P.y>=FLOOR&&!pit){P.y=FLOOR;P.vy=0;P.air=false;}
+  for(const p of (platforms||[])){
+    if(!p.hide&&pvy>=0&&P.x>p.x-6&&P.x<p.x+p.w+6&&P.y>=p.y&&P.y-Math.max(1,pvy)<=p.y+10&&!(P.dropT>0&&p===P.dropP)){
+      P.y=p.y;P.vy=0;P.air=false;
+    }
+  }
+  if(!P.air){P.dj2=0;P.adUsed=0;}
+  return was&&!P.air;
+}
+
+collide133=function(){
+  const tx=P.x, ty=P.y;
+  let wall=0;
+  if(P&&P.vd133&&typeof V133!=='undefined'){
+    const r=stepMove137(V133.x0,V133.y0,tx,ty,{hint:V133.x0});
+    P.x=r.x;P.y=r.y;wall=r.wall;
+    if(wall){V133.dx=0;V133.dy=0;V137.cnt.stop=(V137.cnt.stop|0)+1;}
+  }else{
+    const r=stepMove137(tx,ty,tx,ty,{hint:tx});
+    P.x=r.x;P.y=r.y;wall=r.wall;
+  }
+  if(wall)V137.wall=1;
+  return land137();
+};
+
+collide135=function(){
+  const tx=P.x, ty=P.y;
+  const x0=(P&&P.ec135&&typeof V135!=='undefined')?V135.x0:tx;
+  const y0=(P&&P.ec135&&typeof V135!=='undefined')?V135.y0:ty;
+  const r=stepMove137(x0,y0,tx,ty,{hint:x0});
+  P.x=r.x;P.y=r.y;
+  let wall=r.wall;
+  const f0=(typeof V135!=='undefined'&&V135)?V135.f0:((P&&P.f)||1);
+  if((f0>0&&P.x<tx-0.5)||(f0<0&&P.x>tx+0.5))wall=1;
+  if((typeof V135!=='undefined'&&V135&&V135.ground)||(P&&P.y>=FLOOR)){
+    const pit=(typeof overPit==='function')&&overPit(P.x);
+    if(!pit){P.y=FLOOR;P.vy=0;P.air=false;if(V135)V135.ground=1;}
+  }
+  if(wall){V137.wall=1;V137.cnt.stop=(V137.cnt.stop|0)+1;}
+  return wall;
+};
+
+{const _fn=findNext135;
+findNext135=function(){
+  if(typeof V135==='undefined'||V135.hitN>=V135.HITS)return null;
+  let alt=null,altD=V135.RADIUS,same=null,sameD=V135.RADIUS;
+  for(const e of (enemies||[])){
+    if(typeof live135==='function'?!live135(e):!(!e||e.dead||(e.hp|0)<=0))continue;
+    const d=Math.hypot(e.x-P.x,(e.y-30)-(P.y-40));
+    if(d>V135.RADIUS)continue;
+    if(!losClear137(P.x,P.y,e.x,(e.y||FLOOR)-Math.min(50,(e.h||80)*.45)))continue;
+    if(e===V135.last){if(d<sameD){same=e;sameD=d;}}
+    else if(d<altD){alt=e;altD=d;}
+  }
+  return alt||same;
+};}
+
+{const _p135=post135;
+post135=function(held){
+  V137.wall=0;
+  const st=P&&P.ecSt;
+  const cur=typeof V135!=='undefined'?V135.cur:null;
+  _p135.apply(this,arguments);
+  if(P&&P.ec135&&st==='seek'&&V137.wall&&P.ecSt==='seek'){
+    V137.cnt.blockSeek=(V137.cnt.blockSeek|0)+1;
+    const n=(typeof findNext135==='function')?findNext135():null;
+    if(!n||n===cur){
+      P.ecSt='finish';P.ecPose=3;P.ecFin=V135.FINISH_T;V135.cur=null;
+    }else{
+      V135.cur=n;P.ecSeek=24;P.f=n.x>=P.x?1:-1;
+    }
+  }
+};}
+
+</script>
 </body>
 </html>
