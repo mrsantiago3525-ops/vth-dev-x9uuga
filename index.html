@@ -15937,5 +15937,109 @@ if(_dc){
 console.log('v141 ready',V141.ok);
 
 </script>
+
+<script>
+// ===== v142 TEST: el candado de Ozmar es muy generoso · no publicado =====
+// The lock sits on the right edge of the cage (OZX+38). Dialogue can freeze
+// Sera more than 90px away, and hitLock127 used to ignore swings that already
+// reached the lock. Standing just past the lock facing away also missed.
+const V142={ok:1,on:1,cnt:{lock:0,swing:0}};
+window.V142=V142;
+
+function box142(){
+  const mid=typeof OZX==='number'?OZX:520;
+  const lx=typeof lockX127==='function'?lockX127():mid+38;
+  const fl=typeof FLOOR==='number'?FLOOR:392;
+  return {x0:mid-120,x1:mid+120,y0:fl-220,y1:fl+24,lx:lx,ly:fl-58,mid:mid};
+}
+function ov142(a,b){return !!(a&&b&&a.x0<b.x1&&a.x1>b.x0&&a.y0<b.y1&&a.y1>b.y0);}
+function swordBox142(){
+  if(!P||!P.atk)return null;
+  const f=P.f||1,w=P.w||36,h=P.h||100,x=P.x,y=P.y,atk=P.atk;
+  if(atk==='upsl')return {x0:x-110,x1:x+110,y0:y-h-160,y1:y+30};
+  if(atk==='asl')return {x0:f>0?x-90:x-180,x1:f>0?x+180:x+90,y0:y-170,y1:y+40};
+  if(atk==='chsl')return {x0:f>0?x-40:x-190,x1:f>0?x+190:x+40,y0:y-150,y1:y+24};
+  if(atk==='sword'){
+    const rng=((ATK&&ATK.sword&&ATK.sword.rng)||128)+48;
+    const a0=x+f*(w/2-20), a1=x+f*(w/2+rng);
+    return {x0:Math.min(a0,a1),x1:Math.max(a0,a1),y0:y-h-36,y1:y+16};
+  }
+  return null;
+}
+function nearCage142(){
+  if(!V142.on||typeof caged127!=='function'||!caged127()||!V127||V127.broken)return false;
+  if(typeof stage!=='undefined'&&stage!==0)return false;
+  if(!P)return false;
+  const b=box142();
+  return Math.abs(P.x-b.mid)<=220||Math.abs(P.x-b.lx)<=220;
+}
+function swingTouches142(){
+  const b=box142(), sw=swordBox142();
+  if(ov142(sw,b))return true;
+  if(!sw||!P)return false;
+  // standing next to the lock, cage or Ozmar: the swing still counts
+  const body={x0:P.x-(P.w||36)/2-8,x1:P.x+(P.w||36)/2+8,y0:P.y-(P.h||100),y1:P.y+8};
+  return ov142(body,b)&&nearCage142();
+}
+function tryHit142(){
+  if(!V142.on||typeof hitLock127!=='function')return;
+  if(typeof caged127!=='function'||!caged127()||!V127||V127.broken)return;
+  if(V127.phase!=='waitlock')return;
+  if(!nearCage142()&&!swingTouches142())return;
+  if(!swingTouches142()&&!nearCage142())return;
+  if(!(P&&(P.atk==='sword'||P.atk==='upsl'||P.atk==='asl'||P.atk==='chsl')))return;
+  if(!swingTouches142()&&!nearCage142())return;
+  // If she's by the cage and swinging, or the sword overlaps the generous box
+  if(!(swingTouches142()||(nearCage142()&&P.atk)))return;
+  V142.cnt.swing=(V142.cnt.swing|0)+1;
+  const b=box142();
+  try{hitLock127(b.lx,{rng:999});V142.cnt.lock=(V142.cnt.lock|0)+1;}catch(_){}
+}
+
+if(typeof hitLock127==='function'){
+  const _h=hitLock127;
+  hitLock127=function(hx,a){
+    if(!V142.on)return _h.apply(this,arguments);
+    if(typeof caged127==='function'&&(!caged127()||(V127&&V127.broken)))return;
+    const b=box142();
+    const close=nearCage142()||(hx!=null&&hx>b.x0-100&&hx<b.x1+100);
+    if(!close)return;
+    const px=P&&P.x;
+    try{
+      if(P&&Math.abs(P.x-b.lx)>80)P.x=b.lx-16;
+      return _h.call(this,b.lx,{rng:999});
+    }finally{try{if(P&&px!=null)P.x=px;}catch(_){}}
+  };
+}
+
+if(typeof update==='function'){
+  const _u=update;
+  update=function(){
+    const r=_u.apply(this,arguments);
+    try{
+      if(V142.on&&V127&&V127.phase==='waitlock'&&P&&P.atkT>0)tryHit142();
+    }catch(_){}
+    return r;
+  };
+}
+
+if(typeof hb95==='function'){
+  const _hb=hb95;
+  hb95=function(x0,x1,y0,y1,dmg,id,dir){
+    const n=_hb.apply(this,arguments);
+    try{
+      if(V142.on&&V127&&V127.phase==='waitlock'){
+        const b=box142();
+        const sw={x0:Math.min(x0,x1),x1:Math.max(x0,x1),y0:Math.min(y0,y1),y1:Math.max(y0,y1)};
+        if(ov142(sw,b)||nearCage142())tryHit142();
+      }
+    }catch(_){}
+    return n;
+  };
+}
+
+console.log('v142 ready',V142.ok);
+
+</script>
 </body>
 </html>
