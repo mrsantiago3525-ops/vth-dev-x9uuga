@@ -16041,5 +16041,527 @@ if(typeof hb95==='function'){
 console.log('v142 ready',V142.ok);
 
 </script>
+<script>
+// ===== v143 TEST: ritmo, hojas con espera, tesoros, Gorrath/Nhaz y gigantes · no publicado =====
+const V143={
+  ok:1,on:1,
+  WAIT:'Mmm, este élfico es antiguo… vuelve más tarde, necesito tiempo.',
+  READY:'Ya está. Puedo traducírtela… por un módico precio.',
+  // prices proportional to power, not extreme
+  PRICE:{charge:240,dive:330,solar:600},
+  PRICE_V:2100,
+  PRICE_E:3000,
+  HP_MUL:1.22,
+  DMG_MUL:1.20,
+  GOR_HP:1.40,
+  GOR_DMG:1.28,
+  NH_HP:1.45,
+  NH_DMG:1.28,
+  GIANT_MUL:.08,
+  STUN_MUL:.7,
+  ADD0:1800,
+  ADD1:1600,
+  CHESTS:[
+    {id:'h143_0a',z:0,x:1960,y:215,ag:90,xp:20},
+    {id:'h143_0b',z:0,x:3130,y:225,ag:90,xp:20},
+    {id:'h143_0c',z:0,x:4560,ag:110,xp:25},
+    {id:'h143_1a',z:1,x:1530,y:210,ag:90,xp:20},
+    {id:'h143_1b',z:1,x:4480,ag:110,xp:25},
+    {id:'h143_2a',z:2,x:3920,y:300,ag:120,xp:30},
+    {id:'h143_3a',z:3,x:2480,y:300,ag:120,xp:30},
+    {id:'h143_4a',z:4,x:1980,y:208,ag:120,xp:30},
+    {id:'h143_5a',z:5,x:5520,y:300,ag:120,xp:30}
+  ],
+  patched:0,cnt:{}
+};
+window.V143=V143;
+
+const ZBOSS_LAST143={0:'captain',1:'witch',2:'gorrath',3:'nhaz',4:'medusa',5:'gargola',6:'knight'};
+
+function applyPrices143(){
+  try{if(typeof V140==='object'&&V140.PRICE){V140.PRICE.charge=V143.PRICE.charge;V140.PRICE.dive=V143.PRICE.dive;V140.PRICE.solar=V143.PRICE.solar;}}catch(_){}
+  try{if(typeof V133==='object')V133.PRICE=V143.PRICE_V;}catch(_){}
+  try{if(typeof V135==='object')V135.PRICE=V143.PRICE_E;}catch(_){}
+}
+
+function sheetReady143(k){
+  if(!V143.on||!SAVE)return false;
+  if(!held140||!held140(k))return false;
+  if(SAVE.sh140ready&&SAVE.sh140ready[k])return true;
+  const need=SAVE.sh140need&&SAVE.sh140need[k];
+  if(need==null)return false;
+  try{if(typeof bossDone==='function')return !!bossDone(need|0);}catch(_){}
+  const id=ZBOSS_LAST143[need|0];
+  return !!(id&&SAVE.bd&&SAVE.bd[id]);
+}
+
+function armWait143(k){
+  if(!V143.on||!SAVE)return;
+  SAVE.sh140need=SAVE.sh140need||{};
+  SAVE.sh140ready=SAVE.sh140ready||{};
+  if(SAVE.sh140ready[k]||SAVE.sh140need[k]!=null)return;
+  let z=typeof stage==='number'?stage:0;
+  if(z>10)z=0;
+  try{if(typeof bossDone==='function'&&bossDone(Math.min(z,10)))z=Math.min(z+1,10);}catch(_){}
+  SAVE.sh140need[k]=z;
+  try{saveG();}catch(_){}
+  V143.cnt.arm=(V143.cnt.arm|0)+1;
+}
+
+function anyWaiting143(){
+  if(!SAVE||!SAVE.sh140)return false;
+  for(const k of ['dive','charge','solar'])if(held140(k)&&!sheetReady143(k))return true;
+  return false;
+}
+function anyReadyWait143(){
+  if(!SAVE||!SAVE.sh140)return false;
+  for(const k of ['dive','charge','solar'])if(held140(k)&&sheetReady143(k)&&!(SAVE.gt&&SAVE.gt['oz143r_'+k]))return true;
+  return false;
+}
+
+function sayOz143(line,reopen){
+  try{
+    if(typeof ecoMsg==='function')ecoMsg(line);
+    if(typeof showCards==='function'){
+      showCards(['OZMAR: «'+line+'»'],function(){
+        state='play';
+        if(reopen!==false&&typeof ECOUI!=='undefined'){ECOUI.open='shop';ECOUI.tab='m94';ECOUI.t=0;}
+        if(typeof V94!=='undefined'&&V94.m!=='trade'&&V94.m!=='list'&&V94.m!=='talk'){V94.m='menu';V94.sel=0;}
+      });
+    }else{toastTxt='OZMAR: «'+line+'»';toastT=240;}
+  }catch(_){try{toastTxt='OZMAR: «'+line+'»';toastT=240;}catch(__){}}
+  V143.lastOz=line;
+}
+
+function migrate143(){
+  if(!V143.on||!SAVE)return;
+  if(SAVE.v143)return;
+  SAVE.v143=1;
+  SAVE.sh140ready=SAVE.sh140ready||{};
+  if(SAVE.sh140){
+    for(const k of ['dive','charge','solar']){
+      if(SAVE.sh140[k]&&(SAVE.sh140need==null||SAVE.sh140need[k]==null))SAVE.sh140ready[k]=1;
+    }
+  }
+  try{saveG();}catch(_){}
+  V143.cnt.migrated=(V143.cnt.migrated|0)+1;
+}
+
+function lockNewGame143(){
+  if(!SAVE)return;
+  SAVE.v143=1;
+  SAVE.sh140need=SAVE.sh140need||{};
+  SAVE.sh140ready=SAVE.sh140ready||{};
+}
+
+function buff143(e,opts){
+  if(!V143.on||!e||e._v143||e.type==='wworm')return;
+  e._v143=1;
+  if(opts&&(opts.hp!=null||opts.maxHp!=null))return;
+  const early=e.type==='captain'||e.type==='elf'||e.type==='witch';
+  let hp=1,dg=1;
+  if(e.type==='gorrath'||e.type==='beast'){hp=V143.GOR_HP;dg=V143.GOR_DMG;}
+  else if(e.type==='nhaz'){hp=V143.NH_HP;dg=V143.NH_DMG;}
+  else if(early||(e.boss&&e.type!=='golem'))return;
+  else{hp=V143.HP_MUL;dg=V143.DMG_MUL;}
+  if(hp!==1){e.hp=Math.max(1,Math.round(e.hp*hp));e.maxHp=Math.max(1,Math.round((e.maxHp||e.hp)*hp));if(e.hp2)e.hp2=Math.round(e.hp2*hp);}
+  if(dg!==1&&e.dmg!=null)e.dmg=Math.max(1,Math.round(e.dmg*dg));
+}
+
+function patchWorld143(){
+  if(V143.patched||!V143.on)return;
+  V143.patched=1;
+  try{
+    if(typeof ZW!=='undefined'){ZW[0]+=V143.ADD0;ZW[1]+=V143.ADD1;}
+    if(typeof ZGt!=='undefined'){ZGt[0]+=V143.ADD0;ZGt[1]+=V143.ADD1;}
+    if(typeof DOORD!=='undefined'){
+      for(const d of (DOORD[0]||[]))if(d.x>=4000)d.x+=V143.ADD0;
+      for(const d of (DOORD[1]||[])){
+        if(d.to===0&&d.tx>=3900)d.tx+=V143.ADD0;
+        if(d.x>=7000)d.x+=V143.ADD1;
+      }
+      for(const d of (DOORD[2]||[]))if(d.to===1&&d.tx>=6800)d.tx+=V143.ADD1;
+    }
+    if(typeof M25==='object'&&M25){
+      M25.C0+=V143.ADD1;M25.TDX+=V143.ADD1;M25.EX+=V143.ADD1;M25.TR+=V143.ADD1;
+    }
+    if(typeof M25CR!=='undefined'){
+      for(const row of M25CR){
+        if(Array.isArray(row)){
+          for(const pt of row){if(Array.isArray(pt)&&typeof pt[0]==='number')pt[0]+=V143.ADD1;}
+        }
+      }
+    }
+  }catch(_){}
+}
+
+function placeChests143(z){
+  if(!V143.on||typeof chests==='undefined')return;
+  for(const c of V143.CHESTS){
+    if(c.z!==z)continue;
+    if(chests.some(q=>q&&q.id===c.id))continue;
+    const o={id:c.id,x:c.x,rw:'s143',ag:c.ag,xp:c.xp||0,open:!!(SAVE&&SAVE.ch&&SAVE.ch[c.id]),t:0};
+    if(c.y!=null)o.y=c.y;
+    chests.push(o);
+  }
+}
+
+function extendMissions143(){
+  if(!V143.on)return;
+  const fl=typeof FLOOR==='number'?FLOOR:392;
+  if(stage===0){
+    const plats=[
+      {x:3480,y:300,w:140},{x:3780,y:255,w:130},{x:4080,y:300,w:150},
+      {x:4380,y:240,w:120},{x:4680,y:285,w:180},{x:4980,y:300,w:140},{x:5280,y:270,w:130}
+    ];
+    for(const p of plats)if(!platforms.some(q=>q.x===p.x&&q.y===p.y))platforms.push(p);
+    if(!spikes.some(s=>s.x===3920))spikes.push({x:3920,w:110},{x:4720,w:100});
+    const route=[
+      {x:3680,t:'soldier'},{x:3820,t:'shield'},{x:4020,t:'soldier'},
+      {x:4180,t:'archer',l:4},{x:4360,t:'shield'},{x:4520,t:'soldier'},
+      {x:4700,t:'archer',l:7},{x:4880,t:'shield'},{x:5050,t:'soldier'}
+    ];
+    for(const r of route)if(!ROUTE.some(q=>q.x===r.x&&q.t===r.t))ROUTE.push(r);
+    if(!urns.some(u=>u.x===3780)){
+      urns.push({x:3780,y:255,b:0},{x:4680,y:285,b:0},{x:5050,y:fl,b:0});
+    }
+  }
+  if(stage===1){
+    const plats=[
+      {x:3680,y:260,w:150},{x:3980,y:300,w:140},{x:4280,y:230,w:120},
+      {x:4580,y:270,w:160},{x:4880,y:300,w:140},{x:5120,y:250,w:120}
+    ];
+    for(const p of plats)if(!platforms.some(q=>q.x===p.x&&q.y===p.y))platforms.push(p);
+    if(!pits.some(p=>p.x===3860)){
+      pits.push({x:3860,w:160,lash:0,cd:0},{x:4780,w:150,lash:0,cd:0});
+    }
+    const route=[
+      {x:3650,t:'wolf'},{x:3720,t:'wolf'},{x:3900,t:'wraith'},
+      {x:4120,t:'dryad'},{x:4220,t:'wolf'},{x:4340,t:'spider'},
+      {x:4520,t:'wraith'},{x:4660,t:'dryad'},{x:4920,t:'wolf'},
+      {x:5000,t:'wraith'},{x:5080,t:'dryad'}
+    ];
+    for(const r of route)if(!ROUTE.some(q=>q.x===r.x&&q.t===r.t))ROUTE.push(r);
+    if(!urns.some(u=>u.x===3680))urns.push({x:3680,y:260,b:0},{x:4580,y:270,b:0});
+  }
+}
+
+function blockGiants143(){
+  if(!V143.on||!P||state!=='play'||typeof enemies==='undefined')return;
+  for(const e of enemies){
+    if(!e||e.dead||e.type!=='golem')continue;
+    const hw=(e.w||150)/2+(P.w||28)/2+6;
+    if(Math.abs(P.x-e.x)<hw){
+      P.x=P.x<e.x?e.x-hw:e.x+hw;
+      P.vx=0;
+      if(P.dashT>0)P.dashT=0;
+      if(P.slideT>0)P.slideT=0;
+      V143.cnt.block=(V143.cnt.block|0)+1;
+    }
+  }
+}
+
+function giantMul143(e,d,kind){
+  if(!V143.on||!e||e.type!=='golem'||d>=9999)return d;
+  try{if(typeof TIDE==='function'&&TIDE()&&kind==='sword')return d;}catch(_){}
+  const stun=e.st==='stun';
+  if(kind==='sword'){
+    // GIANT66 already applies *0.1 then stun *2 inside hitEnemy.
+    // sword + stun: want ~STUN_MUL final → pre-scale  STUN_MUL / 0.2
+    // sword normal: want GIANT_MUL final → pre-scale GIANT_MUL / 0.1
+    if(stun)d=Math.round(d*(V143.STUN_MUL/0.2));
+    else d=Math.round(d*(V143.GIANT_MUL/0.1));
+  }else{
+    d=Math.max(1,Math.round(d*(stun?V143.STUN_MUL:V143.GIANT_MUL)));
+  }
+  if(!stun){
+    if(!(e.ck143>0)){e.ck143=18;try{addText(e.x,e.y-280,'¡CLANK!','#cfd8e0');S('block');}catch(_){}}
+  }
+  return Math.max(1,d);
+}
+
+function bossTune143(e){
+  if(!e||e.dead)return;
+  if(e.type==='gorrath'){
+    if(e.cd>1)e.cd-=.45;
+    if(e.st==='expose'&&e.stT>150)e.stT=150;
+    if(e.st==='slashW'&&e.stT>32)e.stT=32;
+    if(e.st==='slamW'&&e.stT>40)e.stT=40;
+  }
+  if(e.type==='nhaz'){
+    const low=e.phase>=4||(e.maxHp>0&&e.hp<e.maxHp*.28);
+    if(low){
+      e.desp143=1;
+      if(e.st==='gasp'&&e.stT>16)e.stT=16;
+      if(e.st==='vortex'&&e.stT>42)e.stT=42;
+      if(e.st==='land'&&e.stT>28)e.stT=28;
+      if(e.cd>1)e.cd-=.55;
+    }
+  }
+}
+
+function stepNhFX143(){
+  if(!V143.on||typeof enemies==='undefined')return;
+  const e=enemies.find(o=>o&&o.type==='nhaz'&&!o.dead);
+  if(!e){V143.scorch=V143.scorch||[];return;}
+  V143.scorch=V143.scorch||[];
+  const st=e.st||'';
+  const mouth=(typeof nhMouth==='function')?nhMouth(e):{x:e.x+e.f*140,y:e.y-160};
+  if(st==='fire'||st==='sweep'||st==='fan'){
+    if(parts.length<720){
+      for(let i=0;i<6;i++){
+        const d=rnd(40,280),a=(e.fa||0)+rnd(-.15,.15);
+        parts.push({x:mouth.x+e.f*Math.cos(a)*d,y:mouth.y+Math.sin(a)*d,vx:e.f*rnd(2,7),vy:rnd(-2,1),life:rnd(12,26),c:['#7af4ff','#dfeaff','#4a7bff','#fff','#b8f8ff'][i%5],s:rnd(2,5),glow:1});
+      }
+    }
+    if(e.t%3===0)V143.scorch.push({x:mouth.x+e.f*rnd(80,420),y:FLOOR-2,t:48,r:rnd(16,28)});
+  }
+  if(st==='claw'||st==='tail'||st==='swoop'||st==='quake'){
+    if(e.stT%4===0)burst(e.x+e.f*rnd(80,260),FLOOR-8,8,'#7af4ff',5);
+  }
+  if(e.desp143&&e.t%4===0&&parts.length<700){
+    parts.push({x:e.x+rnd(-120,120),y:e.y-rnd(40,200),vx:rnd(-.8,.8),vy:rnd(-1.5,-.2),life:rnd(16,28),c:Math.random()<.5?'#ff5a40':'#7af4ff',s:rnd(2,4),glow:1});
+  }
+  for(let i=V143.scorch.length-1;i>=0;i--){V143.scorch[i].t--;if(V143.scorch[i].t<=0)V143.scorch.splice(i,1);}
+}
+
+function drawNhFX143(){
+  if(!V143.on||typeof ctx==='undefined'||state==='title')return;
+  const C=ctx;
+  if(V143.scorch){
+    C.save();C.globalCompositeOperation='lighter';
+    for(const s of V143.scorch){
+      const a=Math.max(0,s.t/48);
+      C.fillStyle='rgba(80,200,255,'+(0.18*a)+')';
+      C.beginPath();C.ellipse(s.x-cam,s.y,s.r,s.r*.35,0,0,7);C.fill();
+    }
+    C.restore();
+  }
+  const e=enemies&&enemies.find(o=>o&&o.type==='nhaz'&&!o.dead);
+  if(!e)return;
+  const x=e.x-cam,y=e.y-(e.fl?160:185);
+  C.save();C.globalCompositeOperation='lighter';
+  const pulse=.45+.25*Math.sin((typeof frame==='number'?frame:0)*.18);
+  const rad=e.desp143?220:150;
+  const g=C.createRadialGradient(x,y,20,x,y,rad);
+  if(e.desp143){
+    g.addColorStop(0,'rgba(255,80,50,'+(0.28*pulse)+')');
+    g.addColorStop(.45,'rgba(80,180,255,'+(0.18*pulse)+')');
+    g.addColorStop(1,'rgba(40,80,255,0)');
+  }else{
+    g.addColorStop(0,'rgba(120,220,255,'+(0.16*pulse)+')');
+    g.addColorStop(1,'rgba(40,80,255,0)');
+  }
+  C.fillStyle=g;C.fillRect(x-rad,y-rad,rad*2,rad*2);
+  if(e.st==='fire'||e.st==='sweep'){
+    try{if(typeof nh72Draw==='function'){/* already drawn */} }catch(_){}
+    C.globalAlpha=.55;
+    C.fillStyle='rgba(200,250,255,.25)';
+    C.beginPath();C.arc(x+e.f*40,y,30+pulse*10,0,7);C.fill();
+  }
+  C.restore();
+}
+
+// ---- boot ----
+applyPrices143();
+patchWorld143();
+try{migrate143();}catch(_){}
+
+{const _rp=resetProgress;
+resetProgress=function(){
+  const r=_rp.apply(this,arguments);
+  try{if(V143.on)lockNewGame143();}catch(_){}
+  return r;
+};}
+
+{const _lg=loadG;
+loadG=function(){
+  const r=_lg.apply(this,arguments);
+  try{if(V143.on)migrate143();}catch(_){}
+  return r;
+};}
+
+{const _sp=spawn;
+spawn=function(type,i){
+  const r=_sp.apply(this,arguments);
+  try{buff143(enemies[enemies.length-1]);}catch(_){}
+  return r;
+};}
+
+if(typeof spawnAt==='function'){
+  const _sa=spawnAt;
+  spawnAt=function(type,x,o){
+    const e=_sa.apply(this,arguments);
+    try{
+      if(e){
+        if(o&&(o.hp!=null||o.maxHp!=null))e._v143=1;
+        else if(!e._v143)buff143(e);
+      }
+    }catch(_){}
+    return e;
+  };
+}
+
+{const _sl=setupLevel;
+setupLevel=function(){
+  const r=_sl.apply(this,arguments);
+  try{if(V143.on)extendMissions143();}catch(_){}
+  return r;
+};}
+
+{const _bz=buildZoneObjs;
+buildZoneObjs=function(z){
+  const r=_bz.apply(this,arguments);
+  try{if(V143.on)placeChests143(z);}catch(_){}
+  return r;
+};}
+
+if(typeof takeSheet140==='function'){
+  const _tk=takeSheet140;
+  takeSheet140=function(k){
+    const r=_tk.apply(this,arguments);
+    try{if(V143.on)armWait143(k);}catch(_){}
+    return r;
+  };
+}
+
+if(typeof translate140==='function'){
+  const _tr=translate140;
+  translate140=function(k){
+    try{
+      if(V143.on&&held140(k)&&!sheetReady143(k)){
+        sayOz143(V143.WAIT,true);
+        V143.cnt.deny=(V143.cnt.deny|0)+1;
+        return false;
+      }
+    }catch(_){}
+    return _tr.apply(this,arguments);
+  };
+}
+
+if(typeof ecoOpen==='function'){
+  const _eo=ecoOpen;
+  ecoOpen=function(m){
+    const r=_eo.apply(this,arguments);
+    try{
+      if(V143.on&&m==='shop'){
+        if(anyWaiting143()&&!(SAVE.gt&&SAVE.gt.oz143wait)){
+          SAVE.gt=SAVE.gt||{};SAVE.gt.oz143wait=1;try{saveG();}catch(_){}
+          // first visit still plays the v140 OZ line; then the wait line
+          setTimeout(function(){try{if(ECOUI&&ECOUI.open==='shop')sayOz143(V143.WAIT,true);}catch(_){}},0);
+        }else if(anyReadyWait143()){
+          for(const k of ['dive','charge','solar']){
+            if(held140(k)&&sheetReady143(k)&&!(SAVE.gt&&SAVE.gt['oz143r_'+k])){
+              SAVE.gt=SAVE.gt||{};SAVE.gt['oz143r_'+k]=1;try{saveG();}catch(_){}
+              sayOz143(V143.READY,true);
+              break;
+            }
+          }
+        }
+      }
+    }catch(_){}
+    return r;
+  };
+}
+
+if(typeof rows94==='function'){
+  const _r=rows94;
+  rows94=function(t){
+    const L=_r.apply(this,arguments);
+    if(!V143.on||t!==1)return L;
+    const names={dive:'Caída Solar',charge:'Tajo Cargado',solar:'Espada Solar'};
+    for(const row of L){
+      let k=null;
+      for(const id of ['dive','charge','solar'])if(row&&row.n===names[id])k=id;
+      if(!k)continue;
+      const learned=k==='dive'?ownedDive140():k==='charge'?learnedCharge140():ownedSolar140();
+      if(learned||!held140(k))continue;
+      if(!sheetReady143(k)){
+        row.x='en estudio';
+        row.d='Ozmar aún traduce esta hoja. Vuelve más tarde.';
+        row.go=function(){sayOz143(V143.WAIT,true);};
+      }
+    }
+    return L;
+  };
+}
+
+if(typeof openChest==='function'){
+  const _oc=openChest;
+  openChest=function(c){
+    if(c&&c.rw==='s143'){
+      if(c.open)return;
+      const n=c.ag|0,y=c.y||FLOOR;
+      try{ecoAdd(n,c.x,y-70);}catch(_){}
+      if(c.xp)try{gainXP(c.xp);}catch(_){}
+      c.open=true;SAVE.ch=SAVE.ch||{};SAVE.ch[c.id]=1;try{saveG();}catch(_){}
+      try{S('rafaga');S('pickup');}catch(_){}
+      flash=Math.max(flash,10);
+      banner={text:'TESORO OCULTO',sub:'+'+n+' ◈ · almas escondidas',t:150};
+      for(let i=0;i<28;i++)parts.push({x:c.x+rnd(-14,14),y:y-rnd(10,40),vx:rnd(-2.5,2.5),vy:-rnd(2,6),life:rnd(30,55),c:Math.random()<.5?'#ffd23a':'#e4eef8',s:rnd(2,4),glow:1});
+      V143.cnt.chest=(V143.cnt.chest|0)+1;
+      return;
+    }
+    return _oc.apply(this,arguments);
+  };
+}
+
+if(typeof hitEnemy==='function'){
+  const _he=hitEnemy;
+  hitEnemy=function(e,d,kind,dir){
+    try{if(V143.on)d=giantMul143(e,d,kind);}catch(_){}
+    return _he.call(this,e,d,kind,dir);
+  };
+}
+
+if(typeof m25Wave==='function'){
+  const _mw=m25Wave;
+  m25Wave=function(k){
+    const r=_mw.apply(this,arguments);
+    try{
+      if(k===0)M25.bar=6000+V143.ADD1;
+      if(k===1)M25.bar=6660+V143.ADD1;
+      if(M25.bar)for(const o of (M25.em||[]))o.x=Math.min(o.x,M25.bar-60);
+    }catch(_){}
+    return r;
+  };
+}
+
+if(typeof aiUpdate0==='function'){
+  const _ai=aiUpdate0;
+  aiUpdate0=function(e){
+    const r=_ai.apply(this,arguments);
+    try{if(V143.on)bossTune143(e);}catch(_){}
+    return r;
+  };
+}
+
+{const _u=update;
+update=function(){
+  const r=_u.apply(this,arguments);
+  try{
+    if(V143.on){
+      blockGiants143();
+      stepNhFX143();
+      for(const e of (enemies||[]))if(e&&e.ck143>0)e.ck143--;
+    }
+  }catch(_){}
+  return r;
+};}
+
+{const _dp=drawPlay;
+drawPlay=function(){
+  const r=_dp.apply(this,arguments);
+  try{if(V143.on)drawNhFX143();}catch(_){}
+  return r;
+};}
+
+// if a zone is already loaded
+try{if(typeof stage==='number'&&typeof chests!=='undefined')placeChests143(stage);}catch(_){}
+try{if(typeof stage==='number'&&(stage===0||stage===1))extendMissions143();}catch(_){}
+
+console.log('v143 ready',V143.ok,V143.PRICE,V143.PRICE_V,V143.PRICE_E,V143.HP_MUL,V143.ADD0,V143.ADD1);
+
+</script>
 </body>
 </html>
