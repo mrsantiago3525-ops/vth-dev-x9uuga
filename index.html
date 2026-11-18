@@ -17796,5 +17796,161 @@ try{if(typeof stage==='number'&&stage===3)placeSerps145();}catch(_){}
 console.log('v145 ready',V145.ok);
 
 </script>
+
+<script>
+// ===== v146 TEST: serpiente más lejos del santuario + golpes que sí conectan · no publicado =====
+const V146={
+  ok:1,on:1,
+  XS:[4340,8480],
+  BUF:700,          // mínimo de distancia al checkpoint desde el que reapareces
+  COIL:280,         // alcance visual de los rollos hacia el jugador
+  HIT_INV:8,        // destello breve; nunca invencible de verdad
+  cnt:{hit:0,flash:0,respawn:0,moved:0}
+};
+window.V146=V146;
+try{if(window.V145){V145.XS=V146.XS.slice();}}catch(_){}
+
+// Hurtboxes: the painted coils and neck are much wider than the old 110px box
+// around the hole, so slashes that clearly hit the body used to whiff.
+function boxes145(e){
+  const m=typeof meta145==='function'?meta145(e):null;
+  const sc=(V145&&V145.SC)||1;
+  const fl=typeof FLOOR==='number'?FLOOR:392;
+  const face=e.f<0?1:-1;
+  const hx=m?m.hx:520,gy=m?m.gy:348;
+  const headX=e.x+face*((m?m.headX:200)-hx)*sc;
+  const headY=fl+((m?m.headY:200)-gy)*sc;
+  const hr=e.st==='lunge'?80:e.st==='stuck'?82:64;
+  const side=(P&&Math.abs(P.x-e.x)>8)?Math.sign(P.x-e.x):(e.f|| -1);
+  const coil=V146.COIL;
+  const xA=e.x-80, xB=e.x+80, xC=e.x+side*coil;
+  const body={
+    x0:Math.min(xA,xB,xC,headX-40),
+    x1:Math.max(xA,xB,xC,headX+40),
+    y0:Math.min(fl-230,headY-40),
+    y1:fl+12
+  };
+  return {
+    head:{x0:headX-hr,x1:headX+hr,y0:headY-hr,y1:headY+hr+20,x:headX,y:headY},
+    body:body,
+    neck:{x0:Math.min(headX,e.x)-56,x1:Math.max(headX,e.x)+56,y0:Math.min(headY,fl-60)-50,y1:Math.max(headY,fl)+8}
+  };
+}
+
+function ovAny146(sw,b){
+  if(!sw||!b)return false;
+  return ov145(sw,b.head)||ov145(sw,b.body)||(b.neck&&ov145(sw,b.neck));
+}
+
+function hitSerpSw145(){
+  if(!V145||!V145.on||!P||!P.atk||P.hp<=0)return;
+  const a=(typeof ATK==='object'&&ATK[P.atk])||(P.atk==='sword'&&typeof ATK==='object'&&ATK.sword);
+  if(!a&&P.atk!=='sword'&&P.atk!=='punch'&&P.atk!=='upsl'&&P.atk!=='asl'&&P.atk!=='chsl')return;
+  const dur=a&&a.dur,el=dur!=null?(dur-P.atkT):4;
+  if(a&&a.a!=null&&(el<a.a||el>a.b))return;
+  const sw=typeof swordBox145==='function'?swordBox145():null;if(!sw)return;
+  for(const e of enemies){
+    if(!e||e.type!=='serp'||e.dead||e.dying)continue;
+    if(e.inv>=9000)continue;                 // only the death pose is unhittable
+    if(e.inv>0&&e.inv<9000)continue;         // brief post-hit flash
+    if(typeof hitSeen124==='function'&&hitSeen124(e,P.atkId))continue;
+    const b=boxes145(e);
+    if(!ovAny146(sw,b))continue;
+    if(typeof markHit124==='function')markHit124(e,P.atkId);
+    let d;
+    if(P.atk==='punch'&&a&&a.dmg)d=a.dmg[P.combo|0];
+    else if(a&&a.dmg)d=Math.round((a.dmg[0]+((Math.random()*6)|0))*((P.atk==='sword'&&typeof SWMUL!=='undefined')?(SWMUL[P.swC|0]||1):1));
+    else d=18;
+    hitEnemy(e,d,P.atk||'sword',P.f||1);
+    V146.cnt.hit=(V146.cnt.hit|0)+1;
+  }
+}
+
+function clearInv146(e){
+  if(!e||e.type!=='serp')return;
+  if(e.dying||e.dead||e.st==='death')return;
+  // alive serpents must never stay permanently invincible
+  if(e.inv>=9000)e.inv=0;
+}
+
+function hook146(){
+  if(typeof bodyHit135==='function'&&!bodyHit135._v146){
+    const _bh=bodyHit135;
+    bodyHit135=function(e,x0,x1){
+      if(V146.on&&e&&e.type==='serp'){
+        const b=boxes145(e),lo=Math.min(x0,x1)-36,hi=Math.max(x0,x1)+36;
+        const hit=box=>box&&box.x1>lo&&box.x0<hi;
+        return !e.dead&&!e.dying&&(hit(b.head)||hit(b.body)||hit(b.neck));
+      }
+      return _bh.apply(this,arguments);
+    };
+    bodyHit135._v146=1;
+  }
+  if(typeof hitEnemy==='function'&&!hitEnemy._v146){
+    const _he=hitEnemy;
+    hitEnemy=function(e,d,kind,dir){
+      if(!(V146.on&&e&&e.type==='serp'))return _he.apply(this,arguments);
+      if(e.dying||e.dead)return;
+      clearInv146(e);
+      const hp0=e.hp;
+      const r=_he.apply(this,arguments);
+      if(e&&!e.dying&&!e.dead&&(e.hp<hp0||e.hitT>0)){
+        if(!(e.hitT>0))e.hitT=8;
+        if(!(e.inv>0)||e.inv>V146.HIT_INV)e.inv=V146.HIT_INV;
+        V146.cnt.flash=(V146.cnt.flash|0)+1;
+      }
+      return r;
+    };
+    hitEnemy._v146=1;
+  }
+  if(typeof aiUpdate==='function'&&!aiUpdate._v146){
+    const _ai=aiUpdate;
+    aiUpdate=function(e){
+      if(V146.on&&e&&e.type==='serp')clearInv146(e);
+      return _ai.apply(this,arguments);
+    };
+    aiUpdate._v146=1;
+  }
+  if(typeof loadAtAltar==='function'&&!loadAtAltar._v146){
+    const _la=loadAtAltar;
+    loadAtAltar=function(dead){
+      // if the saved ember is behind a living serpent, fall back so you
+      // don't respawn on the nest side (or on top of it)
+      try{
+        if(SAVE&&SAVE.az===3&&ALTD[3]){
+          let i=SAVE.ai|0;
+          while(i>=0){
+            const x=ALTD[3][i];
+            const blocked=enemies.some(e=>e&&e.type==='serp'&&!e.dead&&!e.dying&&e.home<x-40);
+            if(!blocked){SAVE.ai=i;break;}
+            i--;
+          }
+        }
+      }catch(_){}
+      const r=_la.apply(this,arguments);
+      V146.cnt.respawn=(V146.cnt.respawn|0)+1;
+      return r;
+    };
+    loadAtAltar._v146=1;
+  }
+  if(typeof placeSerps145==='function'){
+    try{
+      if(typeof stage==='number'&&stage===3){
+        for(const e of enemies){
+          if(e&&e.type==='serp'&&!V146.XS.some(x=>Math.abs((e.home||e.x)-x)<30)){
+            e.dead=1;e.dying=1;e.solid=0;
+          }
+        }
+        placeSerps145();
+        V146.cnt.moved=1;
+      }
+    }catch(_){}
+  }
+}
+
+hook146();
+console.log('v146 ready',V146.ok,V145&&V145.XS);
+
+</script>
 </body>
 </html>
