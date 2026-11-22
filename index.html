@@ -19529,5 +19529,85 @@ hook150();
 console.log('v150 ready',V150.ok);
 
 </script>
+<script>
+// ===== v151 TEST: sin ondas laterales del pisotón ni gateo; se conserva la embestida (lunge) de antes de v149 · no publicado =====
+// El resto de v147–v150 se queda: columna, rayos del corazón, destellos, veneno, rendimiento, menú táctil y salas que se rellenan.
+const V151={
+  ok:1,on:1,
+  cnt:{waveBlock:0,crawlBlock:0,lungeKept:0}
+};
+window.V151=V151;
+
+function hook151(){
+  // 1) Los "poderes laterales" son las ondas del pisotón (V149.waves / waveBolt):
+  // un recorte del sprite del slam, dibujado encima del suelo y viajando a ambos lados.
+  // Se quitan del combate en vivo. El pisotón en sí (poses, destello, temblor, golpe cercano) se queda.
+  // Las ondas viejas de H86W del camino forzado raise→slam→stuck no se tocan (suites).
+  if(typeof spawnWave149==='function'&&!spawnWave149._v151){
+    const _w=spawnWave149;
+    spawnWave149=function(){
+      if(V151.on){
+        V151.cnt.waveBlock=(V151.cnt.waveBlock|0)+1;
+        return;
+      }
+      return _w.apply(this,arguments);
+    };
+    spawnWave149._v151=1;
+  }
+  if(V149&&V149.waves)V149.waves.length=0;
+
+  // 2) El Gateo (crawl) había sustituido la embestida (lunge pintada de v138).
+  // Ya no se convierte: el lunge de antes de v149 vuelve a correr.
+  if(typeof startCrawl149==='function'&&!startCrawl149._v151){
+    const _c=startCrawl149;
+    startCrawl149=function(){
+      if(V151.on){
+        V151.cnt.crawlBlock=(V151.cnt.crawlBlock|0)+1;
+        return;
+      }
+      return _c.apply(this,arguments);
+    };
+    startCrawl149._v151=1;
+    if(V149)V149.startCrawl=startCrawl149;
+  }
+  if(typeof maybePick149==='function'&&!maybePick149._v151){
+    const _m=maybePick149;
+    maybePick149=function(e,st0,ad0){
+      if(V151.on&&e){
+        const saved=e.crCd149;
+        e.crCd149=1e9; // the lunge→gateo branch never fires
+        const r=_m.apply(this,arguments);
+        e.crCd149=saved;
+        if(e&&e.st==='lunge')V151.cnt.lungeKept=(V151.cnt.lungeKept|0)+1;
+        return r;
+      }
+      return _m.apply(this,arguments);
+    };
+    maybePick149._v151=1;
+  }
+
+  // Belt: if a wave somehow got into the array, drop it before the FX tick/draw.
+  if(typeof stepFx149==='function'&&!stepFx149._v151){
+    const _s=stepFx149;
+    stepFx149=function(){
+      if(V151.on&&V149&&V149.waves&&V149.waves.length)V149.waves.length=0;
+      return _s.apply(this,arguments);
+    };
+    stepFx149._v151=1;
+  }
+  if(typeof drawFx149==='function'&&!drawFx149._v151){
+    const _d=drawFx149;
+    drawFx149=function(){
+      if(V151.on&&V149&&V149.waves&&V149.waves.length)V149.waves.length=0;
+      return _d.apply(this,arguments);
+    };
+    drawFx149._v151=1;
+  }
+}
+
+hook151();
+console.log('v151 ready',V151.ok);
+
+</script>
 </body>
 </html>
