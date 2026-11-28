@@ -20738,5 +20738,197 @@ hook155();
 console.log('v155 ready',V155.ok,V155.baked);
 
 </script>
+<script>
+// v156: iOS/WebKit-safe draw for Engendro / Desollado (and a harden of Cirlene fauna).
+// Cause we are fixing: v155 copied every pose onto its own extra canvas and then drew
+// those canvases. On iPhone Safari those hidden canvases can come out empty (memory
+// eviction and/or WebP-to-canvas blit) with no exception, so the hook replaced the
+// old art with a blank draw. Never do that: draw the Image directly, and if a frame
+// is not ready, fall back to mz79Draw so they are never invisible.
+const V156={
+  ok:1,on:1,ver:156,ready:0,
+  cnt:{draw:0,fallback:0,rebind:0,medu:0,abis:0,v154fb:0,pixels:0}
+};
+window.V156=V156;
+
+function okFrame156(fr){
+  if(!fr)return 0;
+  const w=fr.naturalWidth||fr.width||0, h=fr.naturalHeight||fr.height||0;
+  if(!(w>1&&h>1))return 0;
+  // A neutered/evicted canvas keeps width/height but is often a Canvas element
+  // whose backing store is gone. Prefer HTMLImageElement (or any element with src).
+  if(typeof HTMLCanvasElement!=='undefined'&&fr instanceof HTMLCanvasElement){
+    // Don't trust extra canvases on iOS. If we still have the source image, skip this.
+    return 0;
+  }
+  return 1;
+}
+
+function rebind155images(){
+  if(typeof V155!=='object'||!V155.imgs)return 0;
+  const keys=['ec_hang1','ec_hang2','ec_snap','ec_idle','ec_walk1','ec_walk2','ec_lunge','ec_fall','ec_land','ec_hit','ec_dead','ds_hang1','ds_hang2','ds_snap','ds_idle','ds_run1','ds_run2','ds_lunge','ds_fall','ds_land','ds_hit','ds_dead'];
+  let n=0;
+  if(!V155.fr)V155.fr={};
+  for(const k of keys){
+    const im=V155.imgs[k];
+    if(okFrame156(im)){V155.fr[k]=im;n++;}
+  }
+  if(n){V155.baked=1;V156.ready=1;V156.cnt.rebind++;}
+  return n;
+}
+
+function rebind154images(){
+  if(typeof V154!=='object'||!V154.imgs)return 0;
+  const I=V154.imgs, map=[
+    ['medu','idle1','medu_idle1'],['medu','idle2','medu_idle2'],['medu','zapw','medu_zapw'],['medu','zap','medu_zap'],
+    ['abis','leap1','abis_leap1'],['abis','leap2','abis_leap2'],['abis','leap3','abis_leap3'],['abis','peek','abis_peek']
+  ];
+  let n=0;
+  for(const [g,k,ik] of map){
+    if(okFrame156(I[ik])){
+      if(!V154[g])V154[g]={};
+      V154[g][k]=I[ik];n++;
+    }
+  }
+  if(okFrame156(I.water_mid)){V154.water=I.water_mid;n++;}
+  if(okFrame156(I.rimL)){V154.rimL=I.rimL;n++;}
+  if(okFrame156(I.rimR)){V154.rimR=I.rimR;n++;}
+  return n;
+}
+
+function frameReady156(e){
+  if(typeof V156.forceOld==='number'&&V156.forceOld)return 0;
+  if(typeof V155!=='object')return 0;
+  if(V155.baked!==1&&typeof kickBake155==='function'){try{kickBake155();}catch(_){}}
+  rebind155images();
+  const fr=(typeof frame155==='function')?frame155(e):null;
+  return okFrame156(fr)?fr:null;
+}
+
+function safeFilterOff156(C){
+  try{if(C&&'filter' in C)C.filter='none';}catch(_){}
+  try{C.shadowBlur=0;C.shadowColor='transparent';}catch(_){}
+}
+
+function draw156(e){
+  const fr=frameReady156(e);
+  if(!fr){
+    V156.cnt.fallback++;
+    if(typeof mz79Draw==='function')mz79Draw(e);
+    return;
+  }
+  const x=e.x-cam;
+  if(x<-250||x>W+250){
+    if(typeof drawParts155==='function')drawParts155();
+    return;
+  }
+  const k=e.type,st=e.st,t=e.t|0;
+  const C=ctx;
+  C.save();
+  safeFilterOff156(C);
+  if(e.dead)C.globalAlpha=Math.max(0,1-e.dead/25);
+  let top=0,y=e.y,rot=0,xx=x;
+  if((st==='hang'||st==='snap')&&(k==='mzec'||k==='mzds')){
+    xx=x+(st==='snap'?Math.sin(t*2.1)*3:0);
+    rot=Math.sin(t*(st==='snap'?.5:.03)+(e.ph||0))*(st==='snap'?.08:.035);
+    top=1;y=e.ay;
+    if(typeof mz79Chain==='function')mz79Chain(xx,MZ_CEIL-70,e.ay+4,0);
+  }
+  const w=fr.naturalWidth||fr.width, h=fr.naturalHeight||fr.height;
+  C.translate(Math.round(xx),Math.round(y));
+  if(rot)C.rotate(rot);
+  if(e.f<0)C.scale(-1,1);
+  C.drawImage(fr,-w/2,top?0:-h);
+  V156.cnt.draw++;
+  if(typeof V155==='object'&&V155.cnt){
+    V155.cnt[k]=(V155.cnt[k]||0)+1;
+    if(st==='hang'||st==='snap')V155.cnt.hang++;
+    else if(e.dead)V155.cnt.dead++;
+    else if(e.hitT>0)V155.cnt.hit++;
+    else if(st==='lunge'||st==='gap')V155.cnt.lunge++;
+    else if(st==='fall')V155.cnt.fall++;
+    else V155.cnt.ground++;
+  }
+  C.restore();
+  if(typeof drawParts155==='function')drawParts155();
+}
+
+function hook156(){
+  if(typeof finishBake155==='function'&&!finishBake155._v156){
+    const _f=finishBake155;
+    finishBake155=function(){
+      const r=_f.apply(this,arguments);
+      try{rebind155images();}catch(_){}
+      return r;
+    };
+    finishBake155._v156=1;
+  }
+  if(typeof finishBake154==='function'&&!finishBake154._v156){
+    const _f=finishBake154;
+    finishBake154=function(){
+      const r=_f.apply(this,arguments);
+      try{rebind154images();}catch(_){}
+      return r;
+    };
+    finishBake154._v156=1;
+  }
+  if(typeof kickBake155==='function'){try{kickBake155();}catch(_){}}
+  if(typeof kickBake154==='function'){try{kickBake154();}catch(_){}}
+  try{rebind155images();rebind154images();}catch(_){}
+
+  if(typeof drawEnemy==='function'&&!drawEnemy._v156){
+    const _d=drawEnemy;
+    drawEnemy=function(e){
+      if(V156.on&&e&&(e.type==='mzec'||e.type==='mzds')){
+        try{draw156(e);return;}catch(_){}
+        try{
+          if(typeof mz79Draw==='function'){mz79Draw(e);V156.cnt.fallback++;return;}
+        }catch(__){}
+      }
+      return _d.apply(this,arguments);
+    };
+    drawEnemy._v156=1;
+    if(_d._v155)drawEnemy._v155=1;
+  }
+
+  // v154: same risk (blit to extra canvases). Rebind to Images; if a frame is bad, use original art.
+  if(typeof drawMedu==='function'&&!drawMedu._v156){
+    const _d=drawMedu;
+    drawMedu=function(e,dx){
+      try{rebind154images();}catch(_){}
+      const ok=typeof V154==='object'&&okFrame156(V154.medu&&V154.medu.idle1);
+      if(!ok&&typeof V154==='object'){
+        const was=V154.on;V154.on=0;
+        try{const r=_d.apply(this,arguments);V156.cnt.v154fb++;return r;}finally{V154.on=was;}
+      }
+      const r=_d.apply(this,arguments);
+      V156.cnt.medu++;
+      return r;
+    };
+    drawMedu._v156=1;
+    if(_d._v154)drawMedu._v154=1;
+  }
+  if(typeof drawAbis==='function'&&!drawAbis._v156){
+    const _d=drawAbis;
+    drawAbis=function(e,dx){
+      try{rebind154images();}catch(_){}
+      const ok=typeof V154==='object'&&okFrame156(V154.abis&&(V154.abis.leap1||V154.abis.peek));
+      if(!ok&&typeof V154==='object'){
+        const was=V154.on;V154.on=0;
+        try{const r=_d.apply(this,arguments);V156.cnt.v154fb++;return r;}finally{V154.on=was;}
+      }
+      const r=_d.apply(this,arguments);
+      V156.cnt.abis++;
+      return r;
+    };
+    drawAbis._v156=1;
+    if(_d._v154)drawAbis._v154=1;
+  }
+}
+
+hook156();
+console.log('v156 ready',V156.ok,V156.ready);
+
+</script>
 </body>
 </html>
